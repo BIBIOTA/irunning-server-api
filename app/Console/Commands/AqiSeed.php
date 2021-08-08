@@ -63,7 +63,7 @@ class AqiSeed extends Command
         }
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-        Log::info('更新完成');
+        Log::info('Aqi資料更新完成');
         return 0;
     }
 }
