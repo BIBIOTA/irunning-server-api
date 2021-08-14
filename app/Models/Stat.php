@@ -5,13 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Member extends Model
+class Stat extends Model
 {
     use HasFactory;
 
-    protected $table = 'members';
+    protected $table = 'stats';
 
     protected $guarded = [];
-
-    public $incrementing = false;
 }

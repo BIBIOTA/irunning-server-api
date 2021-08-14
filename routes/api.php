@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Apis\RequestApi;
+use App\Http\Controllers\LoginController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -21,7 +22,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::prefix('login')->group(function(){
-    Route::post('login', [RequestApi::class, 'login'])->name('login.login');
+    Route::post('login', [LoginController::class, 'login'])->name('login.login');
 });
 
 Route::prefix('aqi')->group(function(){
@@ -36,4 +37,8 @@ Route::prefix('cities')->group(function(){
 
 Route::prefix('weather')->group(function(){
     Route::get('getWeather', [RequestApi::class, 'getWeather'])->name('weather.getWeather');
+});
+
+Route::prefix('member')->group(function(){
+    Route::get('index', [RequestApi::class, 'getIndexRunInfo'])->name('member.getIndexRunInfo');
 });

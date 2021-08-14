@@ -55,7 +55,7 @@ class WeatherSeeder extends Seeder
             foreach($datas as $city) {
                 $districts = app(District::class)->where('CityName', $city->CityName)->get();
                 foreach($districts as $district) {
-                    $response = Http::get('http://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-093?Authorization=CWB-64ECC965-374F-40DB-90C3-9A2E793CE3DE'.'&'.'locationId'.'='.$city->dataid.'&'.'locationName'.'='.$district->AreaName);
+                    $response = Http::get('https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-093?Authorization=CWB-12E073F0-06A2-4F1E-BEB7-7FB421E605A2'.'&'.'locationId'.'='.$city->dataid.'&'.'locationName'.'='.$district->AreaName);
                     $resdatas = $response->json();
                     foreach($resdatas['records']['locations'] as $data) {
                         foreach($data['location'] as $location) {
