@@ -42,3 +42,7 @@ Route::prefix('weather')->group(function(){
 Route::prefix('member')->group(function(){
     Route::get('index', [RequestApi::class, 'getIndexRunInfo'])->name('member.getIndexRunInfo');
 });
+
+Route::prefix('events')->group(function(){
+    Route::get('getEvents', [RequestApi::class, 'getEvents'])->name('events.getEvents');
+});

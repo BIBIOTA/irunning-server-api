@@ -42,28 +42,34 @@ class AqiSeed extends Command
      */
     public function handle()
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-
-        app(Aqi::class)->truncate();
-        $response = Http::get('https://data.epa.gov.tw/api/v1/aqx_p_432?limit=1000&api_key=9be7b239-557b-4c10-9775-78cadfc555e9&sort=ImportDate%20desc&format=json');
-        $datas = $response->json();
-        if (count($datas['records']) > 0) {
-            foreach($datas['records'] as $data) {
-                $arr = [];
-                foreach($data as $key => $value) {
-                    if ($key === 'PM2.5') {
-                        $key = 'PM2-5';
-                    } else if($key === 'PM2.5_AVG') {
-                        $key = 'PM2-5_AVG';
+        try {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+    
+            $response = Http::get('https://data.epa.gov.tw/api/v1/aqx_p_432?limit=1000&api_key=9be7b239-557b-4c10-9775-78cadfc555e9&sort=ImportDate%20desc&format=json');
+            $datas = $response->json();
+            if (count($datas['records']) > 0) {
+                app(Aqi::class)->truncate();
+                foreach($datas['records'] as $data) {
+                    $arr = [];
+                    foreach($data as $key => $value) {
+                        if ($key === 'PM2.5') {
+                            $key = 'PM2-5';
+                        } else if($key === 'PM2.5_AVG') {
+                            $key = 'PM2-5_AVG';
+                        }
+                        $arr[$key] = $value;
                     }
-                    $arr[$key] = $value;
+                    app(Aqi::class)->insert($arr);
                 }
-                app(Aqi::class)->insert($arr);
+                Log::info('Aqi資料更新完成');
+            } else {
+                Log::info('無法取得Aqi資料');
             }
+    
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        } catch (Throwable $e) {
+            Log::info($e);
         }
-
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-        Log::info('Aqi資料更新完成');
         return 0;
     }
 }

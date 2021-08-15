@@ -10,6 +10,8 @@ use App\Models\Aqi;
 use App\Models\Activity;
 use App\Models\City;
 use App\Models\District;
+use App\Models\Event;
+use App\Models\EventDistance;
 use App\Models\Member;
 use App\Models\Weather;
 use App\Models\Stat;
@@ -119,5 +121,21 @@ class RequestApi extends Controller
         }
 
         return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
+    }
+
+    public function getEvents(Request $request) {
+        $rows = app(Event::class)->orderBy('event_date', 'ASC')->get();
+
+        if ($rows->count() > 0) {
+
+            $data = $rows->map(function($row){
+                $row['distance'] = ($row->distance) ? $row->distance : null;
+                return $row;
+            });
+
+            return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $data], 200);
+        }
+
+        return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);   
     }
 }

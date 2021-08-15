@@ -24,11 +24,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
-
         $schedule->command('aqi:seed')->hourly();
         $schedule->exec('php artisan DB:seed --class=WeatherSeeder')
         ->hourly();
+        $schedule->exec('php artisan DB:seed --class=EventSeeder')
+        ->daily();
     }
 
     /**
