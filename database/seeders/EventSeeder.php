@@ -24,7 +24,7 @@ class EventSeeder extends Seeder
         try {
             DB::statement('SET FOREIGN_KEY_CHECKS=0;');
     
-            $response = Http::get('http://f5c1e7d01498.ngrok.io/api/events');
+            $response = Http::get('http://dc942e3569de.ngrok.io/api/events');
     
             $resdatas = $response->json();
     

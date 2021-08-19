@@ -11,6 +11,8 @@ class PoP12h extends Model
 
     protected $table = 'PoP12h';
 
-    protected $fillable = ['weather_id'];
+    protected $guarded = [];
+
+    protected $primaryKey = 'weather_id';
 
 }

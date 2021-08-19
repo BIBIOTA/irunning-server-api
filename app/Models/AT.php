@@ -12,5 +12,7 @@ class AT extends Model
     protected $table = 'AT';
 
     protected $fillable = ['weather_id'];
+
+    protected $primaryKey = 'weather_id';
 }
 

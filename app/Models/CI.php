@@ -13,4 +13,6 @@ class CI extends Model
 
     protected $fillable = ['weather_id'];
 
+    protected $primaryKey = 'weather_id';
+
 }

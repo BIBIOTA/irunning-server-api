@@ -13,5 +13,8 @@ class WeatherDescription extends Model
 
     protected $fillable = ['weather_id'];
 
+    public $incrementing = false;
+
+    protected $primaryKey = 'weather_id';
 
 }

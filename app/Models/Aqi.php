@@ -11,5 +11,4 @@ class Aqi extends Model
 
     protected $table = 'aqi';
 
-    protected $fillable = ['weather_id'];
 }

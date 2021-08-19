@@ -25,8 +25,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('aqi:seed')->hourly();
-        $schedule->exec('php artisan DB:seed --class=WeatherSeeder')
-        ->hourly();
+        $schedule->command('weather:seed')->hourly();
         $schedule->exec('php artisan DB:seed --class=EventSeeder')
         ->daily();
     }

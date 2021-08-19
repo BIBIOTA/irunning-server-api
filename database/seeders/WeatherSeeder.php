@@ -35,28 +35,29 @@ class WeatherSeeder extends Seeder
     public function run()
     {
         try {
-            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            app(Weather::class)->truncate();
+            app(AT::class)->truncate();
+            app(CI::class)->truncate();
+            app(PoP6h::class)->truncate();
+            app(PoP12h::class)->truncate();
+            app(RH::class)->truncate();
+            app(T::class)->truncate();
+            app(Td::class)->truncate();
+            app(WD::class)->truncate();
+            app(WeatherDescription::class)->truncate();
+            app(WS::class)->truncate();
+            app(Wx::class)->truncate();            
     
             $datas = app(City::class)::select('dataid', 'CityName')->whereNotNull('dataid')->get();
+
             foreach($datas as $city) {
                 $districts = app(District::class)->where('CityName', $city->CityName)->get();
                 foreach($districts as $district) {
                     $response = Http::get('https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-093?Authorization=CWB-12E073F0-06A2-4F1E-BEB7-7FB421E605A2'.'&'.'locationId'.'='.$city->dataid.'&'.'locationName'.'='.$district->AreaName);
                     $resdatas = $response->json();
                     if (count($resdatas) > 0) {
-                        app(Weather::class)->truncate();
-                        app(AT::class)->truncate();
-                        app(CI::class)->truncate();
-                        app(PoP6h::class)->truncate();
-                        app(PoP12h::class)->truncate();
-                        app(RH::class)->truncate();
-                        app(T::class)->truncate();
-                        app(Td::class)->truncate();
-                        app(WD::class)->truncate();
-                        app(WeatherDescription::class)->truncate();
-                        app(WS::class)->truncate();
-                        app(Wx::class)->truncate();            
                         foreach($resdatas['records']['locations'] as $data) {
                             foreach($data['location'] as $location) {
                                 $id = uniqid();
@@ -107,11 +108,10 @@ class WeatherSeeder extends Seeder
     
                 }
             }
-    
-            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
             Log::info('天氣資料更新完成');
         } catch (Throwable $e) {
             Log::info($e);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }
