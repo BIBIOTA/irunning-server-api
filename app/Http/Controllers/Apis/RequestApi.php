@@ -124,7 +124,13 @@ class RequestApi extends Controller
     }
 
     public function getEvents(Request $request) {
-        $rows = app(Event::class)->orderBy('event_date', 'ASC')->get();
+
+        $this->filters = [
+            'startDay' => $request->startDay,
+            'endDay' => $request->endDay,
+        ];
+
+        $rows = app(Event::class)->getFilterData($this->filters);
 
         if ($rows->count() > 0) {
 

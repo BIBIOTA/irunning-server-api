@@ -15,6 +15,23 @@ class Event extends Model
 
     public $incrementing = false;
 
+    public function getFilterData($filters, $orderBy='event_date', $order='ASC') {
+        $query = $this->newModelQuery();
+
+        if (is_array($filters) && count($filters) > 0) {
+            if (!empty($filters['startDay']) && !empty($filters['endDay'])) {
+                $query->where('event_date', '>=', $filters['startDay'])
+                ->where('event_date', '<=', $filters['endDay']);
+            }
+        }
+
+        $query->orderBy($orderBy, $order);
+
+        $results = $query->get();
+
+        return $results;
+    }
+
     public function distance() {
         return $this->hasMany(EventDistance::class, 'event_id');
     }
