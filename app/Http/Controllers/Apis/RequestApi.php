@@ -128,20 +128,35 @@ class RequestApi extends Controller
         $this->filters = [
             'startDay' => $request->startDay,
             'endDay' => $request->endDay,
+            'distances' => $request->distances,
         ];
 
         $rows = app(Event::class)->getFilterData($this->filters);
 
         if ($rows->count() > 0) {
 
-            $data = $rows->map(function($row){
-                $row['distance'] = ($row->distance) ? $row->distance : null;
-                return $row;
-            });
+            if (isset($this->filters['distances']) && is_array($this->filters['distances']) ) {
+                $data = [];
+
+                foreach($rows as $row) {
+                    $row['distance'] = ($row->distance) ? app(EventDistance::class)->distanceFilter($row->distance, $this->filters['distances']) : null;
+                    if ($row['distance'] && $row['distance']->count() > 0) {
+                        array_push($data, $row);
+                    }
+                }
+
+            } else {
+                $data = $rows->map(function($row){
+                    $row['distance'] = ($row->distance) ? $row->distance : null;
+                    return $row;
+                });
+            }
+
 
             return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $data], 200);
         }
 
         return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);   
     }
+
 }
