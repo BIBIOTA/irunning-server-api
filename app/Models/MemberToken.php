@@ -13,4 +13,5 @@ class MemberToken extends Model
 
     protected $guarded = [];
 
+    public $incrementing = false;
 }
