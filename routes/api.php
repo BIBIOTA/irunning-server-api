@@ -30,19 +30,24 @@ Route::prefix('aqi')->group(function(){
     Route::get('getAqiList', [RequestApi::class, 'getAqiList'])->name('aqi.getAqiList');
 });
 
+Route::prefix('activities')->group(function(){
+    Route::get('getActivities', [RequestApi::class, 'getActivities'])->name('activities.getActivities');
+});
+
 Route::prefix('cities')->group(function(){
     Route::get('getCities', [RequestApi::class, 'getCities'])->name('cities.getCities');
     Route::get('getDistricts', [RequestApi::class, 'getDistricts'])->name('districts.getDistricts');
 });
 
-Route::prefix('weather')->group(function(){
-    Route::get('getWeather', [RequestApi::class, 'getWeather'])->name('weather.getWeather');
+Route::prefix('events')->group(function(){
+    Route::get('getEvents', [RequestApi::class, 'getEvents'])->name('events.getEvents');
 });
 
 Route::prefix('member')->group(function(){
     Route::get('index', [RequestApi::class, 'getIndexRunInfo'])->name('member.getIndexRunInfo');
 });
 
-Route::prefix('events')->group(function(){
-    Route::get('getEvents', [RequestApi::class, 'getEvents'])->name('events.getEvents');
+Route::prefix('weather')->group(function(){
+    Route::get('getWeather', [RequestApi::class, 'getWeather'])->name('weather.getWeather');
 });
+

@@ -45,7 +45,7 @@ class ActivitySeeder extends Seeder
                                 if(in_array($key, $columns)) {
                                     if ($key === 'start_date_local') {
                                         $time_raw = strtotime($value);
-                                        $time_mysql = date('Y-m-d H:i:s',$time_raw);
+                                        $time_mysql = gmdate('Y-m-d H:i:s',$time_raw);
                                         $formData[$key] = $time_mysql;
                                     } else {
                                         $formData[$key] = $value;

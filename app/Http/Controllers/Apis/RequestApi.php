@@ -123,6 +123,35 @@ class RequestApi extends Controller
         return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
     }
 
+    public function getActivities (Request $request) {
+
+        $this->filters = [
+            'id' => $request->id,
+            'startDay' => $request->startDay,
+            'endDay' => $request->endDay,
+        ];
+
+        $data = app(Activity::class)->getFilterData($this->filters);
+
+        if ($data->count() > 0) {
+
+            $data->getCollection()->transform(function($row){
+                return [
+                    'id' => $row->id,
+                    'name' => $row->name,
+                    'pace' => $this->getPace($row->distance, $row->moving_time),
+                    'distance' => $this->getDistanceIsFloor($row->distance),
+                    'moving_time' => $row->moving_time,
+                    'start_date_local' => $row->start_date_local,
+                ];
+            });
+            
+            return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $data], 200);
+        }
+
+        return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
+    }
+
     public function getEvents(Request $request) {
 
         $this->filters = [

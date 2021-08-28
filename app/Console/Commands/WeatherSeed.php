@@ -72,7 +72,6 @@ class WeatherSeed extends Command
                         $resdatas = $response->json();
                         if (count($resdatas) > 0) {
                             foreach($resdatas['records']['locations'] as $data) {
-                                logger($data['dataid'].'test');
                                 foreach($data['location'] as $location) {
                                     $data = app(Weather::class)
                                     ->where('locationsName', $city->CityName)
