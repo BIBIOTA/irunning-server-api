@@ -143,6 +143,7 @@ class RequestApi extends Controller
                     'distance' => $this->getDistanceIsFloor($row->distance),
                     'moving_time' => $row->moving_time,
                     'start_date_local' => $row->start_date_local,
+                    'summary_polyline' => $row->summary_polyline,
                 ];
             });
             

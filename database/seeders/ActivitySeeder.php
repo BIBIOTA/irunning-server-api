@@ -51,6 +51,9 @@ class ActivitySeeder extends Seeder
                                         $formData[$key] = $value;
                                     }
                                 }
+                                if ($key === 'map') {
+                                    $formData['summary_polyline'] = $value['summary_polyline'];
+                                }
                             }
                             if ($data['type'] === 'Run') {
                                 app(Activity::class)->create($formData);
