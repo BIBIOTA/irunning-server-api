@@ -18,6 +18,6 @@ class Wx extends Model
     protected $primaryKey = 'weather_id';
 
     public function WxDocument () {
-        return $this->belongsTo(WxDocument::class, 'value', 'text');
+        return $this->belongsTo(WxDocument::class, 'value', 'value');
     }
 }

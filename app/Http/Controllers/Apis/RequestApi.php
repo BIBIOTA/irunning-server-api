@@ -74,8 +74,8 @@ class RequestApi extends Controller
             $data['AT'] = $row->AT->value.'°C';
             $data['PoP6h'] = $row->PoP6h->value.'%';
             $data['CI'] = $row->CI->value;
-            $data['Wx'] = $row->Wx->value;
-            $data['WxValue'] = $row->Wx->WxDocument->value;
+            $data['Wx'] = $row->Wx->WxDocument->text;
+            $data['WxValue'] = $row->Wx->value;
             $data['updated_at'] = $row->updated_at;
 
             return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $data], 200);
