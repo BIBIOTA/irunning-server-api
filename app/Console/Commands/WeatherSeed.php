@@ -91,6 +91,7 @@ class WeatherSeed extends Command
                                         $data = app(Weather::class)->create($formData);
                                     }
                                     foreach($location['weatherElement'] as $key => $weatherElement) {
+                                        $elementData = [];
                                         foreach($weatherElement['time'] as $time) {
                                             if (isset($time['startTime']) && isset($time['endTime'])) {
                                                 if ($time['startTime'] < date('Y-m-d H:i:s') && $time['endTime'] > date('Y-m-d H:i:s')) {
@@ -113,20 +114,12 @@ class WeatherSeed extends Command
                                                 }
                                             }
                                         }
+                                        $elementData['weather_id'] = $id;
+                                        $elementData['description'] = $weatherElement['description'];
                                         $elementData['created_at'] = Carbon::now();
                                         $elementData['updated_at'] = Carbon::now();
-                                        $elementData = [
-                                            'weather_id' => $id,
-                                            'description' => $weatherElement['description'],
-                                        ];
                                         $key = $weatherElement['elementName'];
-                                        if (!empty($elementData['startTime']) || !empty($elementData['endTime']) || !empty($elementData['dataTime'])) {
-                                            $oldData = app('App\Models\\'.$key)->where('weather_id', $id)->first();
-                                            if ($oldData) {
-                                                $oldData->delete();
-                                            }
-                                            app('App\Models\\'.$key)->create($elementData);
-                                        }
+                                        $oldData = app('App\Models\\'.$key)->where('weather_id', $id)->update($elementData);
                                     }
                                 }
                             }
