@@ -32,6 +32,7 @@ Route::prefix('aqi')->group(function(){
 
 Route::prefix('activities')->group(function(){
     Route::get('getActivities', [RequestApi::class, 'getActivities'])->name('activities.getActivities');
+    Route::get('getActivity', [RequestApi::class, 'getActivity'])->name('activities.getActivity');
 });
 
 Route::prefix('cities')->group(function(){
