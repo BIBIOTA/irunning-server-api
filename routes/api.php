@@ -44,6 +44,10 @@ Route::prefix('events')->group(function(){
     Route::get('getEvents', [RequestApi::class, 'getEvents'])->name('events.getEvents');
 });
 
+Route::prefix('index')->group(function(){
+    Route::get('getIndexEvents', [RequestApi::class, 'getIndexEvents'])->name('index.getIndexEvents');
+});
+
 Route::prefix('member')->group(function(){
     Route::get('index', [RequestApi::class, 'getIndexRunInfo'])->name('member.getIndexRunInfo');
 });
