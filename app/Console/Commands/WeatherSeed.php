@@ -86,6 +86,8 @@ class WeatherSeed extends Command
                                     ];
                                     if ($data) {
                                         $id = $data->id;
+                                        $data->updated_at = Carbon::now();
+                                        $data->save();
                                     } else {
                                         $formData['$id'] = uniqid();
                                         $data = app(Weather::class)->create($formData);
