@@ -27,6 +27,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('aqi:seed')->hourly();
         $schedule->command('weather:seed')->hourly();
         $schedule->command('strava:refreashToken')->everyThreeHours();
+        $schedule->command('strava:activities')->daily();
         $schedule->exec('php artisan DB:seed --class=EventSeeder')
         ->daily();
     }

@@ -5,64 +5,86 @@ namespace App\Http\Controllers;
 use App\Models\Member;
 use App\Models\MemberToken;
 
+use App\Http\Controllers\Traits\StravaActivitiesTrait;
+
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 
 class LoginController extends Controller
 {
+    use StravaActivitiesTrait;
+
     public function login(Request $request) {
-        $athlete = $request->athlete;
-        $data = app(Member::class)->where('strava_id', $athlete['id'])->first();
-        if ($data) {
-            $data->update([
-                'username' => $athlete['username'],
-                'resource_state' => $athlete['resource_state'],
-                'firstname' => $athlete['firstname'],
-                'lastname' => $athlete['lastname'],
-                'city' => $athlete['city'],
-                'state' => $athlete['state'],
-                'country' => $athlete['country'],
-                'sex' => $athlete['sex'],
-                'badge_type_id' => $athlete['badge_type_id'],
-                'weight' => $athlete['weight'],
-            ]);
-        } else {
-            $data = app(Member::class)->create([
-                'id' => uniqid(),
-                'strava_id' => $athlete['id'],
-                'username' => $athlete['username'],
-                'resource_state' => $athlete['resource_state'],
-                'firstname' => $athlete['firstname'],
-                'lastname' => $athlete['lastname'],
-                'city' => $athlete['city'],
-                'state' => $athlete['state'],
-                'country' => $athlete['country'],
-                'sex' => $athlete['sex'],
-                'badge_type_id' => $athlete['badge_type_id'],
-                'weight' => $athlete['weight'],
-            ]);
+        try {
+
+            $athlete = $request->athlete;
+            $data = app(Member::class)->where('strava_id', $athlete['id'])->first();
+            if ($data) {
+                $data->update([
+                    'username' => $athlete['username'],
+                    'resource_state' => $athlete['resource_state'],
+                    'firstname' => $athlete['firstname'],
+                    'lastname' => $athlete['lastname'],
+                    'city' => $athlete['city'],
+                    'state' => $athlete['state'],
+                    'country' => $athlete['country'],
+                    'sex' => $athlete['sex'],
+                    'badge_type_id' => $athlete['badge_type_id'],
+                    'weight' => $athlete['weight'],
+                ]);
+            } else {
+                $data = app(Member::class)->create([
+                    'id' => uniqid(),
+                    'strava_id' => $athlete['id'],
+                    'username' => $athlete['username'],
+                    'resource_state' => $athlete['resource_state'],
+                    'firstname' => $athlete['firstname'],
+                    'lastname' => $athlete['lastname'],
+                    'city' => $athlete['city'],
+                    'state' => $athlete['state'],
+                    'country' => $athlete['country'],
+                    'sex' => $athlete['sex'],
+                    'badge_type_id' => $athlete['badge_type_id'],
+                    'weight' => $athlete['weight'],
+                ]);
+            }
+
+            $token = app(MemberToken::class)->where('user_id',$data->id)->first();
+
+            if ($token) {
+                $tokenData = app(MemberToken::class)->where('user_id',$data->id)->update([
+                    'expires_at' => Carbon::parse(intval($request->expires_at))->setTimezone('Asia/Taipei')->format('Y-m-d H:i:s'),
+                    'expires_in' => intval(gmdate('H',$request->expires_in)),
+                    'refresh_token' => $request->refresh_token,
+                    'access_token' => $request->access_token,
+                ]);
+            } else {
+                $tokenData = app(MemberToken::class)->create([
+                    'id' => uniqid(),
+                    'user_id' => $data->id,
+                    'expires_at' => Carbon::parse(intval($request->expires_at))->setTimezone('Asia/Taipei')->format('Y-m-d H:i:s'),
+                    'expires_in' => intval(gmdate('H',$request->expires_in)),
+                    'refresh_token' => $request->refresh_token,
+                    'access_token' => $request->access_token,
+                ]);
+            }
+
+            try {
+                $tokenData = app(MemberToken::class)->where('access_token', $request->access_token)->first();
+    
+                $this->getActivities($tokenData);
+    
+                return response()->json(['status' => true, 'message' => '登入成功', 'data' => $data], 200);
+            } catch (Throwable $e) {
+                Log::info($e);
+                return response()->json(['status' => false, 'message' => '發生例外錯誤:Strava資料取得失敗', 'data' => null], 404);   
+            }
+
+
+        } catch (Throwable $e) {
+            Log::info($e);
+            return response()->json(['status' => false, 'message' => '發生例外錯誤:登入失敗', 'data' => null], 404);   
         }
-
-        $token = app(MemberToken::class)->where('user_id',$data->id)->first();
-
-        if ($token) {
-            app(MemberToken::class)->where('user_id',$data->id)->update([
-                'expires_at' => date('Y-m-d H:i:s',$request->expires_at),
-                'expires_in' => intval(gmdate('H',$request->expires_in)),
-                'refresh_token' => $request->refresh_token,
-                'access_token' => $request->access_token,
-            ]);
-        } else {
-            app(MemberToken::class)->create([
-                'id' => uniqid(),
-                'user_id' => $data->id,
-                'expires_at' => date('Y-m-d H:i:s',$request->expires_at),
-                'expires_in' => intval(gmdate('H',$request->expires_in)),
-                'refresh_token' => $request->refresh_token,
-                'access_token' => $request->access_token,
-            ]);
-        }
-
-        return response()->json(['status' => true, 'message' => '登入成功', 'data' => $data], 200);
     }
 }

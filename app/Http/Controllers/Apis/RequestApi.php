@@ -87,6 +87,8 @@ class RequestApi extends Controller
     }
 
     public function getIndexRunInfo (Request $request) {
+        
+        $now = Carbon::now();
         Carbon::setWeekStartsAt(Carbon::MONDAY);
         Carbon::setWeekEndsAt(Carbon::SUNDAY);
 
@@ -94,15 +96,16 @@ class RequestApi extends Controller
                 ->where('user_id', $request->id)
                 ->first();
         $activitiesYear = app(Activity::class)
-                    ->whereYear('start_date_local', date('Y'))
+                    ->whereYear('start_date_local', $now->year)
                     ->where('user_id', $request->id)
                     ->sum('distance');
         $activitiesMonth = app(Activity::class)
-            ->whereYear('start_date_local', date('Y'))
-            ->whereMonth('start_date_local', date('MM'))
+            ->whereYear('start_date_local', $now->year)
+            ->whereMonth('start_date_local', $now->month)
             ->where('user_id', $request->id)
             ->sum('distance');
-        $activitiesWeek = app(Activity::class)
+
+            $activitiesWeek = app(Activity::class)
             ->whereBetween('start_date_local', 
                 [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]
             )
