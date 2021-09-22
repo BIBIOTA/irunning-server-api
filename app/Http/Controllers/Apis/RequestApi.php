@@ -22,6 +22,7 @@ use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class RequestApi extends Controller
 {
@@ -126,6 +127,36 @@ class RequestApi extends Controller
         }
 
         return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
+    }
+
+    public function updateMemberLocation (Request $request) {
+        
+        $validator = Validator::make($request->all(), [
+            'county'=>'required',
+            'district'=>'required',
+            'siteName'=>'required',
+            'id'=>'required',
+        ], [
+            'county.required'=>'居住地資料更新失敗:缺少縣市參數',
+            'district.required'=>'居住地資料更新失敗:缺少鄉鎮區參數',
+            'siteName.required'=>'居住地資料更新失敗:缺少空氣品質測量站參數',
+            'id.required'=>'居住地資料更新失敗:缺少會員參數',
+        ]);
+        if ($validator->fails()){
+            return response()->json(['status'=>false, 'message'=>$validator->errors()->all()[0], 'data'=>null], 400);
+        }
+
+        $member = app(Member::class)->where('id', $request->id)->first();
+
+        if ($member) {
+            $member->county = $request->county;
+            $member->district = $request->district;
+            $member->siteName = $request->siteName;
+            $member->save();
+            return response()->json(['status' => true, 'message' => '會員居住地資料更新成功', 'data' => $member], 200);
+        }
+
+        return response()->json(['status' => false, 'message' => '無法取得會員資料', 'data' => null], 404);
     }
 
     public function getActivities (Request $request) {

@@ -50,6 +50,7 @@ Route::prefix('index')->group(function(){
 
 Route::prefix('member')->group(function(){
     Route::get('index', [RequestApi::class, 'getIndexRunInfo'])->name('member.getIndexRunInfo');
+    Route::post('updateMemberLocation', [RequestApi::class, 'updateMemberLocation'])->name('member.updateMemberLocation');
 });
 
 Route::prefix('weather')->group(function(){
