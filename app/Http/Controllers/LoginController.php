@@ -73,7 +73,7 @@ class LoginController extends Controller
             try {
                 $tokenData = app(MemberToken::class)->where('access_token', $request->access_token)->first();
     
-                $this->getActivities($tokenData);
+                $this->getStats($tokenData);
     
                 return response()->json(['status' => true, 'message' => '登入成功', 'data' => $data], 200);
             } catch (Throwable $e) {

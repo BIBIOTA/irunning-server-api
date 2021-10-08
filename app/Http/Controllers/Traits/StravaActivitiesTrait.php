@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Traits;
 
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
+use App\Models\Stat;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -12,7 +13,7 @@ use Carbon\Carbon;
 
 trait StravaActivitiesTrait
 {
-    public function getActivities($token)
+    public function getActivitiesDataFromStrava($token)
     {
 
       $columns = DB::getSchemaBuilder()->getColumnListing('activities');
@@ -54,6 +55,31 @@ trait StravaActivitiesTrait
           }
           $page++;
       }
+    }
+
+    public function getStats($token) {
+        $response = Http::withToken($token->access_token)->get('https://www.strava.com/api/v3/athletes/28179653/stats');
+
+        $resdatas = $response->json();
+
+        $allRunTotals = $resdatas['all_run_totals'];
+
+        $formData = [
+            'user_id' => $token->user_id,
+        ];
+
+        foreach($allRunTotals as $key => $value) {
+            $formData[$key] = $value;
+        }
+
+        $data = app(Stat::class)->where('user_id', $token->user_id)->first();
+        
+        if($data) {
+            app(Stat::class)->where('user_id', $token->user_id)->update($formData);
+        } else {
+            $formData['id'] = uniqid();
+            app(Stat::class)->create($formData);
+        }
     }
 
 }
