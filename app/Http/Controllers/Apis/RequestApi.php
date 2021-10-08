@@ -17,6 +17,8 @@ use App\Models\MemberToken;
 use App\Models\Weather;
 use App\Models\Stat;
 
+use App\Http\Controllers\Traits\StravaActivitiesTrait;
+
 use Carbon\Carbon;
 
 use App\Http\Controllers\Controller;
@@ -27,6 +29,7 @@ use Illuminate\Support\Facades\Validator;
 class RequestApi extends Controller
 {
     use Running;
+    use StravaActivitiesTrait;
 
     public function import () {
         $response = Http::get('https://data.epa.gov.tw/api/v1/aqx_p_432?limit=1000&api_key=9be7b239-557b-4c10-9775-78cadfc555e9&sort=ImportDate%20desc&format=json');
@@ -156,10 +159,21 @@ class RequestApi extends Controller
             return response()->json(['status' => true, 'message' => '會員居住地資料更新成功', 'data' => $member], 200);
         }
 
-        return response()->json(['status' => false, 'message' => '無法取得會員資料', 'data' => null], 404);
+        return response()->json(['status' => false, 'message' => '居住地資料更新失敗:無法取得會員資料', 'data' => null], 404);
     }
 
     public function getActivities (Request $request) {
+
+        $count = app(Activity::class)->where('user_id', $request->id)->count();
+
+        if ($count < 1) {
+            $tokenData = app(MemberToken::class)->where('user_id', $request->id)->first();
+            if ($tokenData) {
+                $this->getActivitiesDataFromStrava($tokenData);
+            } else {
+                return response()->json(['status' => false, 'message' => '發生例外錯誤: 無法取得會員Token資料', 'data' => null], 404);
+            }
+        }
 
         $this->filters = [
             'id' => $request->id,
