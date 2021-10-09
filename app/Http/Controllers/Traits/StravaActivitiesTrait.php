@@ -58,9 +58,9 @@ trait StravaActivitiesTrait
       }
     }
 
-    public function getStats($token) {
-
-        $response = Http::withToken($token->access_token)->get('https://www.strava.com/api/v3/athletes/28179653/stats');
+    public function getStats($stravaId, $token) {
+        
+        $response = Http::withToken($token->access_token)->get('https://www.strava.com/api/v3/athletes/'.$stravaId.'/stats');
 
         $resdatas = $response->json();
 
