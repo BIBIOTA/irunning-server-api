@@ -23,11 +23,16 @@ class Event extends Model
                 $query->where('event_date', '>=', $filters['startDay'])
                 ->where('event_date', '<=', $filters['endDay']);
             }
+            if (!empty($filters['ids']) && is_array($filters['ids'])) {
+                logger('test');
+                $query->whereIn('id', $filters['ids']);
+            }
         }
 
         $query->orderBy($orderBy, $order);
 
-        $results = $query->get();
+        $results = $query->paginate($filters['rows']??30);
+        $results->appends($filters);
 
         return $results;
     }
