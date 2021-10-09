@@ -20,8 +20,6 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
-        'https://irunning.bibiota.com',
-        'http://localhost:8070',
         '*'
     ],
 
