@@ -99,6 +99,20 @@ class RequestApi extends Controller
         $stat = app(Stat::class)
                 ->where('user_id', $request->id)
                 ->first();
+
+        $activities = app(Activity::class)
+                    ->where('user_id', $request->id)
+                    ->get();
+        
+        if ($activities->count() === 0) {
+            $tokenData = app(MemberToken::class)->where('user_id', $request->id)->first();
+            if ($tokenData) {
+                $this->getActivitiesDataFromStrava($tokenData);
+            } else {
+                return response()->json(['status' => false, 'message' => '發生例外錯誤: 無法取得會員Token資料', 'data' => null], 404);
+            }
+        }
+
         $activitiesYear = app(Activity::class)
                     ->whereYear('start_date_local', $now->year)
                     ->where('user_id', $request->id)
