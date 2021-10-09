@@ -64,7 +64,7 @@ trait StravaActivitiesTrait
 
         $resdatas = $response->json();
 
-        if ($resdatas['message'] === 'Forbidden') {
+        if (isset($resdatas['message']) && $resdatas['message'] === 'Forbidden') {
             Log::info($resdatas);
             Log::info('取得Strava資料發生錯誤');
             Log::info($token);
