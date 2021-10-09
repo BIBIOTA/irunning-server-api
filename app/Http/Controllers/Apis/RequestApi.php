@@ -235,6 +235,7 @@ class RequestApi extends Controller
             'startDay' => $request->startDay,
             'endDay' => $request->endDay,
             'distances' => $request->distances,
+            'keywords' => $request->keywords,
         ];
 
         if (isset($this->filters['distances']) && is_array($this->filters['distances']) ) {
