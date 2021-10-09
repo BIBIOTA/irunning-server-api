@@ -237,29 +237,29 @@ class RequestApi extends Controller
             'distances' => $request->distances,
         ];
 
+        if (isset($this->filters['distances']) && is_array($this->filters['distances']) ) {
+            $distances = app(EventDistance::class)->get();
+            $this->filters['ids'] = [];
+            foreach($distances as $distance) {
+                $hasDistance = app(EventDistance::class)->distanceFilter($distance, $this->filters['distances']);
+                if ($hasDistance) {
+                    if (!in_array($distance->event_id, $this->filters['ids'])) {
+                        array_push($this->filters['ids'], $distance->event_id);
+                    }
+                }
+            }
+        }
+
         $rows = app(Event::class)->getFilterData($this->filters);
 
         if ($rows->count() > 0) {
 
-            if (isset($this->filters['distances']) && is_array($this->filters['distances']) ) {
-                $data = [];
+            $rows->getCollection()->transform(function($row){
+                $row['distance'] = ($row->distance) ? $row->distance : null;
+                return $row;
+            });
 
-                foreach($rows as $row) {
-                    $row['distance'] = ($row->distance) ? app(EventDistance::class)->distanceFilter($row->distance, $this->filters['distances']) : null;
-                    if ($row['distance'] && $row['distance']->count() > 0) {
-                        array_push($data, $row);
-                    }
-                }
-
-            } else {
-                $data = $rows->map(function($row){
-                    $row['distance'] = ($row->distance) ? $row->distance : null;
-                    return $row;
-                });
-            }
-
-
-            return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $data], 200);
+            return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $rows], 200);
         }
 
         return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);   
