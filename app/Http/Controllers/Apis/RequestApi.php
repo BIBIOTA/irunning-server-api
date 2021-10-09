@@ -268,7 +268,11 @@ class RequestApi extends Controller
 
     public function getIndexEvents(Request $request) {
 
-        $rows = app(Event::class)->where('event_status', 1)->orderBy('event_date', 'ASC')->limit(5)->get();
+        $rows = app(Event::class)
+            ->where('event_status', 1)
+            ->where('event_date', '>=', Carbon::now())
+            ->orderBy('event_date', 'ASC')->limit(5)
+            ->get();
 
         if ($rows->count() > 0) {
 
