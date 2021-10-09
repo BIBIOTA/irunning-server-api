@@ -23,8 +23,13 @@ class Event extends Model
                 $query->where('event_date', '>=', $filters['startDay'])
                 ->where('event_date', '<=', $filters['endDay']);
             }
+            if (!empty($filters['keywords'])) {
+                $query->where(function ($query) use($filters) {
+                    $query->where('event_name', 'like', '%'. $filters['keywords'].'%')
+                    ->orWhere('location', 'like', '%'. $filters['keywords'].'%');
+                });
+            }
             if (!empty($filters['ids']) && is_array($filters['ids'])) {
-                logger('test');
                 $query->whereIn('id', $filters['ids']);
             }
         }
