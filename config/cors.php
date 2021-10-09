@@ -21,6 +21,7 @@ return [
 
     'allowed_origins' => [
         'https://irunning.bibiota.com',
+        'http://localhost:8070',
         '*'
     ],
 
