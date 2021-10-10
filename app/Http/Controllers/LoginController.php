@@ -17,9 +17,16 @@ class LoginController extends Controller
 
     public function login(Request $request) {
         try {
+            
+            if (env('PRODUCTION') === 'develop') {
+                if ($request->athlete['id'] !== env('STRAVA_DEV_ID')) {
+                    return response()->json(['status' => false, 'message' => '此網頁尚在開發階段，僅限開發帳號登入', 'data' => null], 404); 
+                }
+            }
 
             $athlete = $request->athlete;
             $data = app(Member::class)->where('strava_id', $athlete['id'])->first();
+
             if ($data) {
                 $data->update([
                     'username' => $athlete['username'],
