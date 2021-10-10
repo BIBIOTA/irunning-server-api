@@ -19,7 +19,7 @@ class LoginController extends Controller
         try {
             
             if (env('PRODUCTION') === 'develop') {
-                if ($request->athlete['id'] !== env('STRAVA_DEV_ID')) {
+                if ($request->athlete['id'] !== env('STRAVA_DEV_ID', '93819542')) {
                     return response()->json(['status' => false, 'message' => '此網頁尚在開發階段，僅限開發帳號登入', 'data' => null], 404); 
                 }
             }
