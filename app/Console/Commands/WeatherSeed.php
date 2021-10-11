@@ -107,7 +107,7 @@ class WeatherSeed extends Command
                                             }
                                             foreach($time['elementValue'] as $index => $elementValue) {
                                                 if ($key === 'Wx' && $index === 0) {
-                                                    $elementData['value'] = $elementValue['value'];
+                                                    $elementData['value'] = intval($elementValue['value']);
                                                     $elementData['measures'] = $elementValue['measures'];
                                                 } else if ($key !== 'Wx') {
                                                     foreach($elementValue as $obj => $value) {
