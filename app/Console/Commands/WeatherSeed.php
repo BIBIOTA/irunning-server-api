@@ -99,19 +99,21 @@ class WeatherSeed extends Command
                                                 if ($time['startTime'] < date('Y-m-d H:i:s') && $time['endTime'] > date('Y-m-d H:i:s')) {
                                                     $elementData['startTime'] = $time['startTime'];
                                                     $elementData['endTime'] = $time['endTime'];
+                                                    foreach($time['elementValue'] as $index => $elementValue) {
+                                                        if ($weatherElement['elementName'] === 'Wx') {
+                                                            $elementData['value'] = intval($elementValue['value']);
+                                                            $elementData['measures'] = $elementValue['measures'];
+                                                        }
+                                                    }
                                                 }
                                             } else if (isset($time['dataTime'])) {
                                                 if ($time['dataTime'] < date('Y-m-d H:i:s')) {
                                                     $elementData['dataTime'] = $time['dataTime'];
-                                                }
-                                            }
-                                            foreach($time['elementValue'] as $index => $elementValue) {
-                                                if ($key === 'Wx' && $index === 0) {
-                                                    $elementData['value'] = intval($elementValue['value']);
-                                                    $elementData['measures'] = $elementValue['measures'];
-                                                } else if ($key !== 'Wx') {
-                                                    foreach($elementValue as $obj => $value) {
-                                                        $elementData[$obj] = $value;
+
+                                                    foreach($time['elementValue'] as $index => $elementValue) {
+                                                        foreach($elementValue as $obj => $value) {
+                                                            $elementData[$obj] = $value;
+                                                        }
                                                     }
                                                 }
                                             }
