@@ -99,6 +99,20 @@ class RequestApi extends Controller
         $stat = app(Stat::class)
                 ->where('user_id', $request->id)
                 ->first();
+
+        $activities = app(Activity::class)
+                    ->where('user_id', $request->id)
+                    ->get();
+        
+        if ($activities->count() === 0) {
+            $tokenData = app(MemberToken::class)->where('user_id', $request->id)->first();
+            if ($tokenData) {
+                $this->getActivitiesDataFromStrava($tokenData);
+            } else {
+                return response()->json(['status' => false, 'message' => '發生例外錯誤: 無法取得會員Token資料', 'data' => null], 404);
+            }
+        }
+
         $activitiesYear = app(Activity::class)
                     ->whereYear('start_date_local', $now->year)
                     ->where('user_id', $request->id)
@@ -235,6 +249,7 @@ class RequestApi extends Controller
             'startDay' => $request->startDay,
             'endDay' => $request->endDay,
             'distances' => $request->distances,
+            'keywords' => $request->keywords,
         ];
 
         if (isset($this->filters['distances']) && is_array($this->filters['distances']) ) {
@@ -267,7 +282,11 @@ class RequestApi extends Controller
 
     public function getIndexEvents(Request $request) {
 
-        $rows = app(Event::class)->where('event_status', 1)->orderBy('event_date', 'ASC')->limit(5)->get();
+        $rows = app(Event::class)
+            ->where('event_status', 1)
+            ->where('event_date', '>=', Carbon::now())
+            ->orderBy('event_date', 'ASC')->limit(5)
+            ->get();
 
         if ($rows->count() > 0) {
 

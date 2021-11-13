@@ -17,9 +17,16 @@ class LoginController extends Controller
 
     public function login(Request $request) {
         try {
+            
+            if (env('PRODUCTION') === 'develop') {
+                if ($request->athlete['id'] !== env('STRAVA_DEV_ID', '93819542')) {
+                    return response()->json(['status' => false, 'message' => '此網頁尚在開發階段，僅限開發帳號登入', 'data' => null], 404); 
+                }
+            }
 
             $athlete = $request->athlete;
             $data = app(Member::class)->where('strava_id', $athlete['id'])->first();
+
             if ($data) {
                 $data->update([
                     'username' => $athlete['username'],
@@ -73,7 +80,7 @@ class LoginController extends Controller
             try {
                 $tokenData = app(MemberToken::class)->where('access_token', $request->access_token)->first();
     
-                $this->getStats($tokenData);
+                $this->getStats($data->strava_id, $tokenData);
     
                 return response()->json(['status' => true, 'message' => '登入成功', 'data' => $data], 200);
             } catch (Throwable $e) {
