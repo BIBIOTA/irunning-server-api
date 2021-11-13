@@ -19,11 +19,13 @@ trait Running
 
     public function getPace($distance, $movingTime)
     {
-        $hour = gmdate('H', $movingTime) > 0 ? gmdate('H', $movingTime): 1;
+        $hour = gmdate('H', $movingTime);
         $min = gmdate('i', $movingTime);
         $sec = gmdate('s', $movingTime);
 
-        $pace = gmdate('i:s', (($hour*$min*60) + $sec) / $this->floor_dec($distance / 1000, 2));
+        $time=($hour*3600)+($min*60)+$sec;
+
+        $pace = date('i:s', $time / $this->floor_dec($distance / 1000, 2));
         return $pace;
     }
     

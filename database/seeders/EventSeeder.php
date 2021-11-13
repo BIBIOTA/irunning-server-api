@@ -24,7 +24,7 @@ class EventSeeder extends Seeder
         try {
             DB::statement('SET FOREIGN_KEY_CHECKS=0;');
     
-            $response = Http::get(env('NODE_URL'));
+            $response = Http::get(env('NODE_URL').'/api/events');
 
             if ($response->status() === 200) {
 
