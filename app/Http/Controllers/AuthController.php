@@ -36,7 +36,9 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return response()->json(Auth::guard()->user());
+        return response()->json(
+            ['status' => true, 'message' => '資料取得成功', 'data' => Auth::guard()->user()],
+        );
     }
     /**
      * Log the user out(Invalidate the Token).
