@@ -14,7 +14,7 @@ use Carbon\Carbon;
 
 trait StravaActivitiesTrait
 {
-    public function getActivitiesDataFromStrava($token)
+    public function getActivitiesDataFromStrava ($token, $onlyOnePage = false)
     {
 
       $columns = DB::getSchemaBuilder()->getColumnListing('activities');
@@ -22,40 +22,44 @@ trait StravaActivitiesTrait
       $page = 1;
       $hasData = true;
       while($hasData) {
-          $response = Http::withToken($token->access_token)->get('https://www.strava.com/api/v3/athlete/activities?after=0&per_page=200&page='.$page);
+            $response = Http::withToken($token->access_token)->get('https://www.strava.com/api/v3/athlete/activities?after=0&per_page=200&page='.$page);
 
-          $resdatas = $response->json();
+            $resdatas = $response->json();
 
-          if (count($resdatas) > 0) {
-              foreach($resdatas as $data) {
-                  $formData = [
-                      'user_id' => $token->user_id,
-                  ];
-                  foreach($data as $key => $value) {
-                      if(in_array($key, $columns)) {
-                          if ($key === 'start_date_local') {
-                              $time_raw = strtotime($value);
-                              $time_mysql = Carbon::parse($time_raw);
-                              $formData[$key] = $time_mysql;
-                          } else {
-                              $formData[$key] = $value;
-                          }
-                      }
-                      if ($key === 'map') {
-                          $formData['summary_polyline'] = $value['summary_polyline'];
-                      }
-                  }
-                  if ($data['type'] === 'Run') {
-                      app(Activity::class)->updateOrCreate([
-                          'id'=>$formData['id']
-                      ], $formData);
-                  }
-              }
-          } else {
-              $hasData = false;
-          }
-          $page++;
-      }
+            if (count($resdatas) > 0) {
+                foreach($resdatas as $data) {
+                    $formData = [
+                        'user_id' => $token->user_id,
+                    ];
+                    foreach($data as $key => $value) {
+                        if(in_array($key, $columns)) {
+                            if ($key === 'start_date_local') {
+                                $time_raw = strtotime($value);
+                                $time_mysql = Carbon::parse($time_raw);
+                                $formData[$key] = $time_mysql;
+                            } else {
+                                $formData[$key] = $value;
+                            }
+                        }
+                        if ($key === 'map') {
+                            $formData['summary_polyline'] = $value['summary_polyline'];
+                        }
+                    }
+                    if ($data['type'] === 'Run') {
+                        app(Activity::class)->updateOrCreate([
+                            'id'=>$formData['id']
+                        ], $formData);
+                    }
+                }
+            } else {
+                $hasData = false;
+            }
+            if (!$onlyOnePage) {
+                $page++;
+            } else {
+                break;
+            }
+        }
     }
 
     public function getStats($stravaId, $token) {

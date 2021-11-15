@@ -9,6 +9,7 @@ use App\Http\Controllers\Traits\StravaActivitiesTrait;
 
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 
 class LoginController extends Controller
@@ -81,6 +82,9 @@ class LoginController extends Controller
                 $tokenData = app(MemberToken::class)->where('access_token', $request->access_token)->first();
     
                 $this->getStats($data->strava_id, $tokenData);
+
+                $this->getActivitiesDataFromStrava($token, true);
+                Log::info($token->user_id.'Strava活動更新完成');
     
                 return response()->json(['status' => true, 'message' => '登入成功', 'data' => $data], 200);
             } catch (Throwable $e) {
