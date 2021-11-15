@@ -170,6 +170,9 @@ class RequestApi extends Controller
             $member->district = $request->district;
             $member->siteName = $request->siteName;
             $member->save();
+
+            $member->memberToken;
+
             return response()->json(['status' => true, 'message' => '會員居住地資料更新成功', 'data' => $member], 200);
         }
 
