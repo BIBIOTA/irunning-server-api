@@ -14,4 +14,8 @@ class Member extends Model
     protected $guarded = [];
 
     public $incrementing = false;
+
+    public function memberToken () {
+        return $this->belongsTo(MemberToken::class, 'id','user_id');
+    }
 }
