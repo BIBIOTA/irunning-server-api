@@ -83,7 +83,7 @@ class LoginController extends Controller
     
                 $this->getStats($data->strava_id, $tokenData);
 
-                $this->getActivitiesDataFromStrava($token, true);
+                $this->getActivitiesDataFromStrava($tokenData, true);
                 Log::info($token->user_id.'Strava活動更新完成');
 
                 $data['expires_at'] = Carbon::parse(intval($request->expires_at));
