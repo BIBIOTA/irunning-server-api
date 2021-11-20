@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use Carbon\Carbon;
+
 class Activity extends Model
 {
     use HasFactory;
@@ -30,5 +32,50 @@ class Activity extends Model
         $results->appends($filters);
 
         return $results;
+    }
+
+    public function getActivitiesYear($userId) {
+        $now = Carbon::now();
+        Carbon::setWeekStartsAt(Carbon::MONDAY);
+        Carbon::setWeekEndsAt(Carbon::SUNDAY);
+
+        $query = $this->newModelQuery();
+        
+        $activitiesYear = $query
+            ->whereYear('start_date_local', $now->year)
+            ->where('user_id', $userId)
+            ->sum('distance');
+            
+        return $activitiesYear;
+    }
+
+    public function getActivitiesMonth($userId) {
+        $now = Carbon::now();
+        Carbon::setWeekStartsAt(Carbon::MONDAY);
+        Carbon::setWeekEndsAt(Carbon::SUNDAY);
+
+        $query = $this->newModelQuery();
+        
+        $activitiesMonth = $query
+            ->whereYear('start_date_local', $now->year)
+            ->whereMonth('start_date_local', $now->month)
+            ->where('user_id', $userId)
+            ->sum('distance');
+
+        return $activitiesMonth;
+    }
+
+    public function getActivitiesWeek($userId) {
+
+        $query = $this->newModelQuery();
+
+        $activitiesWeek = $query
+            ->whereBetween('start_date_local', 
+                [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]
+            )
+            ->where('user_id', $userId)
+            ->sum('distance');
+
+        return $activitiesWeek;
     }
 }
