@@ -210,27 +210,7 @@ class RequestApi extends Controller
 
     public function getActivity (Request $request) {
 
-        $token = app(MemberToken::class)->where('user_id', $request->user_id)->first();
-
-        if ($token) {
-            $response = Http::withToken($token->access_token)->get('https://www.strava.com/api/v3/activities/'.$request->id);
-
-            if ($response->status() === 200) {
-                $data = $response->json();
-                $time_raw = strtotime($data['start_date_local']);
-                $time_mysql = gmdate('Y-m-d H:i:s',$time_raw);
-                $data['start_date_local'] = $time_mysql;
-                $data['pace'] = $this->getPace($data['distance'], $data['moving_time']);
-                $data['distance'] = $this->getDistanceIsFloor($data['distance']);
-                return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $data], 200);
-            } else {
-                Log::info($response);
-                return response()->json(['status' => false, 'message' => '發生例外錯誤:無法取得Strava資料', 'data' => null], 404);
-            }
-
-        } else {
-            return response()->json(['status' => false, 'message' => '無法取得登入資料', 'data' => null], 404);
-        }
+        return $this->getActivityFromStrava($request->user_id, $request->id);
 
     }
 

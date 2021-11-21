@@ -34,6 +34,8 @@ Route::group([
     'prefix' => 'members'
 ], function () {
     Route::get('/', [MemberController::class, 'index'])->name('members.index');
+    Route::get('/view', [MemberController::class, 'view'])->name('members.view');
+    Route::get('/runningInfo', [MemberController::class, 'runningInfo'])->name('members.runningInfo');
 });
 
 Route::prefix('login')->group(function(){
