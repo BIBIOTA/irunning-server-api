@@ -7,6 +7,24 @@ use Illuminate\Http\Request;
 
 trait Running
 {
+    public function runnerType($type)
+    {
+        switch ($type) {
+            case 1:
+                return '初階跑者';
+                break;
+            case 2:
+                return '中階跑者';
+                break;
+            case 3:
+                return '進階跑者';
+                break;
+            default:
+                return null;
+                break;
+        }
+    }
+
     public function getDistance($distance)
     {
         return $distance / 1000;
