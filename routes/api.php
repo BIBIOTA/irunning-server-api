@@ -3,6 +3,7 @@
 use App\Http\Controllers\Apis\RequestApi;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MemberController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,13 @@ Route::group([
 		Route::post('logout', [AuthController::class,'logout']);
 		Route::post('refresh', [AuthController::class,'refresh']);
 		Route::post('me', [AuthController::class,'me']);
+});
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'members'
+], function () {
+    Route::get('/', [MemberController::class, 'index'])->name('members.index');
 });
 
 Route::prefix('login')->group(function(){
