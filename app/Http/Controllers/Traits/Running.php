@@ -29,9 +29,8 @@ trait Running
         return $pace;
     }
     
-    // 無條件捨去(值,小數點位數)
+    // 四捨五入(值,小數點位數)
     private function floor_dec($v, $precision){
-        $c = pow(10, $precision);
-        return floor($v*$c)/$c;
+        return round($v, $precision);
     }
 }
