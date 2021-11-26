@@ -58,7 +58,7 @@ Route::prefix('cities')->group(function(){
 });
 
 Route::prefix('events')->group(function(){
-    Route::get('getEvents', [RequestApi::class, 'getEvents'])->name('events.getEvents');
+    Route::get('/', [RequestApi::class, 'getEvents'])->name('events.getEvents');
 });
 
 Route::prefix('index')->group(function(){
