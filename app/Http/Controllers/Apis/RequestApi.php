@@ -208,9 +208,23 @@ class RequestApi extends Controller
         return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
     }
 
-    public function getActivity (Request $request) {
+    public function getActivity (Request $request, $memberUuid, $runningUuId) {
 
-        return $this->getActivityFromStrava($request->user_id, $request->id);
+        $validator = Validator::make([
+            'memberUuid'=> $memberUuid,
+            'runningUuId'=> $runningUuId,
+        ], [
+            'memberUuid'=>'required',
+            'runningUuId'=>'required',
+        ], [
+            'runningUuId.required'=>'缺少會員uuid資料',
+            'memberUuid.required'=>'缺少跑步紀錄uuid資料',
+        ]);
+        if ($validator->fails()){
+            return response()->json(['status'=>false, 'message'=>$validator->errors()->all()[0], 'data'=>null], 400);
+        }
+
+        return $this->getActivityFromStrava($memberUuid, $runningUuId);
 
     }
 

@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Apis\RequestApi;
 use App\Http\Controllers\LoginController;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MemberController;
 
 use Illuminate\Http\Request;
@@ -19,25 +18,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group([
-    'middleware' => 'api',
-    'prefix' => 'auth'
-], function ($router) {
-		Route::post('login', [AuthController::class,'login']);
-		Route::post('logout', [AuthController::class,'logout']);
-		Route::post('refresh', [AuthController::class,'refresh']);
-		Route::post('me', [AuthController::class,'me']);
-});
-
-Route::group([
-    'middleware' => 'api',
-    'prefix' => 'members'
-], function () {
-    Route::get('/', [MemberController::class, 'index'])->name('members.index');
-    Route::get('{memberUuid}', [MemberController::class, 'view'])->name('members.view');
-    Route::get('{memberUuid}/{runningUuId}', [MemberController::class, 'runningInfo'])->name('members.runningInfo');
-});
-
 Route::prefix('login')->group(function(){
     Route::post('login', [LoginController::class, 'login'])->name('login.login');
 });
@@ -48,8 +28,8 @@ Route::prefix('aqi')->group(function(){
 });
 
 Route::prefix('activities')->group(function(){
-    Route::get('getActivities', [RequestApi::class, 'getActivities'])->name('activities.getActivities');
-    Route::get('getActivity', [RequestApi::class, 'getActivity'])->name('activities.getActivity');
+    Route::get('/', [RequestApi::class, 'getActivities'])->name('activities.getActivities');
+    Route::get('{memberUuid}/{runningUuId}', [RequestApi::class, 'getActivity'])->name('activities.getActivity');
 });
 
 Route::prefix('cities')->group(function(){
