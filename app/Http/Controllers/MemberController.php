@@ -48,29 +48,32 @@ class MemberController extends Controller
         return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
     }
 
-    public function view (Request $request) {
+    public function view (Request $request, $memberUuid) {
 
-        $validator = Validator::make($request->all(), [
-            'id'=>'required',
+        $validator = Validator::make(
+            [
+                'memberUuid' => $memberUuid,
+            ], [
+            'memberUuid'=>'required',
         ], [
-            'id.required'=>'缺少uuid資料',
+            'memberUuid.required'=>'缺少uuid資料',
         ]);
         if ($validator->fails()){
             return response()->json(['status'=>false, 'message'=>$validator->errors()->all()[0], 'data'=>null], 400);
         }
 
-        $member = $this->members->find($request->id);
+        $member = $this->members->find($memberUuid);
 
         if ($member) {
 
             $data['member'] = $this->memberDataProcess($member);
 
             $this->filters = [
-                'id' => $request->id,
+                'id' => $memberUuid,
             ];
     
             $activities = app(Activity::class)
-                        ->where('user_id', $request->id)
+                        ->where('user_id', $memberUuid)
                         ->orderBy('start_date_local', 'DESC')
                         ->get();
 
@@ -93,20 +96,23 @@ class MemberController extends Controller
 
     }
 
-    public function runningInfo (Request $request) {
+    public function runningInfo (Request $request, $memberUuid, $runningUuId) {
 
-        $validator = Validator::make($request->all(), [
-            'id'=>'required',
-            'user_id'=>'required',
+        $validator = Validator::make([
+            'memberUuid'=> $memberUuid,
+            'runningUuId'=> $runningUuId,
         ], [
-            'id.required'=>'缺少跑步紀錄uuid資料',
-            'user_id.required'=>'缺少會員uuid資料',
+            'memberUuid'=>'required',
+            'runningUuId'=>'required',
+        ], [
+            'runningUuId.required'=>'缺少會員uuid資料',
+            'memberUuid.required'=>'缺少跑步紀錄uuid資料',
         ]);
         if ($validator->fails()){
             return response()->json(['status'=>false, 'message'=>$validator->errors()->all()[0], 'data'=>null], 400);
         }
 
-        return $this->getActivityFromStrava($request->user_id, $request->id);
+        return $this->getActivityFromStrava($memberUuid, $runningUuId);
 
     }
 
