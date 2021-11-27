@@ -29,6 +29,8 @@ class MemberController extends Controller
         $this->activity = new Activity;
     }
 
+    /* ============   admin  ============= */
+
     public function index(Request $request) {
         $filters = [
             'username' => $request->username ?? null,
@@ -117,6 +119,8 @@ class MemberController extends Controller
         return $this->getActivityFromStrava($memberUuid, $runningUuId);
 
     }
+
+    /* ============   client  ============= */
 
     public function getIndexRunInfo (Request $request) {
         
