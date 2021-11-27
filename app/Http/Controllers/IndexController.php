@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Models\Activity;
 use App\Models\Event;
 
 use Carbon\Carbon;
@@ -12,9 +11,14 @@ use Carbon\Carbon;
 class IndexController extends Controller
 {
 
+    public function __construct()
+    {
+        $this->events = new Event;
+    }
+
     public function getIndexEvents(Request $request) {
 
-        $rows = app(Event::class)
+        $rows = $this->events
             ->where('event_status', 1)
             ->where('event_date', '>=', Carbon::now())
             ->orderBy('event_date', 'ASC')->limit(5)
