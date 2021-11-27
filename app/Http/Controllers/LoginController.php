@@ -16,6 +16,12 @@ class LoginController extends Controller
 {
     use StravaActivitiesTrait;
 
+    public function __construct()
+    {
+        $this->members = new Member;
+        $this->memberTokens = new MemberToken;
+    }
+
     public function login(Request $request) {
         try {
             
@@ -26,7 +32,7 @@ class LoginController extends Controller
             }
 
             $athlete = $request->athlete;
-            $data = app(Member::class)->where('strava_id', $athlete['id'])->first();
+            $data = $this->members->where('strava_id', $athlete['id'])->first();
 
             if ($data) {
                 $data->update([
@@ -42,7 +48,7 @@ class LoginController extends Controller
                     'weight' => $athlete['weight'],
                 ]);
             } else {
-                $data = app(Member::class)->create([
+                $data = $this->members->create([
                     'id' => uniqid(),
                     'strava_id' => $athlete['id'],
                     'username' => $athlete['username'],
@@ -58,17 +64,17 @@ class LoginController extends Controller
                 ]);
             }
 
-            $token = app(MemberToken::class)->where('user_id',$data->id)->first();
+            $token = $this->memberTokens->where('user_id',$data->id)->first();
 
             if ($token) {
-                $tokenData = app(MemberToken::class)->where('user_id',$data->id)->update([
+                $tokenData = $this->memberTokens->where('user_id',$data->id)->update([
                     'expires_at' => Carbon::parse(intval($request->expires_at))->setTimezone('Asia/Taipei')->format('Y-m-d H:i:s'),
                     'expires_in' => intval(gmdate('H',$request->expires_in)),
                     'refresh_token' => $request->refresh_token,
                     'access_token' => $request->access_token,
                 ]);
             } else {
-                $tokenData = app(MemberToken::class)->create([
+                $tokenData = $this->memberTokens->create([
                     'id' => uniqid(),
                     'user_id' => $data->id,
                     'expires_at' => Carbon::parse(intval($request->expires_at))->setTimezone('Asia/Taipei')->format('Y-m-d H:i:s'),
@@ -79,7 +85,7 @@ class LoginController extends Controller
             }
 
             try {
-                $tokenData = app(MemberToken::class)->where('access_token', $request->access_token)->first();
+                $tokenData = $this->memberTokens->where('access_token', $request->access_token)->first();
     
                 $this->getStats($data->strava_id, $tokenData);
 
