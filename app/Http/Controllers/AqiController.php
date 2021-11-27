@@ -8,8 +8,14 @@ use App\Models\Aqi;
 
 class AqiController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->aqis = new Aqi;
+    }
+
     public function getAqiList (Request $request) {
-        $data = app(Aqi::class)->where('County', $request->County)->get();
+        $data = $this->aqis->where('County', $request->County)->get();
 
         if ($data->count() > 0) {
             return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $data], 200);
