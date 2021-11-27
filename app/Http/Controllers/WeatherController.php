@@ -8,8 +8,14 @@ use App\Models\Weather;
 
 class WeatherController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->weathers = new Weather;
+    }
+
     public function getWeather (Request $request) {
-        $row = app(Weather::class)
+        $row = $this->weathers
                 ->where('locationsName', $request->CityName)
                 ->where('locationName', $request->AreaName)
                 ->first();
