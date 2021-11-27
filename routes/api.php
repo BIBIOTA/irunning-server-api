@@ -28,7 +28,7 @@ Route::prefix('aqi')->group(function(){
 });
 
 Route::prefix('activities')->group(function(){
-    Route::get('/', [RequestApi::class, 'getActivities'])->name('activities.getActivities');
+    Route::get('', [RequestApi::class, 'getActivities'])->name('activities.getActivities');
     Route::get('{memberUuid}/{runningUuId}', [RequestApi::class, 'getActivity'])->name('activities.getActivity');
 });
 
