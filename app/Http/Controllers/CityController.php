@@ -8,8 +8,14 @@ use App\Models\City;
 
 class CityController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->cities = new City;
+    }
+
     public function getCities (Request $request) {
-        $data = app(City::class)->whereNotNull('dataid')->get();
+        $data = $this->cities->whereNotNull('dataid')->get();
 
         if ($data->count() > 0) {
             return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $data], 200);
