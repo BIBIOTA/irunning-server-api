@@ -6,8 +6,10 @@ use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\IndexController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\WeatherController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -49,15 +51,15 @@ Route::prefix('events')->group(function(){
 });
 
 Route::prefix('index')->group(function(){
-    Route::get('getIndexEvents', [EventController::class, 'getIndexEvents'])->name('index.getIndexEvents');
+    Route::get('getIndexEvents', [IndexController::class, 'getIndexEvents'])->name('index.getIndexEvents');
 });
 
 Route::prefix('member')->group(function(){
-    Route::get('index', [RequestApi::class, 'getIndexRunInfo'])->name('member.getIndexRunInfo');
-    Route::post('updateMemberLocation', [RequestApi::class, 'updateMemberLocation'])->name('member.updateMemberLocation');
+    Route::get('getIndexRunInfo', [MemberController::class, 'getIndexRunInfo'])->name('member.getIndexRunInfo');
+    Route::post('updateMemberLocation', [MemberController::class, 'updateMemberLocation'])->name('member.updateMemberLocation');
 });
 
 Route::prefix('weather')->group(function(){
-    Route::get('getWeather', [RequestApi::class, 'getWeather'])->name('weather.getWeather');
+    Route::get('', [WeatherController::class, 'getWeather'])->name('weather.getWeather');
 });
 
