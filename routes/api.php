@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Apis\RequestApi;
+use App\Http\Controllers\AqiController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MemberController;
 
@@ -23,8 +24,7 @@ Route::prefix('login')->group(function(){
 });
 
 Route::prefix('aqi')->group(function(){
-    Route::get('import', [RequestApi::class, 'import'])->name('aqi.import');
-    Route::get('getAqiList', [RequestApi::class, 'getAqiList'])->name('aqi.getAqiList');
+    Route::get('', [AqiController::class, 'getAqiList'])->name('aqi.getAqiList');
 });
 
 Route::prefix('activities')->group(function(){

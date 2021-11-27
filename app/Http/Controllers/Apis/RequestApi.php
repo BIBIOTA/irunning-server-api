@@ -31,21 +31,6 @@ class RequestApi extends Controller
     use Running;
     use StravaActivitiesTrait;
 
-    public function import () {
-        $response = Http::get('https://data.epa.gov.tw/api/v1/aqx_p_432?limit=1000&api_key=9be7b239-557b-4c10-9775-78cadfc555e9&sort=ImportDate%20desc&format=json');
-        return $response->json();
-    }
-
-    public function getAqiList (Request $request) {
-        $data = app(Aqi::class)->where('County', $request->County)->get();
-
-        if ($data->count() > 0) {
-            return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $data], 200);
-        }
-
-        return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
-    }
-
     public function getCities (Request $request) {
         $data = app(City::class)->whereNotNull('dataid')->get();
 
