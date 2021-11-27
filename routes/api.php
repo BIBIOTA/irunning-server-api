@@ -61,5 +61,6 @@ Route::prefix('member')->group(function(){
 
 Route::prefix('weather')->group(function(){
     Route::get('', [WeatherController::class, 'getWeather'])->name('weather.getWeather');
+    Route::get('getWeatherImage', [WeatherController::class, 'getWeatherImage'])->name('weather.getWeatherImage');
 });
 
