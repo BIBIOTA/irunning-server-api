@@ -31,25 +31,6 @@ class RequestApi extends Controller
     use Running;
     use StravaActivitiesTrait;
 
-    public function getCities (Request $request) {
-        $data = app(City::class)->whereNotNull('dataid')->get();
-
-        if ($data->count() > 0) {
-            return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $data], 200);
-        }
-
-        return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
-    }
-
-    public function getDistricts (Request $request) {
-        $data = app(District::class)->where('CityName', $request->CityName)->get();
-
-        if ($data->count() > 0) {
-            return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $data], 200);
-        }
-
-        return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
-    }
 
     public function getWeather (Request $request) {
         $row = app(Weather::class)
