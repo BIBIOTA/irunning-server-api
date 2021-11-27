@@ -9,6 +9,13 @@ use App\Models\EventDistance;
 
 class EventController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->events = new Event;
+        $this->eventDistances = new EventDistance;
+    }
+
     public function getEvents(Request $request) {
 
         $this->filters = [
@@ -19,10 +26,10 @@ class EventController extends Controller
         ];
 
         if (isset($this->filters['distances']) && is_array($this->filters['distances']) ) {
-            $distances = app(EventDistance::class)->get();
+            $distances = $this->eventDistances->get();
             $this->filters['ids'] = [];
             foreach($distances as $distance) {
-                $hasDistance = app(EventDistance::class)->distanceFilter($distance, $this->filters['distances']);
+                $hasDistance = $this->eventDistances->distanceFilter($distance, $this->filters['distances']);
                 if ($hasDistance) {
                     if (!in_array($distance->event_id, $this->filters['ids'])) {
                         array_push($this->filters['ids'], $distance->event_id);
@@ -31,7 +38,7 @@ class EventController extends Controller
             }
         }
 
-        $rows = app(Event::class)->getFilterData($this->filters);
+        $rows = $this->events->getFilterData($this->filters);
 
         if ($rows->count() > 0) {
 
