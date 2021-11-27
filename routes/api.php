@@ -3,6 +3,8 @@
 use App\Http\Controllers\Apis\RequestApi;
 use App\Http\Controllers\AqiController;
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\CityController;
+use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MemberController;
 
@@ -34,8 +36,11 @@ Route::prefix('activities')->group(function(){
 });
 
 Route::prefix('cities')->group(function(){
-    Route::get('getCities', [RequestApi::class, 'getCities'])->name('cities.getCities');
-    Route::get('getDistricts', [RequestApi::class, 'getDistricts'])->name('districts.getDistricts');
+    Route::get('', [CityController::class, 'getCities'])->name('cities.getCities');
+});
+
+Route::prefix('districts')->group(function(){
+    Route::get('', [DistrictController::class, 'getDistricts'])->name('districts.getDistricts');
 });
 
 Route::prefix('events')->group(function(){
