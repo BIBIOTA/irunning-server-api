@@ -16,12 +16,18 @@ class ActivityController extends Controller
     use Running;
     use StravaActivitiesTrait;
 
+    public function __construct()
+    {
+        $this->memberTokens = new MemberToken;
+        $this->activities = new Activity;
+    }
+
     public function getActivities (Request $request) {
 
-        $count = app(Activity::class)->where('user_id', $request->id)->count();
+        $count = $this->activities->where('user_id', $request->id)->count();
 
         if ($count < 1) {
-            $tokenData = app(MemberToken::class)->where('user_id', $request->id)->first();
+            $tokenData = $this->memberTokens->where('user_id', $request->id)->first();
             if ($tokenData) {
                 $this->getActivitiesDataFromStrava($tokenData);
             } else {
@@ -35,7 +41,7 @@ class ActivityController extends Controller
             'endDay' => $request->endDay,
         ];
 
-        $data = app(Activity::class)->getFilterData($this->filters);
+        $data = $this->activities->getFilterData($this->filters);
 
         if ($data->count() > 0) {
 
