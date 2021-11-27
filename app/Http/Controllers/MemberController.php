@@ -26,7 +26,9 @@ class MemberController extends Controller
     public function __construct()
     {
         $this->members = new Member;
-        $this->activity = new Activity;
+        $this->memberTokens = new MemberToken;
+        $this->activities = new Activity;
+        $this->stats = new Stat;
     }
 
     /* ============   admin  ============= */
@@ -71,15 +73,8 @@ class MemberController extends Controller
         if ($member) {
 
             $data['member'] = $this->memberDataProcess($member);
-
-            $this->filters = [
-                'id' => $memberUuid,
-            ];
     
-            $activities = app(Activity::class)
-                        ->where('user_id', $memberUuid)
-                        ->orderBy('start_date_local', 'DESC')
-                        ->get();
+            $activities = $this->activities->where('user_id', $memberUuid)->get();
 
             if ($activities->count() > 0) {
                 $data['activities'] = $activities->map(function($row){
@@ -124,16 +119,13 @@ class MemberController extends Controller
 
     public function getIndexRunInfo (Request $request) {
         
-        $stat = app(Stat::class)
-                ->where('user_id', $request->id)
-                ->first();
+        $stat = $this->stats->where('user_id', $request->id)->first();
 
-        $activities = app(Activity::class)
-                    ->where('user_id', $request->id)
-                    ->get();
+
+        $activitiesCount = $this->activities->where('user_id', $request->id)->count();
         
-        if ($activities->count() === 0) {
-            $tokenData = app(MemberToken::class)->where('user_id', $request->id)->first();
+        if ($activitiesCount === 0) {
+            $tokenData = $this->memberTokens->where('user_id', $request->id)->first();
             if ($tokenData) {
                 $this->getActivitiesDataFromStrava($tokenData);
             } else {
@@ -141,13 +133,13 @@ class MemberController extends Controller
             }
         }
 
-        $activitiesYear = app(Activity::class)
+        $activitiesYear = $this->activities
                     ->getActivitiesYear($request->id);
 
-        $activitiesMonth = app(Activity::class)
+        $activitiesMonth = $this->activities
                     ->getActivitiesMonth($request->id);
 
-        $activitiesWeek = app(Activity::class)
+        $activitiesWeek = $this->activities
                     ->getActivitiesWeek($request->id);
 
         if ($stat && isset($activitiesYear) && isset($activitiesMonth) && isset($activitiesWeek)) {
@@ -183,7 +175,7 @@ class MemberController extends Controller
             return response()->json(['status'=>false, 'message'=>$validator->errors()->all()[0], 'data'=>null], 400);
         }
 
-        $member = app(Member::class)->where('id', $request->id)->first();
+        $member = $this->members->where('id', $request->id)->first();
 
         if ($member) {
             $member->county = $request->county;
@@ -203,7 +195,7 @@ class MemberController extends Controller
 
         $stat = $row->stat;
         
-        $activitiesMonth = $this->activity->getActivitiesMonth($row->id);
+        $activitiesMonth = $this->activities->getActivitiesMonth($row->id);
 
         $runningStatus = [
             'totalDistance' => 0,
