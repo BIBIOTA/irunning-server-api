@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Apis\RequestApi;
 use App\Http\Controllers\AqiController;
+use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MemberController;
 
@@ -28,8 +29,8 @@ Route::prefix('aqi')->group(function(){
 });
 
 Route::prefix('activities')->group(function(){
-    Route::get('', [RequestApi::class, 'getActivities'])->name('activities.getActivities');
-    Route::get('{memberUuid}/{runningUuId}', [RequestApi::class, 'getActivity'])->name('activities.getActivity');
+    Route::get('', [ActivityController::class, 'getActivities'])->name('activities.getActivities');
+    Route::get('{memberUuid}/{runningUuId}', [ActivityController::class, 'getActivity'])->name('activities.getActivity');
 });
 
 Route::prefix('cities')->group(function(){
