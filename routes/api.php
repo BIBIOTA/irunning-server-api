@@ -5,6 +5,7 @@ use App\Http\Controllers\AqiController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\DistrictController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MemberController;
 
@@ -44,11 +45,11 @@ Route::prefix('districts')->group(function(){
 });
 
 Route::prefix('events')->group(function(){
-    Route::get('/', [RequestApi::class, 'getEvents'])->name('events.getEvents');
+    Route::get('', [EventController::class, 'getEvents'])->name('events.getEvents');
 });
 
 Route::prefix('index')->group(function(){
-    Route::get('getIndexEvents', [RequestApi::class, 'getIndexEvents'])->name('index.getIndexEvents');
+    Route::get('getIndexEvents', [EventController::class, 'getIndexEvents'])->name('index.getIndexEvents');
 });
 
 Route::prefix('member')->group(function(){
