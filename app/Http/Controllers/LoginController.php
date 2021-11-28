@@ -36,7 +36,6 @@ class LoginController extends Controller
 
             if ($data) {
                 $data->update([
-                    'username' => $athlete['username'],
                     'resource_state' => $athlete['resource_state'],
                     'firstname' => $athlete['firstname'],
                     'lastname' => $athlete['lastname'],
@@ -51,7 +50,6 @@ class LoginController extends Controller
                 $data = $this->members->create([
                     'id' => uniqid(),
                     'strava_id' => $athlete['id'],
-                    'username' => $athlete['username'],
                     'resource_state' => $athlete['resource_state'],
                     'firstname' => $athlete['firstname'],
                     'lastname' => $athlete['lastname'],
