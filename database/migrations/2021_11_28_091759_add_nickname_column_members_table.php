@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddIsRegisterJoinRankMembersTable extends Migration
+class AddNicknameColumnMembersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,7 @@ class AddIsRegisterJoinRankMembersTable extends Migration
     public function up()
     {
         Schema::table('members', function (Blueprint $table) {
-            $table->boolean('is_register')->default(false)->after('runner_type')->comment('是否註冊,false:否,true:是');
-            $table->boolean('join_rank')->default(false)->after('runner_type')->comment('是否參加排行榜,false:否,true:是');
+            $table->string('nickname')->nullable()->after('username')->comment('暱稱');
         });
     }
 

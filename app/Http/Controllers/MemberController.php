@@ -117,15 +117,92 @@ class MemberController extends Controller
 
     /* ============   client  ============= */
 
-    public function getIndexRunInfo (Request $request) {
+    public function read (Request $request, $memberUuid) {
+
+        $validator = Validator::make(
+            [
+                'memberUuid' => $memberUuid,
+            ], [
+            'memberUuid'=>'required',
+        ], [
+            'memberUuid.required'=>'缺少uuid資料',
+        ]);
+        if ($validator->fails()){
+            return response()->json(['status'=>false, 'message'=>$validator->errors()->all()[0], 'data'=>null], 400);
+        }
+
+        $member = $this->members->find($memberUuid);
+
+        if ($member) {
+
+            $data = $this->memberDataProcessforClientRead($member);
+
+            return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $data], 200);
+
+        }
+
+        return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
+
+    }
+
+    public function update (Request $request, $memberUuid) {
+
+        $form = [
+            'username' => $request->username,
+            'nickname' => $request->nickname,
+            'email' => $request->email,
+            'county' => $request->county,
+            'district' => $request->district,
+            'runner_type' => $request->runnerType,
+            'join_rank' => $request->joinRank,
+        ];
+
+        $validator = Validator::make($form, [
+            'username'=>'required',
+            'nickname'=>'required',
+            'email'=>'required',
+            'county'=>'required',
+            'district'=>'required',
+            'runner_type'=>'required',
+            'join_rank'=>'required',
+        ], [
+            'username.required'=>'請填寫姓名',
+            'nickname.required'=>'請填寫暱稱',
+            'email.required'=>'請填寫email',
+            'county.required'=>'請填寫居住城市',
+            'district.required'=>'請填寫居住鄉鎮區',
+            'runner_type.required'=>'請填寫跑步經驗',
+            'join_rank.required'=>'發生例外錯誤:缺少join_rank參數',
+        ]);
+        if ($validator->fails()){
+            return response()->json(['status'=>false, 'message'=>$validator->errors()->all()[0], 'data'=>null], 400);
+        }
+
+        $member = $this->members->find($memberUuid);
+
+        if ($member) {
+            if ($member->is_register === 1) {
+                $member->update($form);
+            } else {
+                $request['is_register'] = 1;
+                $member->update($form);
+            }
+            return response()->json(['status' => true, 'message' => '資料更新成功', 'data' => null], 200);
+        } else {
+            return response()->json(['status' => false, 'message' => '查無會員資料', 'data' => null], 404);
+        }
+
+    }
+
+    public function getIndexRunInfo (Request $request, $memberUuid) {
         
-        $stat = $this->stats->where('user_id', $request->id)->first();
+        $stat = $this->stats->where('user_id', $memberUuid)->first();
 
 
-        $activitiesCount = $this->activities->where('user_id', $request->id)->count();
+        $activitiesCount = $this->activities->where('user_id', $memberUuid)->count();
         
         if ($activitiesCount === 0) {
-            $tokenData = $this->memberTokens->where('user_id', $request->id)->first();
+            $tokenData = $this->memberTokens->where('user_id', $memberUuid)->first();
             if ($tokenData) {
                 $this->getActivitiesDataFromStrava($tokenData);
             } else {
@@ -134,13 +211,13 @@ class MemberController extends Controller
         }
 
         $activitiesYear = $this->activities
-                    ->getActivitiesYear($request->id);
+                    ->getActivitiesYear($memberUuid);
 
         $activitiesMonth = $this->activities
-                    ->getActivitiesMonth($request->id);
+                    ->getActivitiesMonth($memberUuid);
 
         $activitiesWeek = $this->activities
-                    ->getActivitiesWeek($request->id);
+                    ->getActivitiesWeek($memberUuid);
 
         if ($stat && isset($activitiesYear) && isset($activitiesMonth) && isset($activitiesWeek)) {
 
@@ -217,6 +294,19 @@ class MemberController extends Controller
             'monthDistance' => $runningStatus['monthDistance'],
             'runnerType' => $this->runnerType($row->runner_type),
             'lastLoginAt' => $row->memberToken->updated_at,
+        ];
+    }
+
+    private function memberDataProcessforClientRead($row) {
+        return [
+            'id' => $row->id,
+            'username' => $row->username ?? '',
+            'nickname' => $row->nickname ?? '',
+            'email' => $row->email,
+            'county' => $row->county,
+            'district' => $row->district,
+            'runnerType' => $row->runner_type,
+            'joinRank' => $row->join_rank,
         ];
     }
 }

@@ -55,7 +55,9 @@ Route::prefix('index')->group(function(){
 });
 
 Route::prefix('member')->group(function(){
-    Route::get('getIndexRunInfo', [MemberController::class, 'getIndexRunInfo'])->name('member.getIndexRunInfo');
+    Route::get('/{memberUuid}', [MemberController::class, 'read'])->name('member.read');
+    Route::put('/{memberUuid}', [MemberController::class, 'update'])->name('member.update');
+    Route::get('/{memberUuid}/getIndexRunInfo', [MemberController::class, 'getIndexRunInfo'])->name('member.getIndexRunInfo');
     Route::post('updateMemberLocation', [MemberController::class, 'updateMemberLocation'])->name('member.updateMemberLocation');
 });
 
