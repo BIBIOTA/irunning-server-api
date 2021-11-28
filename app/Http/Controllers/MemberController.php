@@ -154,7 +154,7 @@ class MemberController extends Controller
             'county' => $request->county,
             'district' => $request->district,
             'runner_type' => $request->runnerType,
-            'join_rank' => $request->joinRank,
+            // 'join_rank' => $request->joinRank,
         ];
 
         $validator = Validator::make($form, [
@@ -164,7 +164,7 @@ class MemberController extends Controller
             'county'=>'required',
             'district'=>'required',
             'runner_type'=>'required',
-            'join_rank'=>'required',
+            // 'join_rank'=>'required',
         ], [
             'username.required'=>'請填寫姓名',
             'nickname.required'=>'請填寫暱稱',
@@ -172,7 +172,7 @@ class MemberController extends Controller
             'county.required'=>'請填寫居住城市',
             'district.required'=>'請填寫居住鄉鎮區',
             'runner_type.required'=>'請填寫跑步經驗',
-            'join_rank.required'=>'發生例外錯誤:缺少join_rank參數',
+            // 'join_rank.required'=>'發生例外錯誤:缺少join_rank參數',
         ]);
         if ($validator->fails()){
             return response()->json(['status'=>false, 'message'=>$validator->errors()->all()[0], 'data'=>null], 400);
