@@ -184,7 +184,7 @@ class MemberController extends Controller
             if ($member->is_register === 1) {
                 $member->update($form);
             } else {
-                $request['is_register'] = 1;
+                $form['is_register'] = 1;
                 $member->update($form);
             }
             return response()->json(['status' => true, 'message' => '資料更新成功', 'data' => null], 200);
