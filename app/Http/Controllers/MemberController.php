@@ -74,7 +74,10 @@ class MemberController extends Controller
 
             $data['member'] = $this->memberDataProcess($member);
     
-            $activities = $this->activities->where('user_id', $memberUuid)->get();
+            $activities = $this->activities
+                            ->where('user_id', $memberUuid)
+                            ->orderBy('start_date_local', 'DESC')
+                            ->get();
 
             if ($activities->count() > 0) {
                 $data['activities'] = $activities->map(function($row){
