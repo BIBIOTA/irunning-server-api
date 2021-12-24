@@ -16,13 +16,9 @@ class AqiTest extends TestCase
      */
     public function test_example()
     {
-        $filename = 'CityCountyData';
+        $json = $this->getCityCountyData();
 
-        $path = storage_path() . "/app/public" ."/${filename}.json";
-
-        $json = json_decode(file_get_contents($path), true); 
-
-        $distinct = ['釣魚臺', '南海島'];
+        $distinct = $this->distinctCities();
 
         foreach($json as $county) {
             if (!in_array($county['CityName'], $distinct)) {
