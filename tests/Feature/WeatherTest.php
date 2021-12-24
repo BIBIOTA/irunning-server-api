@@ -16,13 +16,9 @@ class WeatherTest extends TestCase
     public function test_example()
     {
 
-        $filename = 'CityCountyData';
+        $json = $this->getCityCountyData();
 
-        $path = storage_path() . "/app/public" ."/${filename}.json";
-
-        $json = json_decode(file_get_contents($path), true); 
-
-        $distinct = ['釣魚臺', '東沙群島','南沙群島'];
+        $distinct = $this->distinctDistricts();
 
         foreach($json as $county) {
             foreach($county['AreaList'] as $district) {
