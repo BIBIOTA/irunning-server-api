@@ -24,6 +24,37 @@ class LoginTest extends TestCase
         
         $stravaAthleteUrl = 'https://www.strava.com/api/v3/athlete';
 
+        $dataStructure = [
+            'status',
+            'message',
+            'data' => [
+                'badge_type_id',
+                'city',
+                'country',
+                'county',
+                'created_at',
+                'district',
+                'email',
+                'expires_at',
+                'firstname',
+                'id',
+                'is_register',
+                'join_rank',
+                'lastname',
+                'login_from',
+                'nickname',
+                'resource_state',
+                'runner_type',
+                'sex',
+                'siteName',
+                'state',
+                'strava_id',
+                'updated_at',
+                'username',
+                'weight',
+            ],
+        ];
+
         $datas = app(MemberToken::class)->get();
 
         if ($datas->count() > 0) {
@@ -38,37 +69,14 @@ class LoginTest extends TestCase
                 $formData = array_merge($responseRefreashToken, ['athlete' => $responseAthlete]);
 
                 $response = $this->call('POST', 'api/login/login', $formData);
-                $response->assertStatus(200);
-                $response->assertJsonStructure([
-                    'status',
-                    'message',
-                    'data' => [
-                        'badge_type_id',
-                        'city',
-                        'country',
-                        'county',
-                        'created_at',
-                        'district',
-                        'email',
-                        'expires_at',
-                        'firstname',
-                        'id',
-                        'is_register',
-                        'join_rank',
-                        'lastname',
-                        'login_from',
-                        'nickname',
-                        'resource_state',
-                        'runner_type',
-                        'sex',
-                        'siteName',
-                        'state',
-                        'strava_id',
-                        'updated_at',
-                        'username',
-                        'weight',
-                    ],
-                ]);
+
+                if ($response->getStatusCode() === 200) {
+                    $response->assertStatus(200);
+                    $response->assertJsonStructure($dataStructure);
+                } else {
+                    $response->assertStatus(404);
+                    $response->assertJsonStructure($this->falseJsonStructure());
+                }
             }
         }
 

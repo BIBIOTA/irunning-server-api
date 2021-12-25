@@ -30,7 +30,6 @@ abstract class TestCase extends BaseTestCase
             if ($response->getStatusCode() === 200) {
                 $response->assertStatus(200);
                 $response->assertJsonStructure($dataStructure);
-                logger($this->hasNextPage($response));
                 if ($this->hasNextPage($response)) {
                     $pageCount++;
                 }
