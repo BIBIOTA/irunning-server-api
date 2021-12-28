@@ -63,6 +63,7 @@ trait StravaActivitiesTrait
                 break;
             }
         }
+        Log::info($token->user_id.'Strava活動更新完成');
     }
 
     public function getStats($stravaId, $token) {
