@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(CityAndDistrictSeeder::class);
         $this->call(CityDataIdSeeder::class);
+        $this->call(DistrictDataIdSeeder::class);
         $this->call(AqiSeeder::class);
         $this->call(WxDocumentSeeder::class);
         $this->call(WeatherSeeder::class);

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddWeathersTable extends Migration
+class AddWeatherDetailsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,14 @@ class AddWeathersTable extends Migration
      */
     public function up()
     {
-        Schema::create('weathers', function (Blueprint $table) {
+        Schema::create('weather_details', function (Blueprint $table) {
             $table->uuid('id')->unique()->primary();
-            $table->string('district_id')->comment('鄉鎮區id');
-            $table->string('name')->comment('天氣參數名稱');
-            $table->string('description')->comment('天氣參數描述');
+            $table->string('weather_id')->comment('天氣id');
+            $table->dateTime('data_time')->nullable()->comment('資料時間');
+            $table->dateTime('start_time')->nullable()->comment('資料區間');
+            $table->dateTime('end_time')->nullable()->comment('資料區間');
             $table->timestamps();
-            $table->foreign('district_id')->references('id')->on('districts');
+            $table->foreign('weather_id')->references('id')->on('weathers');
         });
     }
 
