@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Member;
 use App\Models\MemberToken;
 
+use App\Jobs\GetActivitiesDataFromStrava;
+
 use App\Http\Controllers\Traits\StravaActivitiesTrait;
 
 use Illuminate\Http\Request;
@@ -87,10 +89,10 @@ class LoginController extends Controller
     
                 $this->getStats($data->strava_id, $tokenData);
 
-                $this->getActivitiesDataFromStrava($tokenData, true);
-                Log::info($token->user_id.'Strava活動更新完成');
-
                 $data['expires_at'] = Carbon::parse(intval($request->expires_at));
+
+                $newJob = new GetActivitiesDataFromStrava($tokenData, true);
+                dispatch($newJob);
     
                 return response()->json(['status' => true, 'message' => '登入成功', 'data' => $data], 200);
             } catch (Throwable $e) {
