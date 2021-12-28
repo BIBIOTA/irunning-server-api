@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 use App\Models\City;
 use App\Models\District;
@@ -32,10 +34,19 @@ class CityAndDistrictSeeder extends Seeder
         logger($json);
 
         foreach($json as $county) {
-            app(City::class)->create(['CityName' => $county['CityName']]);
-            foreach($county['AreaList'] as $district) {
-                app(District::class)->create(['CityName' => $county['CityName'], 'AreaName' => $district['AreaName']]);
-            }
+
+                $city = app(City::class)->create([
+                    'id' => uniqid(),
+                    'city_name' => $county['CityName'],
+                ]);
+                foreach($county['AreaList'] as $district) {
+                    app(District::class)->create([
+                        'id' => uniqid(),
+                        'city_id' => $city->id,
+                        'district_name' => $district['AreaName'],
+                    ]);
+                }
+
         }
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
