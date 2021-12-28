@@ -43,7 +43,7 @@ class CityDataIdSeeder extends Seeder
         ];
 
         foreach($cities as $key => $value) {
-            $data = app(City::class)->where('CityName', $key)->update([
+            $data = app(City::class)->where('city_name', $key)->update([
                 'dataid' => $value,
             ]);
         }

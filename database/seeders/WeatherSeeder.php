@@ -38,70 +38,65 @@ class WeatherSeeder extends Seeder
         
             DB::statement('SET FOREIGN_KEY_CHECKS=0;');
             app(Weather::class)->truncate();
-            app(AT::class)->truncate();
-            app(CI::class)->truncate();
-            app(PoP6h::class)->truncate();
-            app(PoP12h::class)->truncate();
-            app(RH::class)->truncate();
-            app(T::class)->truncate();
-            app(Td::class)->truncate();
-            app(WD::class)->truncate();
-            app(WeatherDescription::class)->truncate();
-            app(WS::class)->truncate();
-            app(Wx::class)->truncate();            
     
-            $datas = app(City::class)::select('dataid', 'CityName')->whereNotNull('dataid')->get();
+            $datas = app(City::class)::select('id', 'dataid')->whereNotNull('dataid')->get();
 
+            $weathersColumns = [
+                'CI' => 'ci', 
+                'T' => 'temperature', 
+                'AT' => 'apparent_temperature', 
+                'PoP6h' => 'pop6h', 
+                'Wx' => 'wx', 
+            ];
+
+            // TODO 鄉鎮區取得方法整合
             foreach($datas as $city) {
-                $districts = app(District::class)->where('CityName', $city->CityName)->get();
+                $districts = app(District::class)->where('city_id', $city->id)->get();
                 foreach($districts as $district) {
-                    $response = Http::get('https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-093?Authorization=CWB-12E073F0-06A2-4F1E-BEB7-7FB421E605A2'.'&'.'locationId'.'='.$city->dataid.'&'.'locationName'.'='.$district->AreaName);
+                    $response = Http::get('https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-093?Authorization=CWB-12E073F0-06A2-4F1E-BEB7-7FB421E605A2'.'&'.'locationId'.'='.$city->dataid.'&'.'locationName'.'='.$district->district_name);
                     $resdatas = $response->json();
                     if (count($resdatas) > 0) {
                         foreach($resdatas['records']['locations'] as $data) {
                             foreach($data['location'] as $location) {
-                                $id = uniqid();
+
                                 $formData = [
-                                    'id' => $id,
-                                    'locationsName' => $data['locationsName'],
-                                    'dataid' => $data['dataid'],
-                                    'locationName' => $location['locationName'],
+                                    'id' => uniqid(),
+                                    'district_id' => $district->id,
                                 ];
-                                $data = app(Weather::class)->create($formData);
+
                                 foreach($location['weatherElement'] as $key => $weatherElement) {
-                                    $elementData = [
-                                        'weather_id' => $id,
-                                        'description' => $weatherElement['description'],
-                                    ];
-                                    $key = $weatherElement['elementName'];
-                                    foreach($weatherElement['time'] as $time) {
-                                        if (isset($time['startTime']) && isset($time['endTime'])) {
-                                            if ($time['startTime'] < date('Y-m-d H:i:s') && $time['endTime'] > date('Y-m-d H:i:s')) {
-                                                $elementData['startTime'] = $time['startTime'];
-                                                $elementData['endTime'] = $time['endTime'];
-                                                foreach($time['elementValue'] as $index => $elementValue) {
-                                                    if ($weatherElement['elementName'] === 'Wx') {
-                                                        $elementData['value'] = intval($elementValue['value']);
-                                                        $elementData['measures'] = $elementValue['measures'];
+
+                                    if (array_key_exists($weatherElement['elementName'], $weathersColumns)) {
+                                        $column = $weathersColumns[$weatherElement['elementName']];
+                                        foreach($weatherElement['time'] as $time) {
+                                            if (isset($time['startTime']) && isset($time['endTime'])) {
+                                                if ($time['startTime'] < date('Y-m-d H:i:s') && $time['endTime'] > date('Y-m-d H:i:s')) {
+                                                    foreach($time['elementValue'] as $index => $elementValue) {
+                                                        $formData['start_time'] = $time['startTime'];
+                                                        $formData['end_time'] = $time['endTime'];
+                                                        if ($elementValue['measures'] === '自定義 Wx 單位') {
+                                                            $formData[$column] = intval($elementValue['value']);
+                                                        }
+                                                        if ($elementValue['measures'] === '百分比') {
+                                                            $formData[$column] = intval($elementValue['value']);
+                                                        }
                                                     }
                                                 }
-                                            }
-                                        } else if (isset($time['dataTime'])) {
-                                            if ($time['dataTime'] < date('Y-m-d H:i:s')) {
-                                                $elementData['dataTime'] = $time['dataTime'];
-
-                                                foreach($time['elementValue'] as $index => $elementValue) {
-                                                    foreach($elementValue as $obj => $value) {
-                                                        $elementData[$obj] = $value;
+                                            } else if (isset($time['dataTime'])) {
+                                                if ($time['dataTime'] < date('Y-m-d H:i:s')) {
+                                                    $formData['dataTime'] = $time['dataTime'];
+    
+                                                    foreach($time['elementValue'] as $index => $elementValue) {
+                                                        //TODO CI資料取得
+                                                        $formData[$column] = intval($elementValue['value']);
                                                     }
                                                 }
                                             }
                                         }
                                     }
-                                    $elementData['created_at'] = Carbon::now();
-                                    $elementData['updated_at'] = Carbon::now();
-                                    app('App\Models\\'.$key)->create($elementData);
+                                       
                                 }
+                                $data = app(Weather::class)->create($formData); 
                             }
                         }
                     } else {
