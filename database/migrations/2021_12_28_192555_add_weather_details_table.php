@@ -16,11 +16,13 @@ class AddWeatherDetailsTable extends Migration
         Schema::create('weather_details', function (Blueprint $table) {
             $table->uuid('id')->unique()->primary();
             $table->string('weather_id')->comment('天氣id');
-            $table->dateTime('data_time')->nullable()->comment('資料時間');
-            $table->dateTime('start_time')->nullable()->comment('資料區間');
-            $table->dateTime('end_time')->nullable()->comment('資料區間');
+            $table->string('district_id')->comment('鄉鎮區id');
+            $table->dateTime('start_time')->comment('資料區間');
+            $table->dateTime('end_time')->comment('資料區間');
+            $table->string('value')->comment('參數值');
             $table->timestamps();
             $table->foreign('weather_id')->references('id')->on('weathers');
+            $table->foreign('district_id')->references('id')->on('districts');
         });
     }
 

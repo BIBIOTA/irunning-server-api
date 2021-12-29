@@ -16,14 +16,14 @@ class DistrictsTest extends TestCase
      */
     public function test_example()
     {
-        $json = $this->getCityCountyData();
+        $cities = $this->getCityCountyData();
 
-        $distinct = $this->distinctCities();;
+        $distinct = $this->distinctCities();
 
-        foreach($json as $county) {
-            if (!in_array($county['CityName'], $distinct)) {
+        foreach($cities as $city) {
+            if (!in_array($city->city_name, $distinct)) {
                 $response = $this->call('GET', 'api/districts', [
-                    'CityName' => $county['CityName'],
+                    'city_id' => $city->id,
                 ]);
                 $response->assertStatus(200);
                 $response->assertJsonStructure([
@@ -31,8 +31,8 @@ class DistrictsTest extends TestCase
                     'message',
                     'data' => [
                         '*' => [
-                            'CityName',
-                            'AreaName',
+                            'city_id',
+                            'district_name',
                         ],
                     ]
                 ]);   
