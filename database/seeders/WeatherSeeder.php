@@ -44,6 +44,10 @@ class WeatherSeeder extends Seeder
 
                     if (count($resdatas) > 0) {
                         foreach($resdatas['records']['locations'] as $data) {
+
+                            $district->dataid = $data['dataid'];
+                            $district->save();
+
                             foreach($data['location'] as $location) {
 
                                 foreach($location['weatherElement'] as $key => $weatherElement) {
