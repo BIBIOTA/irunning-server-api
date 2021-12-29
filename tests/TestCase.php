@@ -95,8 +95,8 @@ abstract class TestCase extends BaseTestCase
         return $districts;
     }
 
-    public function getCityCountyData($cityId) {
-        $cities = app(City::class)->where('city_id', $cityId)->get();
+    public function getCityCountyData() {
+        $cities = app(City::class)->get();
 
         return $cities;
     }
