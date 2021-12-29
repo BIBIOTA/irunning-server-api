@@ -15,7 +15,7 @@ class DistrictController extends Controller
     }
 
     public function getDistricts (Request $request) {
-        $data = $this->districts->where('CityName', $request->CityName)->get();
+        $data = $this->districts->where('city_id', $request->city_id)->get();
 
         if ($data->count() > 0) {
             return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $data], 200);

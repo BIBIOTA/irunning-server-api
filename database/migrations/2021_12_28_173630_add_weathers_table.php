@@ -15,11 +15,9 @@ class AddWeathersTable extends Migration
     {
         Schema::create('weathers', function (Blueprint $table) {
             $table->uuid('id')->unique()->primary();
-            $table->string('district_id')->comment('鄉鎮區id');
-            $table->string('name')->comment('天氣參數名稱');
-            $table->string('description')->comment('天氣參數描述');
+            $table->string('name')->unique()->comment('天氣參數名稱');
+            $table->string('description')->unique()->comment('天氣參數描述');
             $table->timestamps();
-            $table->foreign('district_id')->references('id')->on('districts');
         });
     }
 
