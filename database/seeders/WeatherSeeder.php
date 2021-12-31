@@ -47,6 +47,7 @@ class WeatherSeeder extends Seeder
                             foreach($resdatas['records']['locations'] as $data) {
     
                                 $district->dataid = $data['dataid'];
+                                $district->updated_at = Carbon::now();
                                 $district->save();
     
                                 foreach($data['location'] as $location) {
