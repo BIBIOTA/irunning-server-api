@@ -15,7 +15,7 @@ class AqiController extends Controller
     }
 
     public function getAqiList (Request $request) {
-        $data = $this->aqis->where('County', $request->County)->get();
+        $data = $this->aqis->where('city_id', $request->city_id)->get();
 
         if ($data->count() > 0) {
             return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $data], 200);

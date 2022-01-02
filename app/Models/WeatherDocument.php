@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PoP12h extends Model
+class WeatherDocument extends Model
 {
     use HasFactory;
 
-    protected $table = 'PoP12h';
+    protected $table = 'weather_documents';
 
-    protected $guarded = [];
+    protected $fillable = ['id'];
 
-    protected $primaryKey = 'weather_id';
+    public $incrementing = false;
 
 }

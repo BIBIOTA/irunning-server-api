@@ -4,6 +4,8 @@ namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Http;
+use App\Models\City;
+use App\Models\District;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -87,13 +89,15 @@ abstract class TestCase extends BaseTestCase
         return ['釣魚臺', '東沙群島','南沙群島'];
     }
 
+    public function getDistrictsData() {
+        $districts = app(District::class)->get();
+
+        return $districts;
+    }
+
     public function getCityCountyData() {
-        $filename = 'CityCountyData';
+        $cities = app(City::class)->get();
 
-        $path = storage_path() . "/app/public" ."/${filename}.json";
-
-        $json = json_decode(file_get_contents($path), true);
-
-        return $json;
+        return $cities;
     }
 }
