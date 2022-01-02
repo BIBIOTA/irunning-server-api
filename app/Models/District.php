@@ -11,5 +11,10 @@ class District extends Model
 
     protected $table = 'districts';
 
-    public $timestamps = false;
+    public $incrementing = false;
+
+    public function city () {
+        return $this->belongsTo(City::class);
+    }
+
 }

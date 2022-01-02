@@ -4,29 +4,21 @@ namespace Database\Seeders;
 
 use App\Models\City;
 use App\Models\District;
-use App\Models\Weather;
-use App\Models\AT;
-use App\Models\CI;
-use App\Models\PoP6h;
-use App\Models\PoP12h;
-use App\Models\RH;
-use App\Models\T;
-use App\Models\Td;
-use App\Models\WD;
-use App\Models\WeatherDescription;
-use App\Models\WS;
-use App\Models\Wx;
-
+use App\Models\WeatherDocument;
+use App\Models\WeatherData;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
+use App\Http\Controllers\Traits\WeatherTrait;
+
 class WeatherSeeder extends Seeder
 {
+    use WeatherTrait;
+
     /**
      * Run the database seeds.
      *
@@ -34,83 +26,119 @@ class WeatherSeeder extends Seeder
      */
     public function run()
     {
+
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
         try {
-        
-            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-            app(Weather::class)->truncate();
-            app(AT::class)->truncate();
-            app(CI::class)->truncate();
-            app(PoP6h::class)->truncate();
-            app(PoP12h::class)->truncate();
-            app(RH::class)->truncate();
-            app(T::class)->truncate();
-            app(Td::class)->truncate();
-            app(WD::class)->truncate();
-            app(WeatherDescription::class)->truncate();
-            app(WS::class)->truncate();
-            app(Wx::class)->truncate();            
+            
+            $datas = app(City::class)::select('id', 'dataid')->whereNotNull('dataid')->get();
+
+            if ($datas->count() > 0) {
+                foreach($datas as $city) {
+                    
     
-            $datas = app(City::class)::select('dataid', 'CityName')->whereNotNull('dataid')->get();
-
-            foreach($datas as $city) {
-                $districts = app(District::class)->where('CityName', $city->CityName)->get();
-                foreach($districts as $district) {
-                    $response = Http::get('https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-093?Authorization=CWB-12E073F0-06A2-4F1E-BEB7-7FB421E605A2'.'&'.'locationId'.'='.$city->dataid.'&'.'locationName'.'='.$district->AreaName);
-                    $resdatas = $response->json();
-                    if (count($resdatas) > 0) {
-                        foreach($resdatas['records']['locations'] as $data) {
-                            foreach($data['location'] as $location) {
-                                $id = uniqid();
-                                $formData = [
-                                    'id' => $id,
-                                    'locationsName' => $data['locationsName'],
-                                    'dataid' => $data['dataid'],
-                                    'locationName' => $location['locationName'],
-                                ];
-                                $data = app(Weather::class)->create($formData);
-                                foreach($location['weatherElement'] as $key => $weatherElement) {
-                                    $elementData = [
-                                        'weather_id' => $id,
-                                        'description' => $weatherElement['description'],
-                                    ];
-                                    $key = $weatherElement['elementName'];
-                                    foreach($weatherElement['time'] as $time) {
-                                        if (isset($time['startTime']) && isset($time['endTime'])) {
-                                            if ($time['startTime'] < date('Y-m-d H:i:s') && $time['endTime'] > date('Y-m-d H:i:s')) {
-                                                $elementData['startTime'] = $time['startTime'];
-                                                $elementData['endTime'] = $time['endTime'];
-                                                foreach($time['elementValue'] as $index => $elementValue) {
-                                                    if ($weatherElement['elementName'] === 'Wx') {
-                                                        $elementData['value'] = intval($elementValue['value']);
-                                                        $elementData['measures'] = $elementValue['measures'];
-                                                    }
-                                                }
+                    $districts = app(District::class)->where('city_id', $city->id)->get();
+    
+                    foreach($districts as $district) {
+    
+                        $resdatas = $this->getHttpWeatherData($city->dataid, $district->district_name);
+    
+                        if (count($resdatas) > 0) {
+                            foreach($resdatas['records']['locations'] as $data) {
+    
+                                $district->dataid = $data['dataid'];
+                                $district->updated_at = Carbon::now();
+                                $district->save();
+    
+                                foreach($data['location'] as $location) {
+    
+    
+                                    foreach($location['weatherElement'] as $key => $weatherElement) {
+    
+                                        if ($this->getColumnsKey($weatherElement['elementName'])) {
+                                            $weather = app(WeatherDocument::class)
+                                            ->where('name', $weatherElement['elementName'])
+                                            ->first();
+                                        
+                                            if (!$weather) {
+                                                $weatherformData = [
+                                                    'id' => uniqid(),
+                                                    'name' => $weatherElement['elementName'],
+                                                    'description' => $weatherElement['description'],
+                                                ];
+            
+                                                $weather = app(WeatherDocument::class)->create($weatherformData);
                                             }
-                                        } else if (isset($time['dataTime'])) {
-                                            if ($time['dataTime'] < date('Y-m-d H:i:s')) {
-                                                $elementData['dataTime'] = $time['dataTime'];
-
-                                                foreach($time['elementValue'] as $index => $elementValue) {
-                                                    foreach($elementValue as $obj => $value) {
-                                                        $elementData[$obj] = $value;
+    
+    
+                                            foreach($weatherElement['time'] as $time) {
+                                                if (isset($time['startTime']) && isset($time['endTime'])) {
+    
+                                                    $weatherData = app(WeatherData::class)
+                                                        ->where('weather_document_id', $weather->id)
+                                                        ->where('district_id', $district->id)
+                                                        ->where('start_time', $time['startTime'])
+                                                        ->where('end_time', $time['endTime'])
+                                                        ->first();
+    
+                                                    if (!$weatherData) {
+                                                        $data = [
+                                                            'id' => uniqid(),
+                                                            'weather_document_id' => $weather->id,
+                                                            'district_id' => $district->id,
+                                                            'start_time' => $time['startTime'],
+                                                            'end_time' => $time['endTime'],
+                                                            'value' => $this->getValue($weatherElement['elementName'], $time['elementValue'])
+                                                        ];
+            
+                                                        $weatherData = app(WeatherData::class)->create($data);
                                                     }
+    
+    
+    
+                                                }
+                                                if (isset($time['dataTime'])) {
+    
+                                                    $defaultEndTime = Carbon::parse($time['dataTime'])->addHours(3);
+    
+                                                    $weatherData = app(WeatherData::class)
+                                                        ->where('weather_document_id', $weather->id)
+                                                        ->where('district_id', $district->id)
+                                                        ->where('start_time', $time['dataTime'])
+                                                        ->where('end_time', $defaultEndTime)
+                                                        ->first();
+    
+                                                    if (!$weatherData) {
+                                                        $data = [
+                                                            'id' => uniqid(),
+                                                            'weather_document_id' => $weather->id,
+                                                            'district_id' => $district->id,
+                                                            'start_time' => $time['dataTime'],
+                                                            'end_time' => $defaultEndTime,
+                                                            'value' => $this->getValue($weatherElement['elementName'], $time['elementValue'])
+                                                        ];
+            
+                                                        $weatherData = app(WeatherData::class)->create($data);
+                                                    }
+    
                                                 }
                                             }
                                         }
+                                            
                                     }
-                                    $elementData['created_at'] = Carbon::now();
-                                    $elementData['updated_at'] = Carbon::now();
-                                    app('App\Models\\'.$key)->create($elementData);
                                 }
                             }
+                        } else {
+                            Log::info('無法取得資料');
                         }
-                    } else {
-                        Log::info('無法取得資料');
+        
                     }
-    
                 }
+                Log::info('天氣資料更新完成');
+            } else {
+                Log::info('天氣更新失敗:無法取得縣市資料');
             }
-            Log::info('天氣資料更新完成');
+
         } catch (Throwable $e) {
             Log::info($e);
         }

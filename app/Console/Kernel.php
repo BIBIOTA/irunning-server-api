@@ -12,9 +12,7 @@ class Kernel extends ConsoleKernel
      *
      * @var array
      */
-    protected $commands = [
-        \App\Console\Commands\AqiSeed::class,
-    ];
+    protected $commands = [];
 
     /**
      * Define the application's command schedule.
@@ -24,8 +22,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('aqi:seed')->hourly();
-        $schedule->command('weather:seed')->hourly();
+        $schedule->exec('php artisan DB:seed --class=AqiSeeder')->hourly();
+        $schedule->exec('php artisan DB:seed --class=WeatherSeeder')
+        ->hourly();
         $schedule->command('strava:refreashToken')->everyThreeHours();
         $schedule->command('strava:activities')->daily();
         $schedule->exec('php artisan DB:seed --class=EventSeeder')

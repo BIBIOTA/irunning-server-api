@@ -11,6 +11,7 @@ class City extends Model
 
     protected $table = 'cities';
 
-    public $timestamps = false;
+    public $incrementing = false;
+
 
 }
