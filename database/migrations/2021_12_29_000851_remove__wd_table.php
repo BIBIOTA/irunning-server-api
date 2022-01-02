@@ -13,10 +13,10 @@ class RemoveWDTable extends Migration
      */
     public function up()
     {
-        Schema::table('wd', function (Blueprint $table) {
+        Schema::table('WD', function (Blueprint $table) {
             $table->dropForeign(['weather_id']);
         });
-        Schema::dropIfExists('wd');
+        Schema::dropIfExists('WD');
     }
 
     /**
@@ -26,7 +26,7 @@ class RemoveWDTable extends Migration
      */
     public function down()
     {
-        Schema::table('WS', function (Blueprint $table) {
+        Schema::table('WD', function (Blueprint $table) {
             //
         });
     }

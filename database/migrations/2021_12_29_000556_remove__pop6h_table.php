@@ -13,10 +13,10 @@ class RemovePop6hTable extends Migration
      */
     public function up()
     {
-        Schema::table('Pop6h', function (Blueprint $table) {
+        Schema::table('PoP6h', function (Blueprint $table) {
             $table->dropForeign(['weather_id']);
         });
-        Schema::dropIfExists('Pop6h');
+        Schema::dropIfExists('PoP6h');
     }
 
     /**
