@@ -11,4 +11,8 @@ class Aqi extends Model
 
     protected $table = 'aqi';
 
+    protected $fillable = ['id'];
+
+    public $incrementing = false;
+
 }

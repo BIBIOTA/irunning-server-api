@@ -16,33 +16,36 @@ class WeatherTest extends TestCase
     public function test_example()
     {
 
-        $json = $this->getCityCountyData();
+        $cities = $this->getCityCountyData();
 
         $distinct = $this->distinctDistricts();
 
-        foreach($json as $county) {
-            foreach($county['AreaList'] as $district) {
-                if (!in_array($district['AreaName'], $distinct))
-                $response = $this->call('GET', 'api/weather', [
-                    'CityName' => $county['CityName'],
-                    'AreaName' => $district['AreaName'],
-                ]);
-                $response->assertStatus(200);
-                $response->assertJsonStructure([
-                    'status',
-                    'message',
-                    'data' => [
-                        'CityName',
-                        'AreaName',
-                        'temperature',
-                        'AT',
-                        'PoP6h',
-                        'CI',
-                        'Wx',
-                        'WxValue',
-                        'updated_at',
-                    ]
-                ]);
+        foreach($cities as $city) {
+            $districts = $this->getDistrictsData($city->id);
+            foreach($districts as $district) {
+                if (!in_array($district->district_name, $distinct)) {
+                    $response = $this->call('GET', 'api/weather', [
+                        'district_id' => $district->id,
+                    ]);
+                    $response->assertStatus(200);
+                    $response->assertJsonStructure([
+                        'status',
+                        'message',
+                        'data' => [
+                            'city',
+                            'district',
+                            'T',
+                            'AT',
+                            'PoP6h',
+                            'CI',
+                            'Wx',
+                            'WxValue',
+                            'updated_at',
+                            'start_time',
+                            'end_time',
+                        ]
+                    ]);
+                }
             }
         }
 
