@@ -28,11 +28,11 @@ class WeatherData extends Model
 
         $weatherDatas = $query->get();
 
-        return $this->dataProcess($weatherDatas);
+        return $this->dataProcess($weatherDatas, $districtId);
 
     }
 
-    private function dataProcess ($weatherDatas) {
+    private function dataProcess ($weatherDatas, $districtId) {
         
         $data = [];
         
@@ -51,6 +51,11 @@ class WeatherData extends Model
                 $data['end_time'] = $weatherData->end_time;
             }
 
+            //FIXME 取得六小時天氣資訊修復
+            if (empty($data['PoP6h'])) {
+                $data['PoP6h'] = $this->getFirstPop6h($districtId);
+            }
+
         }
         return $data;
     }
@@ -65,5 +70,26 @@ class WeatherData extends Model
 
     public function wxDocument() {
         return $this->belongsTo(WxDocument::class, 'value');
+    }
+
+    public function getFirstPop6h($districtId) {
+        $query = $this->newModelQuery();
+
+        $query->select('weather_datas.value');
+
+        $query->join('weather_documents', 'weather_documents.id', '=', 'weather_datas.weather_document_id');
+
+        $query->where('weather_datas.district_id', $districtId);
+
+        $query->where('weather_documents.name', 'PoP6h');
+
+        $weatherData = $query->first();
+
+        if ($weatherData) {
+            return $weatherData->value;
+        }
+
+        return 0;
+
     }
 }
