@@ -22,7 +22,7 @@ class CitiesTest extends TestCase
             'message',
             'data' => [
                 '*' => [
-                    'CityName',
+                    'city_name',
                     'dataid',
                 ],
             ]

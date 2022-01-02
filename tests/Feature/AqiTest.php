@@ -16,14 +16,14 @@ class AqiTest extends TestCase
      */
     public function test_example()
     {
-        $json = $this->getCityCountyData();
+        $cities = $this->getCityCountyData();
 
         $distinct = $this->distinctCities();
 
-        foreach($json as $county) {
-            if (!in_array($county['CityName'], $distinct)) {
+        foreach($cities as $city) {
+            if (!in_array($city->city_name, $distinct)) {
                 $response = $this->call('GET', 'api/aqi', [
-                    'County' => $county['CityName'],
+                    'city_id' => $city->id,
                 ]);
                 $response->assertStatus(200);
                 $response->assertJsonStructure([
@@ -31,8 +31,9 @@ class AqiTest extends TestCase
                     'message',
                     'data' => [
                         '*' => [
+                            'id',
+                            'city_id',
                             'SiteName',
-                            'County',
                             'AQI',
                             'Pollutant',
                             'Status',
@@ -40,14 +41,14 @@ class AqiTest extends TestCase
                             'CO',
                             'CO_8hr',
                             'PM10',
-                            'PM2-5',
+                            'PM2_5',
                             'NO2',
                             'NOx',
                             'NO',
                             'WindSpeed',
                             'WindDirec',
                             'PublishTime',
-                            'PM2-5_AVG',
+                            'PM2_5_AVG',
                             'PM10_AVG',
                             'SO2_AVG',
                             'Longitude',
