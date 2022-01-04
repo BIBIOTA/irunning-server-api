@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
+use App\Models\WeatherDocument;
 use App\Models\WeatherData;
 use App\Models\District;
 
@@ -13,6 +14,7 @@ class WeatherController extends Controller
 
     public function __construct()
     {
+        $this->WeatherDocuments = new WeatherDocument;
         $this->weatherDatas = new WeatherData;
         $this->districts = new District;
     }
@@ -39,7 +41,23 @@ class WeatherController extends Controller
             'updated_at' => $district->updated_at,
         ];
 
-        $weatherDatas = $this->weatherDatas->getDatas($request->district_id, $district->updated_at);
+        $weatherDetails = $this->WeatherDocuments->get();
+
+        if ($weatherDetails->count() > 0) {
+            $weatherDatas = [];
+            foreach($weatherDetails as $weatherDetail) {
+                $weatherData = $this->weatherDatas->getData($weatherDetail->id, $request->district_id);
+                if ($weatherData) {
+                    $weatherDatas[$weatherDetail->name] = $weatherData->value;
+
+                    if ($weatherDetail->name === 'Wx') {
+                        $weatherDatas['WxValue'] = $weatherData->wxDocument->text;
+                    }
+                } else {
+                    $weatherDatas[$weatherDetail->name] = null;
+                }
+            }
+        }
 
         $response = array_merge($infoData, $weatherDatas);
 
