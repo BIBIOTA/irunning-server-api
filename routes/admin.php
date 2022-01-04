@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MemberController;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,10 +20,10 @@ Route::group([
     'middleware' => 'admin',
     'prefix' => 'auth'
 ], function ($router) {
-		Route::post('login', [AuthController::class,'login']);
-		Route::post('logout', [AuthController::class,'logout']);
-		Route::post('refresh', [AuthController::class,'refresh']);
-		Route::post('me', [AuthController::class,'me']);
+    Route::post('login', [AuthController::class,'login']);
+    Route::post('logout', [AuthController::class,'logout']);
+    Route::post('refresh', [AuthController::class,'refresh']);
+    Route::post('me', [AuthController::class,'me']);
 });
 
 Route::group([
@@ -35,4 +34,3 @@ Route::group([
     Route::get('{memberUuid}', [MemberController::class, 'view'])->name('members.view');
     Route::get('{memberUuid}/{runningUuId}', [MemberController::class, 'runningInfo'])->name('members.runningInfo');
 });
-
