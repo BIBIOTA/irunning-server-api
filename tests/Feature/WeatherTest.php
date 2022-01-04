@@ -41,8 +41,6 @@ class WeatherTest extends TestCase
                             'Wx',
                             'WxValue',
                             'updated_at',
-                            'start_time',
-                            'end_time',
                         ]
                     ]);
                 }
