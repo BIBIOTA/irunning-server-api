@@ -16,8 +16,8 @@ class WeatherData extends Model
 
     public $incrementing = false;
 
-    public function getData($weatherDetailId, $districtId) {
-
+    public function getData($weatherDetailId, $districtId)
+    {
         $query = $this->newModelQuery();
 
         $query->where('weather_datas.weather_document_id', $weatherDetailId);
@@ -29,21 +29,22 @@ class WeatherData extends Model
         $query->orderBy('weather_datas.start_time', 'ASC');
 
         $weatherData = $query->first();
-        
-        return $weatherData;
 
+        return $weatherData;
     }
 
-    public function district() {
+    public function district()
+    {
         return $this->belongsTo(District::class);
     }
 
-    public function weatherDocument () {
+    public function weatherDocument()
+    {
         return $this->belongsTo(WeatherDocument::class);
     }
 
-    public function wxDocument() {
+    public function wxDocument()
+    {
         return $this->belongsTo(WxDocument::class, 'value', 'value');
     }
-
 }

@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-
 use App\Models\Activity;
 use App\Models\MemberToken;
-
 use App\Http\Controllers\Traits\StravaActivitiesTrait;
 use App\Http\Controllers\Traits\Running;
 
@@ -18,11 +16,12 @@ class ActivityController extends Controller
 
     public function __construct()
     {
-        $this->memberTokens = new MemberToken;
-        $this->activities = new Activity;
+        $this->memberTokens = new MemberToken();
+        $this->activities = new Activity();
     }
 
-    public function getActivities (Request $request) {
+    public function getActivities(Request $request)
+    {
 
         $count = $this->activities->where('user_id', $request->id)->count();
 
@@ -44,8 +43,7 @@ class ActivityController extends Controller
         $data = $this->activities->getFilterData($this->filters);
 
         if ($data->count() > 0) {
-
-            $data->getCollection()->transform(function($row){
+            $data->getCollection()->transform(function ($row) {
                 return [
                     'id' => $row->id,
                     'name' => $row->name,
@@ -56,30 +54,35 @@ class ActivityController extends Controller
                     'summary_polyline' => $row->summary_polyline,
                 ];
             });
-            
+
             return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $data], 200);
         }
 
         return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
     }
 
-    public function getActivity (Request $request, $memberUuid, $runningUuId) {
+    public function getActivity(Request $request, $memberUuid, $runningUuId)
+    {
 
         $validator = Validator::make([
-            'memberUuid'=> $memberUuid,
-            'runningUuId'=> $runningUuId,
+            'memberUuid' => $memberUuid,
+            'runningUuId' => $runningUuId,
         ], [
-            'memberUuid'=>'required',
-            'runningUuId'=>'required',
+            'memberUuid' => 'required',
+            'runningUuId' => 'required',
         ], [
-            'runningUuId.required'=>'缺少會員uuid資料',
-            'memberUuid.required'=>'缺少跑步紀錄uuid資料',
+            'runningUuId.required' => '缺少會員uuid資料',
+            'memberUuid.required' => '缺少跑步紀錄uuid資料',
         ]);
-        if ($validator->fails()){
-            return response()->json(['status'=>false, 'message'=>$validator->errors()->all()[0], 'data'=>null], 400);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validator->errors()->all()[0],
+                'data' => null
+            ], 400);
         }
 
         return $this->getActivityFromStrava($memberUuid, $runningUuId);
-
     }
 }

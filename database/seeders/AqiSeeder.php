@@ -26,13 +26,13 @@ class AqiSeeder extends Seeder
             $response = Http::get('https://data.epa.gov.tw/api/v1/aqx_p_432?api_key=9be7b239-557b-4c10-9775-78cadfc555e9&sort=ImportDate%20desc&format=json');
             $datas = $response->json();
             if (count($datas['records']) > 0) {
-                foreach($datas['records'] as $data) {
+                foreach ($datas['records'] as $data) {
                     $aqi = app(Aqi::class)->where('SiteName', $data['SiteName'])->first();
-                    foreach($data as $key => $value) {
+                    foreach ($data as $key => $value) {
                         if ($key === 'PM2.5') {
                             $key = 'PM2_5';
                         }
-                        if($key === 'PM2.5_AVG') {
+                        if ($key === 'PM2.5_AVG') {
                             $key = 'PM2_5_AVG';
                         }
                         if ($key === 'County') {

@@ -3,21 +3,19 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Models\Event;
 use App\Models\EventDistance;
 
 class EventController extends Controller
 {
-
     public function __construct()
     {
-        $this->events = new Event;
-        $this->eventDistances = new EventDistance;
+        $this->events = new Event();
+        $this->eventDistances = new EventDistance();
     }
 
-    public function getEvents(Request $request) {
-
+    public function getEvents(Request $request)
+    {
         $this->filters = [
             'startDay' => $request->startDay,
             'endDay' => $request->endDay,
@@ -25,10 +23,10 @@ class EventController extends Controller
             'keywords' => $request->keywords,
         ];
 
-        if (isset($this->filters['distances']) && is_array($this->filters['distances']) ) {
+        if (isset($this->filters['distances']) && is_array($this->filters['distances'])) {
             $distances = $this->eventDistances->get();
             $this->filters['ids'] = [];
-            foreach($distances as $distance) {
+            foreach ($distances as $distance) {
                 $hasDistance = $this->eventDistances->distanceFilter($distance, $this->filters['distances']);
                 if ($hasDistance) {
                     if (!in_array($distance->event_id, $this->filters['ids'])) {
@@ -41,8 +39,7 @@ class EventController extends Controller
         $rows = $this->events->getFilterData($this->filters);
 
         if ($rows->count() > 0) {
-
-            $rows->getCollection()->transform(function($row){
+            $rows->getCollection()->transform(function ($row) {
                 $row['distance'] = ($row->distance) ? $row->distance : null;
                 return $row;
             });
@@ -50,7 +47,6 @@ class EventController extends Controller
             return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $rows], 200);
         }
 
-        return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);   
+        return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
     }
-
 }

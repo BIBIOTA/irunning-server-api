@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\MemberToken;
 use App\Models\Activity;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -28,21 +27,22 @@ class ActivitySeeder extends Seeder
         $columns = DB::getSchemaBuilder()->getColumnListing('activities');
 
         if ($tokens->count() > 0) {
-            foreach($tokens as $token) {
+            foreach ($tokens as $token) {
                 $page = 1;
                 $hasData = true;
-                while($hasData) {
-                    $response = Http::withToken($token->access_token)->get('https://www.strava.com/api/v3/athlete/activities?after=0&per_page=200&page='.$page);
-    
+                while ($hasData) {
+                    $response = Http::withToken($token->access_token)
+                    ->get('https://www.strava.com/api/v3/athlete/activities?after=0&per_page=200&page=' . $page);
+
                     $resdatas = $response->json();
 
                     if (count($resdatas) > 0) {
-                        foreach($resdatas as $data) {
+                        foreach ($resdatas as $data) {
                             $formData = [
                                 'user_id' => $token->user_id,
                             ];
-                            foreach($data as $key => $value) {
-                                if(in_array($key, $columns)) {
+                            foreach ($data as $key => $value) {
+                                if (in_array($key, $columns)) {
                                     if ($key === 'start_date_local') {
                                         $time_raw = strtotime($value);
                                         $time_mysql = Carbon::parse($time_raw);

@@ -16,7 +16,8 @@ class Event extends Model
 
     public $incrementing = false;
 
-    public function getFilterData($filters, $orderBy='event_date', $order='ASC') {
+    public function getFilterData($filters, $orderBy = 'event_date', $order = 'ASC')
+    {
         $query = $this->newModelQuery();
 
         $query->where('event_date', '>=', Carbon::now());
@@ -27,9 +28,9 @@ class Event extends Model
                 ->where('event_date', '<=', $filters['endDay']);
             }
             if (!empty($filters['keywords'])) {
-                $query->where(function ($query) use($filters) {
-                    $query->where('event_name', 'like', '%'. $filters['keywords'].'%')
-                    ->orWhere('location', 'like', '%'. $filters['keywords'].'%');
+                $query->where(function ($query) use ($filters) {
+                    $query->where('event_name', 'like', '%' . $filters['keywords'] . '%')
+                    ->orWhere('location', 'like', '%' . $filters['keywords'] . '%');
                 });
             }
             if (!empty($filters['ids']) && is_array($filters['ids'])) {
@@ -39,13 +40,14 @@ class Event extends Model
 
         $query->orderBy($orderBy, $order);
 
-        $results = $query->paginate($filters['rows']??30);
+        $results = $query->paginate($filters['rows'] ?? 30);
         $results->appends($filters);
 
         return $results;
     }
 
-    public function distance() {
+    public function distance()
+    {
         return $this->hasMany(EventDistance::class, 'event_id');
     }
 }
