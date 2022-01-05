@@ -3,11 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-
 use App\Models\MemberToken;
-
 use App\Http\Controllers\Traits\StravaActivitiesTrait;
-
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
