@@ -3,9 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\City;
-
 use Illuminate\Database\Seeder;
-
 
 class CityDataIdSeeder extends Seeder
 {
@@ -42,7 +40,7 @@ class CityDataIdSeeder extends Seeder
             '金門縣' => 'F-D0047-085',
         ];
 
-        foreach($cities as $key => $value) {
+        foreach ($cities as $key => $value) {
             $data = app(City::class)->where('city_name', $key)->update([
                 'dataid' => $value,
             ]);
