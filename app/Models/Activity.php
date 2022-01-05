@@ -14,7 +14,7 @@ class Activity extends Model
 
     protected $guarded = [];
 
-    public function getFilterData($filters, $orderBy = 'start_date_local', $order='DESC')
+    public function getFilterData($filters, $orderBy = 'start_date_local', $order = 'DESC')
     {
         $query = $this->newModelQuery();
 
