@@ -14,5 +14,4 @@ class Aqi extends Model
     protected $fillable = ['id'];
 
     public $incrementing = false;
-
 }

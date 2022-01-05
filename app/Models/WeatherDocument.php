@@ -14,5 +14,4 @@ class WeatherDocument extends Model
     protected $fillable = ['id'];
 
     public $incrementing = false;
-
 }

@@ -12,6 +12,4 @@ class City extends Model
     protected $table = 'cities';
 
     public $incrementing = false;
-
-
 }
