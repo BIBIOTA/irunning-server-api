@@ -9,7 +9,7 @@ class AuthController extends Controller
 {
     /**
      * Create a new AuthController instance
-     * 
+     *
      * @return void
      */
     public function __construct()
@@ -18,7 +18,7 @@ class AuthController extends Controller
     }
     /**
      * Get a JWT via given credentials.
-     * 
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function login()
@@ -31,7 +31,7 @@ class AuthController extends Controller
     }
     /**
      * Get a authenticated User.
-     * 
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function me()
@@ -42,18 +42,18 @@ class AuthController extends Controller
     }
     /**
      * Log the user out(Invalidate the Token).
-     * 
+     *
      * @return \Illuminate\Http\JsonResponse
      */
-    
+
     public function logout()
     {
         Auth::guard()->logout();
-        return response()->json(['status' => true, 'message'=>'登出成功']);
+        return response()->json(['status' => true, 'message' => '登出成功']);
     }
     /**
      * Refresh a Token.
-     * 
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function refresh()
@@ -63,10 +63,10 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
         return response()->json([
-            'status'=>true,
-            'access_token'=>$token,
-            'token_type'=>'bearer',
-            'expires_in'=>Auth::guard()->factory()->getTTL()*60
+            'status' => true,
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => Auth::guard()->factory()->getTTL() * 60
         ]);
     }
 }
