@@ -4,15 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Member;
 use App\Models\MemberToken;
-
 use App\Jobs\GetActivitiesDataFromStrava;
-
 use App\Http\Controllers\Traits\StravaActivitiesTrait;
-
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
-
 
 class LoginController extends Controller
 {
@@ -20,16 +16,19 @@ class LoginController extends Controller
 
     public function __construct()
     {
-        $this->members = new Member;
-        $this->memberTokens = new MemberToken;
+        $this->members = new Member();
+        $this->memberTokens = new MemberToken();
     }
 
-    public function login(Request $request) {
+    public function login(Request $request)
+    {
         try {
-            
             if (env('PRODUCTION') === 'develop') {
                 if ($request->athlete['id'] !== env('STRAVA_DEV_ID', '93819542')) {
-                    return response()->json(['status' => false, 'message' => '此網頁尚在開發階段，僅限開發帳號登入', 'data' => null], 404); 
+                    return response()->json([
+                        'status' => false,
+                        'message' => '此網頁尚在開發階段，僅限開發帳號登入', 'data' => null
+                    ], 404);
                 }
             }
 
@@ -64,12 +63,14 @@ class LoginController extends Controller
                 ]);
             }
 
-            $token = $this->memberTokens->where('user_id',$data->id)->first();
+            $token = $this->memberTokens->where('user_id', $data->id)->first();
 
             if ($token) {
-                $tokenData = $this->memberTokens->where('user_id',$data->id)->update([
-                    'expires_at' => Carbon::parse(intval($request->expires_at))->setTimezone('Asia/Taipei')->format('Y-m-d H:i:s'),
-                    'expires_in' => intval(gmdate('H',$request->expires_in)),
+                $tokenData = $this->memberTokens->where('user_id', $data->id)->update([
+                    'expires_at' => Carbon::parse(intval($request->expires_at))
+                                    ->setTimezone('Asia/Taipei')
+                                    ->format('Y-m-d H:i:s'),
+                    'expires_in' => intval(gmdate('H', $request->expires_in)),
                     'refresh_token' => $request->refresh_token,
                     'access_token' => $request->access_token,
                 ]);
@@ -77,8 +78,10 @@ class LoginController extends Controller
                 $tokenData = $this->memberTokens->create([
                     'id' => uniqid(),
                     'user_id' => $data->id,
-                    'expires_at' => Carbon::parse(intval($request->expires_at))->setTimezone('Asia/Taipei')->format('Y-m-d H:i:s'),
-                    'expires_in' => intval(gmdate('H',$request->expires_in)),
+                    'expires_at' => Carbon::parse(intval($request->expires_at))
+                                    ->setTimezone('Asia/Taipei')
+                                    ->format('Y-m-d H:i:s'),
+                    'expires_in' => intval(gmdate('H', $request->expires_in)),
                     'refresh_token' => $request->refresh_token,
                     'access_token' => $request->access_token,
                 ]);
@@ -86,24 +89,22 @@ class LoginController extends Controller
 
             try {
                 $tokenData = $this->memberTokens->where('access_token', $request->access_token)->first();
-    
+
                 $this->getStats($data->strava_id, $tokenData);
 
                 $data['expires_at'] = Carbon::parse(intval($request->expires_at));
 
                 $newJob = new GetActivitiesDataFromStrava($tokenData, true);
                 dispatch($newJob);
-    
+
                 return response()->json(['status' => true, 'message' => '登入成功', 'data' => $data], 200);
             } catch (Throwable $e) {
                 Log::info($e);
-                return response()->json(['status' => false, 'message' => '發生例外錯誤:Strava資料取得失敗', 'data' => null], 404);   
+                return response()->json(['status' => false, 'message' => '發生例外錯誤:Strava資料取得失敗', 'data' => null], 404);
             }
-
-
         } catch (Throwable $e) {
             Log::info($e);
-            return response()->json(['status' => false, 'message' => '發生例外錯誤:登入失敗', 'data' => null], 404);   
+            return response()->json(['status' => false, 'message' => '發生例外錯誤:登入失敗', 'data' => null], 404);
         }
     }
 }

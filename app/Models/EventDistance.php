@@ -13,8 +13,9 @@ class EventDistance extends Model
 
     protected $guarded = [];
 
-    public function distanceFilter($distance, $filters) {
-        foreach($filters as $filter) {
+    public function distanceFilter($distance, $filters)
+    {
+        foreach ($filters as $filter) {
             if ($filter == 1) {
                 if (str_contains($distance, '42K')) {
                     return $distance;

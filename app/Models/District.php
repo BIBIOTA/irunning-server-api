@@ -13,8 +13,8 @@ class District extends Model
 
     public $incrementing = false;
 
-    public function city () {
+    public function city()
+    {
         return $this->belongsTo(City::class);
     }
-
 }

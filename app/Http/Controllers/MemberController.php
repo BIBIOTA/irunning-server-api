@@ -6,34 +6,33 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-
 use App\Models\Activity;
 use App\Models\Member;
 use App\Models\MemberToken;
 use App\Models\Stat;
-
 use App\Http\Controllers\Traits\Running;
 use App\Http\Controllers\Traits\StravaActivitiesTrait;
 
 class MemberController extends Controller
 {
-
-    public $members;
-
     use Running;
     use StravaActivitiesTrait;
 
+    public $members;
+
+
     public function __construct()
     {
-        $this->members = new Member;
-        $this->memberTokens = new MemberToken;
-        $this->activities = new Activity;
-        $this->stats = new Stat;
+        $this->members = new Member();
+        $this->memberTokens = new MemberToken();
+        $this->activities = new Activity();
+        $this->stats = new Stat();
     }
 
     /* ============   admin  ============= */
 
-    public function index(Request $request) {
+    public function index(Request $request)
+    {
         $filters = [
             'username' => $request->username ?? null,
         ];
@@ -41,46 +40,49 @@ class MemberController extends Controller
         $data = $this->members->index($filters);
 
         if ($data->count() > 0) {
-
-            $data->getCollection()->transform(function($row){
-
+            $data->getCollection()->transform(function ($row) {
                 return $this->memberDataProcess($row);
-                
             });
-            
+
             return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $data], 200);
         }
 
         return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
     }
 
-    public function view (Request $request, $memberUuid) {
-
+    public function view(Request $request, $memberUuid)
+    {
         $validator = Validator::make(
             [
                 'memberUuid' => $memberUuid,
-            ], [
-            'memberUuid'=>'required',
-        ], [
-            'memberUuid.required'=>'缺少uuid資料',
-        ]);
-        if ($validator->fails()){
-            return response()->json(['status'=>false, 'message'=>$validator->errors()->all()[0], 'data'=>null], 400);
+            ],
+            [
+                'memberUuid' => 'required',
+            ],
+            [
+                'memberUuid.required' => '缺少uuid資料',
+            ]
+        );
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validator->errors()->all()[0],
+                'data' => null
+            ], 400);
         }
 
         $member = $this->members->find($memberUuid);
 
         if ($member) {
-
             $data['member'] = $this->memberDataProcess($member);
-    
+
             $activities = $this->activities
                             ->where('user_id', $memberUuid)
                             ->orderBy('start_date_local', 'DESC')
                             ->get();
 
             if ($activities->count() > 0) {
-                $data['activities'] = $activities->map(function($row){
+                $data['activities'] = $activities->map(function ($row) {
                     return [
                         'id' => $row->id,
                         'distance' => $this->getDistanceIsFloor($row->distance),
@@ -91,65 +93,70 @@ class MemberController extends Controller
             }
 
             return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $data], 200);
-
         }
 
         return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
-
     }
 
-    public function runningInfo (Request $request, $memberUuid, $runningUuId) {
-
+    public function runningInfo(Request $request, $memberUuid, $runningUuId)
+    {
         $validator = Validator::make([
-            'memberUuid'=> $memberUuid,
-            'runningUuId'=> $runningUuId,
+            'memberUuid' => $memberUuid,
+            'runningUuId' => $runningUuId,
         ], [
-            'memberUuid'=>'required',
-            'runningUuId'=>'required',
+            'memberUuid' => 'required',
+            'runningUuId' => 'required',
         ], [
-            'runningUuId.required'=>'缺少會員uuid資料',
-            'memberUuid.required'=>'缺少跑步紀錄uuid資料',
+            'runningUuId.required' => '缺少會員uuid資料',
+            'memberUuid.required' => '缺少跑步紀錄uuid資料',
         ]);
-        if ($validator->fails()){
-            return response()->json(['status'=>false, 'message'=>$validator->errors()->all()[0], 'data'=>null], 400);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validator->errors()->all()[0],
+                'data' => null
+            ], 400);
         }
 
         return $this->getActivityFromStrava($memberUuid, $runningUuId);
-
     }
 
     /* ============   client  ============= */
 
-    public function read (Request $request, $memberUuid) {
-
+    public function read(Request $request, $memberUuid)
+    {
         $validator = Validator::make(
             [
                 'memberUuid' => $memberUuid,
-            ], [
-            'memberUuid'=>'required',
-        ], [
-            'memberUuid.required'=>'缺少uuid資料',
-        ]);
-        if ($validator->fails()){
-            return response()->json(['status'=>false, 'message'=>$validator->errors()->all()[0], 'data'=>null], 400);
+            ],
+            [
+                'memberUuid' => 'required',
+            ],
+            [
+                'memberUuid.required' => '缺少uuid資料',
+            ]
+        );
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validator->errors()->all()[0],
+                'data' => null
+            ], 400);
         }
 
         $member = $this->members->find($memberUuid);
 
         if ($member) {
-
             $data = $this->memberDataProcessforClientRead($member);
 
             return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $data], 200);
-
         }
 
         return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
-
     }
 
-    public function update (Request $request, $memberUuid) {
-
+    public function update(Request $request, $memberUuid)
+    {
         $form = [
             'username' => $request->username,
             'nickname' => $request->nickname,
@@ -161,24 +168,28 @@ class MemberController extends Controller
         ];
 
         $validator = Validator::make($form, [
-            'username'=>'required',
-            'nickname'=>'required',
-            'email'=>'required',
-            'county'=>'required',
-            'district'=>'required',
-            'runner_type'=>'required',
+            'username' => 'required',
+            'nickname' => 'required',
+            'email' => 'required',
+            'county' => 'required',
+            'district' => 'required',
+            'runner_type' => 'required',
             // 'join_rank'=>'required',
         ], [
-            'username.required'=>'請填寫姓名',
-            'nickname.required'=>'請填寫暱稱',
-            'email.required'=>'請填寫email',
-            'county.required'=>'請填寫居住城市',
-            'district.required'=>'請填寫居住鄉鎮區',
-            'runner_type.required'=>'請填寫跑步經驗',
+            'username.required' => '請填寫姓名',
+            'nickname.required' => '請填寫暱稱',
+            'email.required' => '請填寫email',
+            'county.required' => '請填寫居住城市',
+            'district.required' => '請填寫居住鄉鎮區',
+            'runner_type.required' => '請填寫跑步經驗',
             // 'join_rank.required'=>'發生例外錯誤:缺少join_rank參數',
         ]);
-        if ($validator->fails()){
-            return response()->json(['status'=>false, 'message'=>$validator->errors()->all()[0], 'data'=>null], 400);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validator->errors()->all()[0],
+                'data' => null
+            ], 400);
         }
 
         $member = $this->members->find($memberUuid);
@@ -194,16 +205,15 @@ class MemberController extends Controller
         } else {
             return response()->json(['status' => false, 'message' => '查無會員資料', 'data' => null], 404);
         }
-
     }
 
-    public function getIndexRunInfo (Request $request, $memberUuid) {
-        
+    public function getIndexRunInfo(Request $request, $memberUuid)
+    {
         $stat = $this->stats->where('user_id', $memberUuid)->first();
 
 
         $activitiesCount = $this->activities->where('user_id', $memberUuid)->count();
-        
+
         if ($activitiesCount === 0) {
             $tokenData = $this->memberTokens->where('user_id', $memberUuid)->first();
             if ($tokenData) {
@@ -223,7 +233,6 @@ class MemberController extends Controller
                     ->getActivitiesWeek($memberUuid);
 
         if ($stat && isset($activitiesYear) && isset($activitiesMonth) && isset($activitiesWeek)) {
-
             $data['totalDistance'] = floor($this->getDistance($stat->distance));
 
             $data['yearDistance'] = floor($this->getDistance($activitiesYear));
@@ -238,21 +247,25 @@ class MemberController extends Controller
         return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
     }
 
-    public function updateMemberLocation (Request $request) {
-        
+    public function updateMemberLocation(Request $request)
+    {
         $validator = Validator::make($request->all(), [
-            'county'=>'required',
-            'district'=>'required',
-            'siteName'=>'required',
-            'id'=>'required',
+            'county' => 'required',
+            'district' => 'required',
+            'siteName' => 'required',
+            'id' => 'required',
         ], [
-            'county.required'=>'居住地資料更新失敗:缺少縣市參數',
-            'district.required'=>'居住地資料更新失敗:缺少鄉鎮區參數',
-            'siteName.required'=>'居住地資料更新失敗:缺少空氣品質測量站參數',
-            'id.required'=>'居住地資料更新失敗:缺少會員參數',
+            'county.required' => '居住地資料更新失敗:缺少縣市參數',
+            'district.required' => '居住地資料更新失敗:缺少鄉鎮區參數',
+            'siteName.required' => '居住地資料更新失敗:缺少空氣品質測量站參數',
+            'id.required' => '居住地資料更新失敗:缺少會員參數',
         ]);
-        if ($validator->fails()){
-            return response()->json(['status'=>false, 'message'=>$validator->errors()->all()[0], 'data'=>null], 400);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validator->errors()->all()[0],
+                'data' => null
+            ], 400);
         }
 
         $member = $this->members->where('id', $request->id)->first();
@@ -271,10 +284,10 @@ class MemberController extends Controller
         return response()->json(['status' => false, 'message' => '居住地資料更新失敗:無法取得會員資料', 'data' => null], 404);
     }
 
-    private function memberDataProcess($row) {
-
+    private function memberDataProcess($row)
+    {
         $stat = $row->stat;
-        
+
         $activitiesMonth = $this->activities->getActivitiesMonth($row->id);
 
         $runningStatus = [
@@ -283,10 +296,8 @@ class MemberController extends Controller
         ];
 
         if ($stat && isset($activitiesMonth)) {
-
             $runningStatus['totalDistance'] = floor($this->getDistance($stat->distance));
             $runningStatus['monthDistance'] = floor($this->getDistance($activitiesMonth));
-
         }
 
         return [
@@ -300,7 +311,8 @@ class MemberController extends Controller
         ];
     }
 
-    private function memberDataProcessforClientRead($row) {
+    private function memberDataProcessforClientRead($row)
+    {
         return [
             'id' => $row->id,
             'username' => $row->username ?? '',

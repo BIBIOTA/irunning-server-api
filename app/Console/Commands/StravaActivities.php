@@ -3,11 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-
 use App\Models\MemberToken;
-
 use App\Http\Controllers\Traits\StravaActivitiesTrait;
-
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -46,15 +43,14 @@ class StravaActivities extends Command
      */
     public function handle()
     {
-
         try {
             $tokens = app(MemberToken::class)->get();
 
             if ($tokens->count() > 0) {
-                foreach($tokens as $token) {
+                foreach ($tokens as $token) {
                     try {
                         $this->getActivitiesDataFromStrava($token);
-                        Log::info($token->user_id.'Strava活動更新完成');    
+                        Log::info($token->user_id . 'Strava活動更新完成');
                     } catch (Throwable $e) {
                         Log::info($e);
                     }

@@ -3,11 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-
 use App\Models\WeatherData;
-
 use Carbon\Carbon;
-
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -45,7 +42,6 @@ class WeatherClearRecords extends Command
     public function handle()
     {
         try {
-
             $lastDay = Carbon::today('Asia/Taipei')->subDays(1);
 
             app(WeatherData::class)

@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\MemberToken;
 use App\Models\Stat;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -26,7 +25,7 @@ class StatSeeder extends Seeder
         $tokens = app(MemberToken::class)->get();
 
         if ($tokens->count() > 0) {
-            foreach($tokens as $token) {
+            foreach ($tokens as $token) {
                 $response = Http::withToken($token->access_token)->get('https://www.strava.com/api/v3/athletes/28179653/stats');
 
                 $resdatas = $response->json();
@@ -38,7 +37,7 @@ class StatSeeder extends Seeder
                     'user_id' => $token->user_id,
                 ];
 
-                foreach($allRunTotals as $key => $value) {
+                foreach ($allRunTotals as $key => $value) {
                     $formData[$key] = $value;
                 }
 
