@@ -32,7 +32,7 @@ trait Running
 
     public function getDistanceIsFloor($distance)
     {
-        return $this->floor_dec($distance / 1000, 2);
+        return $this->floorDec($distance / 1000, 2);
     }
 
     public function getPace($distance, $movingTime)
@@ -41,14 +41,15 @@ trait Running
         $min = gmdate('i', $movingTime);
         $sec = gmdate('s', $movingTime);
 
-        $time=($hour*3600)+($min*60)+$sec;
+        $time = ( $hour * 3600 ) + ( $min * 60 ) + $sec;
 
-        $pace = date('i:s', $time / $this->floor_dec($distance / 1000, 2));
+        $pace = date('i:s', $time / $this->floorDec($distance / 1000, 2));
         return $pace;
     }
-    
+
     // 四捨五入(值,小數點位數)
-    private function floor_dec($v, $precision){
+    private function floorDec($v, $precision)
+    {
         return round($v, $precision);
     }
 }

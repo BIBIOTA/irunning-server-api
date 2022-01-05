@@ -3,18 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Models\District;
 
 class DistrictController extends Controller
 {
-
     public function __construct()
     {
-        $this->districts = new District;
+        $this->districts = new District();
     }
 
-    public function getDistricts (Request $request) {
+    public function getDistricts(Request $request)
+    {
         $data = $this->districts->where('city_id', $request->city_id)->get();
 
         if ($data->count() > 0) {
