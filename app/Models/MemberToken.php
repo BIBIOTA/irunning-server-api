@@ -9,7 +9,7 @@ class MemberToken extends Model
 {
     use HasFactory;
 
-    protected $table = 'member_token';
+    protected $table = 'member_tokens';
 
     protected $guarded = [];
 
