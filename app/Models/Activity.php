@@ -14,16 +14,14 @@ class Activity extends Model
 
     protected $guarded = [];
 
-    public function getFilterData($filters, $orderBy = 'start_date_local', $order = 'DESC')
+    public function getFilterData(array $filters, string $orderBy = 'start_date_local', string $order = 'DESC')
     {
         $query = $this->newModelQuery();
 
-        if (is_array($filters) && count($filters) > 0) {
-            $query->where('user_id', $filters['id']);
-            if (!empty($filters['startDay']) && !empty($filters['endDay'])) {
-                $query->where('start_date_local', '>=', $filters['startDay'] . ' 00:00:00')
-                ->where('start_date_local', '<=', $filters['endDay'] . ' 23:59:59');
-            }
+        $query->where('member_id', $filters['id']);
+        if (!empty($filters['startDay']) && !empty($filters['endDay'])) {
+            $query->where('start_date_local', '>=', $filters['startDay'] . ' 00:00:00')
+            ->where('start_date_local', '<=', $filters['endDay'] . ' 23:59:59');
         }
 
         $query->orderBy($orderBy, $order);
@@ -34,7 +32,7 @@ class Activity extends Model
         return $results;
     }
 
-    public function getActivitiesYear($userId)
+    public function getActivitiesYear(string $memberId)
     {
         $now = Carbon::now();
         Carbon::setWeekStartsAt(Carbon::MONDAY);
@@ -44,13 +42,13 @@ class Activity extends Model
 
         $activitiesYear = $query
             ->whereYear('start_date_local', $now->year)
-            ->where('user_id', $userId)
+            ->where('member_id', $memberId)
             ->sum('distance');
 
         return $activitiesYear;
     }
 
-    public function getActivitiesMonth($userId)
+    public function getActivitiesMonth(string $memberId)
     {
         $now = Carbon::now();
         Carbon::setWeekStartsAt(Carbon::MONDAY);
@@ -61,13 +59,13 @@ class Activity extends Model
         $activitiesMonth = $query
             ->whereYear('start_date_local', $now->year)
             ->whereMonth('start_date_local', $now->month)
-            ->where('user_id', $userId)
+            ->where('member_id', $memberId)
             ->sum('distance');
 
         return $activitiesMonth;
     }
 
-    public function getActivitiesWeek($userId)
+    public function getActivitiesWeek(string $memberId)
     {
         $query = $this->newModelQuery();
 
@@ -76,7 +74,7 @@ class Activity extends Model
                 'start_date_local',
                 [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]
             )
-            ->where('user_id', $userId)
+            ->where('member_id', $memberId)
             ->sum('distance');
 
         return $activitiesWeek;

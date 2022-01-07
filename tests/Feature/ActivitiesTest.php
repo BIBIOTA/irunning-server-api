@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\MemberToken;
-
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -33,18 +32,16 @@ class ActivitiesTest extends TestCase
         ]);
 
         if ($datas->count() > 0) {
-            foreach($datas as $data) {   
+            foreach ($datas as $data) {
 
                 $responseRefreashToken = $this->refreshStravaToken($data);
 
                 $formData = [
-                    'id' => $data->user_id,
+                    'id' => $data->member_id,
                 ];
 
                 $this->paginationTest('GET', 'api/activities', $formData, $dataStructure);
-
             }
         }
-
     }
 }

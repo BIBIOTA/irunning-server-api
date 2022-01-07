@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 trait Running
 {
-    public function runnerType($type)
+    public function runnerType(string $type): ?string
     {
         switch ($type) {
             case 1:
@@ -25,17 +25,17 @@ trait Running
         }
     }
 
-    public function getDistance($distance)
+    public function getDistance(int $distance): int
     {
         return $distance / 1000;
     }
 
-    public function getDistanceIsFloor($distance)
+    public function getDistanceIsFloor(int $distance): int
     {
         return $this->floorDec($distance / 1000, 2);
     }
 
-    public function getPace($distance, $movingTime)
+    public function getPace(int $distance, int $movingTime): string
     {
         $hour = gmdate('H', $movingTime);
         $min = gmdate('i', $movingTime);
@@ -43,12 +43,15 @@ trait Running
 
         $time = ( $hour * 3600 ) + ( $min * 60 ) + $sec;
 
-        $pace = date('i:s', $time / $this->floorDec($distance / 1000, 2));
+        $distanceFloor = $this->floorDec($distance / 1000, 2);
+
+        $pace = date('i:s', $time / ( ($distanceFloor > 0) ? $distanceFloor : 1));
+
         return $pace;
     }
 
     // 四捨五入(值,小數點位數)
-    private function floorDec($v, $precision)
+    private function floorDec(int $v, int $precision): int
     {
         return round($v, $precision);
     }

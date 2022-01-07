@@ -34,7 +34,7 @@ class StatSeeder extends Seeder
 
                 $formData = [
                     'id' => uniqid(),
-                    'user_id' => $token->user_id,
+                    'member_id' => $token->member_id,
                 ];
 
                 foreach ($allRunTotals as $key => $value) {

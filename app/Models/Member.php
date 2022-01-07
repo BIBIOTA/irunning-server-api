@@ -36,16 +36,16 @@ class Member extends Model
 
     public function stat()
     {
-        return $this->belongsTo(Stat::class, 'id', 'user_id');
+        return $this->belongsTo(Stat::class, 'id', 'member_id');
     }
 
     public function activity()
     {
-        return $this->belongsTo(Activity::class, 'id', 'user_id');
+        return $this->belongsTo(Activity::class, 'id', 'member_id');
     }
 
     public function memberToken()
     {
-        return $this->belongsTo(MemberToken::class, 'id', 'user_id');
+        return $this->belongsTo(MemberToken::class, 'id', 'member_id');
     }
 }

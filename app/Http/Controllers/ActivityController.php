@@ -22,11 +22,24 @@ class ActivityController extends Controller
 
     public function getActivities(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+        ], [
+            'id.required' => '缺少會員uuid資料',
+        ]);
 
-        $count = $this->activities->where('user_id', $request->id)->count();
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validator->errors()->all()[0],
+                'data' => null
+            ], 400);
+        }
+
+        $count = $this->activities->where('member_id', $request->id)->count();
 
         if ($count < 1) {
-            $tokenData = $this->memberTokens->where('user_id', $request->id)->first();
+            $tokenData = $this->memberTokens->where('member_id', $request->id)->first();
             if ($tokenData) {
                 $this->getActivitiesDataFromStrava($tokenData);
             } else {
@@ -61,7 +74,7 @@ class ActivityController extends Controller
         return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
     }
 
-    public function getActivity(Request $request, $memberUuid, $runningUuId)
+    public function getActivity(Request $request, string $memberUuid, string $runningUuId)
     {
 
         $validator = Validator::make([

@@ -14,14 +14,14 @@ use Carbon\Carbon;
 
 trait StravaActivitiesTrait
 {
-    public function getActivitiesDataFromStrava($token, $onlyOnePage = false)
+    public function getActivitiesDataFromStrava(object $tokenData, $onlyOnePage = false)
     {
         $columns = DB::getSchemaBuilder()->getColumnListing('activities');
 
         $page = 1;
         $hasData = true;
         while ($hasData) {
-            $response = Http::withToken($token->access_token)
+            $response = Http::withToken($tokenData->access_token)
                         ->get('https://www.strava.com/api/v3/athlete/activities?after=0&per_page=200&page=' . $page);
 
             $resdatas = $response->json();
@@ -29,7 +29,7 @@ trait StravaActivitiesTrait
             if (count($resdatas) > 0) {
                 foreach ($resdatas as $data) {
                     $formData = [
-                        'user_id' => $token->user_id,
+                        'member_id' => $tokenData->member_id,
                     ];
                     if (is_array($data)) {
                         foreach ($data as $key => $value) {
@@ -62,12 +62,12 @@ trait StravaActivitiesTrait
                 break;
             }
         }
-        Log::info($token->user_id . 'Strava活動更新完成');
+        Log::info($tokenData->member_id . 'Strava活動更新完成');
     }
 
-    public function getStats($stravaId, $token)
+    public function getStats(string $stravaId, object $tokenData)
     {
-        $response = Http::withToken($token->access_token)
+        $response = Http::withToken($tokenData->access_token)
                     ->get('https://www.strava.com/api/v3/athletes/' . $stravaId . '/stats');
 
         $resdatas = $response->json();
@@ -75,22 +75,22 @@ trait StravaActivitiesTrait
         if (isset($resdatas['message']) && $resdatas['message'] === 'Forbidden') {
             Log::info($resdatas);
             Log::info('取得Strava資料發生錯誤');
-            Log::info($token);
+            Log::info($tokenData);
         } else {
             $allRunTotals = $resdatas['all_run_totals'];
 
             $formData = [
-                'user_id' => $token->user_id,
+                'member_id' => $tokenData->member_id,
             ];
 
             foreach ($allRunTotals as $key => $value) {
                 $formData[$key] = $value;
             }
 
-            $data = app(Stat::class)->where('user_id', $token->user_id)->first();
+            $data = app(Stat::class)->where('member_id', $tokenData->member_id)->first();
 
             if ($data) {
-                app(Stat::class)->where('user_id', $token->user_id)->update($formData);
+                app(Stat::class)->where('member_id', $tokenData->member_id)->update($formData);
             } else {
                 $formData['id'] = uniqid();
                 app(Stat::class)->create($formData);
@@ -98,9 +98,9 @@ trait StravaActivitiesTrait
         }
     }
 
-    public function getActivityFromStrava($userId, $stravaActivityId)
+    public function getActivityFromStrava(string $memberId, string $stravaActivityId)
     {
-        $token = app(MemberToken::class)->where('user_id', $userId)->first();
+        $token = app(MemberToken::class)->where('member_id', $memberId)->first();
 
         if ($token) {
             $response = Http::withToken($token->access_token)

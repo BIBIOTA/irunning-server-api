@@ -77,7 +77,7 @@ class MemberController extends Controller
             $data['member'] = $this->memberDataProcess($member);
 
             $activities = $this->activities
-                            ->where('user_id', $memberUuid)
+                            ->where('member_id', $memberUuid)
                             ->orderBy('start_date_local', 'DESC')
                             ->get();
 
@@ -209,13 +209,13 @@ class MemberController extends Controller
 
     public function getIndexRunInfo(Request $request, $memberUuid)
     {
-        $stat = $this->stats->where('user_id', $memberUuid)->first();
+        $stat = $this->stats->where('member_id', $memberUuid)->first();
 
 
-        $activitiesCount = $this->activities->where('user_id', $memberUuid)->count();
+        $activitiesCount = $this->activities->where('member_id', $memberUuid)->count();
 
         if ($activitiesCount === 0) {
-            $tokenData = $this->memberTokens->where('user_id', $memberUuid)->first();
+            $tokenData = $this->memberTokens->where('member_id', $memberUuid)->first();
             if ($tokenData) {
                 $this->getActivitiesDataFromStrava($tokenData);
             } else {
