@@ -47,10 +47,10 @@ class StravaActivities extends Command
             $tokens = app(MemberToken::class)->get();
 
             if ($tokens->count() > 0) {
-                foreach ($tokens as $token) {
+                foreach ($tokens as $tokenData) {
                     try {
-                        $this->getActivitiesDataFromStrava($token);
-                        Log::info($token->user_id . 'Strava活動更新完成');
+                        $this->getActivitiesDataFromStrava($tokenData);
+                        Log::info($tokenData->member_id . 'Strava活動更新完成');
                     } catch (Throwable $e) {
                         Log::info($e);
                     }

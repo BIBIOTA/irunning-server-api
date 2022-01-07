@@ -63,10 +63,10 @@ class LoginController extends Controller
                 ]);
             }
 
-            $token = $this->memberTokens->where('user_id', $data->id)->first();
+            $token = $this->memberTokens->where('member_id', $data->id)->first();
 
             if ($token) {
-                $tokenData = $this->memberTokens->where('user_id', $data->id)->update([
+                $tokenData = $this->memberTokens->where('member_id', $data->id)->update([
                     'expires_at' => Carbon::parse(intval($request->expires_at))
                                     ->setTimezone('Asia/Taipei')
                                     ->format('Y-m-d H:i:s'),
@@ -77,7 +77,7 @@ class LoginController extends Controller
             } else {
                 $tokenData = $this->memberTokens->create([
                     'id' => uniqid(),
-                    'user_id' => $data->id,
+                    'member_id' => $data->id,
                     'expires_at' => Carbon::parse(intval($request->expires_at))
                                     ->setTimezone('Asia/Taipei')
                                     ->format('Y-m-d H:i:s'),

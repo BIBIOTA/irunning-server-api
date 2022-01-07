@@ -1,1 +1,2 @@
-// TODO 會員token表格user_id命名調整
+// TODO 計算配速精度調整(一公里以下)
+// TODO api測試新增400

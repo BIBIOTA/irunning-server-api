@@ -39,7 +39,7 @@ class ActivitySeeder extends Seeder
                     if (count($resdatas) > 0) {
                         foreach ($resdatas as $data) {
                             $formData = [
-                                'user_id' => $token->user_id,
+                                'member_id' => $token->member_id,
                             ];
                             foreach ($data as $key => $value) {
                                 if (in_array($key, $columns)) {
