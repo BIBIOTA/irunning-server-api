@@ -69,12 +69,11 @@ class EventsTest extends TestCase
                     'startDay' => $dateRange['startDay'],
                     'endDay' => $dateRange['endDay'],
                 ];
-                $this->paginationTest('GET', 'api/activities', $data, $dataStructure);
+                $this->paginationTest('GET', 'api/events', $data, $dataStructure);
             }
-
-        } 
+        }
 
         // default
-        $this->paginationTest('GET', 'api/activities', [], $dataStructure);
+        $this->paginationTest('GET', 'api/events', [], $dataStructure);
     }
 }
