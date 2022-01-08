@@ -50,7 +50,7 @@ class MemberController extends Controller
         return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
     }
 
-    public function view(Request $request, $memberUuid)
+    public function view(Request $request, string $memberUuid)
     {
         $validator = Validator::make(
             [
@@ -98,7 +98,7 @@ class MemberController extends Controller
         return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
     }
 
-    public function runningInfo(Request $request, $memberUuid, $runningUuId)
+    public function runningInfo(Request $request, string $memberUuid, string $runningUuId)
     {
         $validator = Validator::make([
             'memberUuid' => $memberUuid,
@@ -123,7 +123,7 @@ class MemberController extends Controller
 
     /* ============   client  ============= */
 
-    public function read(Request $request, $memberUuid)
+    public function read(Request $request, string $memberUuid)
     {
         $validator = Validator::make(
             [
@@ -155,7 +155,7 @@ class MemberController extends Controller
         return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
     }
 
-    public function update(Request $request, $memberUuid)
+    public function update(Request $request, string $memberUuid)
     {
         $form = [
             'username' => $request->username,
@@ -207,7 +207,7 @@ class MemberController extends Controller
         }
     }
 
-    public function getIndexRunInfo(Request $request, $memberUuid)
+    public function getIndexRunInfo(Request $request, string $memberUuid)
     {
         $stat = $this->stats->where('member_id', $memberUuid)->first();
 
@@ -284,7 +284,7 @@ class MemberController extends Controller
         return response()->json(['status' => false, 'message' => '居住地資料更新失敗:無法取得會員資料', 'data' => null], 404);
     }
 
-    private function memberDataProcess($row)
+    private function memberDataProcess(object $row)
     {
         $stat = $row->stat;
 
@@ -311,7 +311,7 @@ class MemberController extends Controller
         ];
     }
 
-    private function memberDataProcessforClientRead($row)
+    private function memberDataProcessforClientRead(object $row)
     {
         return [
             'id' => $row->id,
