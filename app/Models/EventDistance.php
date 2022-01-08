@@ -13,7 +13,7 @@ class EventDistance extends Model
 
     protected $guarded = [];
 
-    public function distanceFilter($distance, $filters)
+    public function distanceFilter(int $distance, array $filters)
     {
         foreach ($filters as $filter) {
             if ($filter == 1) {
