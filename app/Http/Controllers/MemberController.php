@@ -12,11 +12,13 @@ use App\Models\MemberToken;
 use App\Models\Stat;
 use App\Http\Controllers\Traits\Running;
 use App\Http\Controllers\Traits\StravaActivitiesTrait;
+use App\Http\Controllers\Traits\MemberTrait;
 
 class MemberController extends Controller
 {
     use Running;
     use StravaActivitiesTrait;
+    use MemberTrait;
 
     public $members;
 
@@ -123,28 +125,9 @@ class MemberController extends Controller
 
     /* ============   client  ============= */
 
-    public function read(Request $request, string $memberUuid)
+    public function read(Request $request)
     {
-        $validator = Validator::make(
-            [
-                'memberUuid' => $memberUuid,
-            ],
-            [
-                'memberUuid' => 'required',
-            ],
-            [
-                'memberUuid.required' => '缺少uuid資料',
-            ]
-        );
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => $validator->errors()->all()[0],
-                'data' => null
-            ], 400);
-        }
-
-        $member = $this->members->find($memberUuid);
+        $member = $this->me();
 
         if ($member) {
             $data = $this->memberDataProcessforClientRead($member);
@@ -155,7 +138,7 @@ class MemberController extends Controller
         return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
     }
 
-    public function update(Request $request, string $memberUuid)
+    public function update(Request $request)
     {
         $form = [
             'username' => $request->username,
@@ -192,7 +175,7 @@ class MemberController extends Controller
             ], 400);
         }
 
-        $member = $this->members->find($memberUuid);
+        $member = $this->me();
 
         if ($member) {
             if ($member->is_register === 1) {
@@ -207,15 +190,17 @@ class MemberController extends Controller
         }
     }
 
-    public function getIndexRunInfo(Request $request, string $memberUuid)
+    public function getIndexRunInfo(Request $request)
     {
-        $stat = $this->stats->where('member_id', $memberUuid)->first();
+        $member = $this->me();
+
+        $stat = $this->stats->where('member_id', $member->id)->first();
 
 
-        $activitiesCount = $this->activities->where('member_id', $memberUuid)->count();
+        $activitiesCount = $this->activities->where('member_id', $member->id)->count();
 
         if ($activitiesCount === 0) {
-            $tokenData = $this->memberTokens->where('member_id', $memberUuid)->first();
+            $tokenData = $this->memberTokens->where('member_id', $member->id)->first();
             if ($tokenData) {
                 $this->getActivitiesDataFromStrava($tokenData);
             } else {
@@ -224,13 +209,13 @@ class MemberController extends Controller
         }
 
         $activitiesYear = $this->activities
-                    ->getActivitiesYear($memberUuid);
+                    ->getActivitiesYear($member->id);
 
         $activitiesMonth = $this->activities
-                    ->getActivitiesMonth($memberUuid);
+                    ->getActivitiesMonth($member->id);
 
         $activitiesWeek = $this->activities
-                    ->getActivitiesWeek($memberUuid);
+                    ->getActivitiesWeek($member->id);
 
         if ($stat && isset($activitiesYear) && isset($activitiesMonth) && isset($activitiesWeek)) {
             $data['totalDistance'] = floor($this->getDistance($stat->distance));
