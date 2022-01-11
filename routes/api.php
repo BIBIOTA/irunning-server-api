@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('login')->group(function () {
     Route::post('login', [LoginController::class, 'login'])->name('login.login');
+    Route::post('logout', [LoginController::class,'logout']);
 });
 
 Route::prefix('aqi')->group(function () {
@@ -55,9 +56,9 @@ Route::prefix('index')->group(function () {
 });
 
 Route::prefix('member')->group(function () {
-    Route::get('/{memberUuid}', [MemberController::class, 'read'])->name('member.read');
-    Route::put('/{memberUuid}', [MemberController::class, 'update'])->name('member.update');
-    Route::get('/{memberUuid}/getIndexRunInfo', [MemberController::class, 'getIndexRunInfo'])
+    Route::get('/', [MemberController::class, 'read'])->name('member.read');
+    Route::put('/', [MemberController::class, 'update'])->name('member.update');
+    Route::get('/getIndexRunInfo', [MemberController::class, 'getIndexRunInfo'])
     ->name('member.getIndexRunInfo');
     Route::post('updateMemberLocation', [MemberController::class, 'updateMemberLocation'])
     ->name('member.updateMemberLocation');
