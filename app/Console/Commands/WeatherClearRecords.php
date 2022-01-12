@@ -44,9 +44,11 @@ class WeatherClearRecords extends Command
         try {
             $lastDay = Carbon::today('Asia/Taipei')->subDays(1);
 
+            logger($lastDay);
+
             app(WeatherData::class)
-                ->where('start_time', '<=', $lastDay)
-                ->where('end_time', '<=', $lastDay)
+                ->whereDate('start_time', '<=', $lastDay)
+                ->whereDate('end_time', '<=', $lastDay)
                 ->delete();
 
             Log::info('天氣舊資料刪除完成');
