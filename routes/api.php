@@ -24,10 +24,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('login')->group(function () {
-    Route::post('login', [LoginController::class, 'login'])->name('login.login');
-    Route::post('logout', [LoginController::class,'logout']);
-});
+Route::post('login', [LoginController::class, 'login']);
+Route::post('logout', [LoginController::class,'logout']);
 
 Route::prefix('aqi')->group(function () {
     Route::get('', [AqiController::class, 'getAqiList'])->name('aqi.getAqiList');
@@ -35,7 +33,7 @@ Route::prefix('aqi')->group(function () {
 
 Route::prefix('activities')->group(function () {
     Route::get('', [ActivityController::class, 'getActivities'])->name('activities.getActivities');
-    Route::get('{memberUuid}/{runningUuId}', [ActivityController::class, 'getActivity'])
+    Route::get('/{runningUuId}', [ActivityController::class, 'getActivity'])
     ->name('activities.getActivity');
 });
 
@@ -60,8 +58,6 @@ Route::prefix('member')->group(function () {
     Route::put('/', [MemberController::class, 'update'])->name('member.update');
     Route::get('/getIndexRunInfo', [MemberController::class, 'getIndexRunInfo'])
     ->name('member.getIndexRunInfo');
-    Route::post('updateMemberLocation', [MemberController::class, 'updateMemberLocation'])
-    ->name('member.updateMemberLocation');
 });
 
 Route::prefix('weather')->group(function () {
