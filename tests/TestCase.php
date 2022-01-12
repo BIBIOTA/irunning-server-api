@@ -52,7 +52,8 @@ abstract class TestCase extends BaseTestCase
         }
     }
 
-    public function paginationStructure($data) {
+    public function paginationStructure($data)
+    {
         $structure = [
             'status',
             'message',

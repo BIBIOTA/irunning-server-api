@@ -64,7 +64,7 @@ class ActivityController extends Controller
         return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
     }
 
-    public function getActivity(Request $request, string $memberUuid, string $runningUuId)
+    public function getActivity(Request $request, string $runningUuId)
     {
 
         $validator = Validator::make([
@@ -72,7 +72,7 @@ class ActivityController extends Controller
         ], [
             'runningUuId' => 'required',
         ], [
-            'runningUuId.required' => '缺少會員uuid資料',
+            'runningUuId.required' => '缺少活動紀錄uuid資料',
         ]);
 
         if ($validator->fails()) {
