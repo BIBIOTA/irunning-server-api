@@ -16,7 +16,7 @@ class WeatherData extends Model
 
     public $incrementing = false;
 
-    public function getData($weatherDetailId, $districtId)
+    public function getData(string $weatherDetailId, string $districtId)
     {
         $query = $this->newModelQuery();
 

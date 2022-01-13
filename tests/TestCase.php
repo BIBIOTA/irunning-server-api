@@ -11,7 +11,8 @@ abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
 
-    public function refreshStravaToken($data) {
+    public function refreshStravaToken($data)
+    {
         $responseRefreashToken = Http::post('https://www.strava.com/oauth/token', [
             'client_id' => '68055',
             'client_secret' => '4222100739f8aeecfe2bd2c2df077e5ec5a6b46c',
@@ -22,13 +23,21 @@ abstract class TestCase extends BaseTestCase
         return $responseRefreashToken->json();
     }
 
-    public function paginationTest($httpMethod, $url, $formData, $dataStructure) {
+    public function paginationTest($httpMethod, $url, $formData, $dataStructure, $server = [])
+    {
         $pageCount = 1;
         for ($page = 1; $page <= $pageCount; $page++) {
-            
             $formData = array_merge($formData, ['page' => $pageCount]);
 
-            $response = $this->call($httpMethod, $url, $formData);
+            $response = $this->call(
+                $httpMethod,
+                $url,
+                $formData,
+                $cookies = [],
+                $files = [],
+                $server,
+                $content = []
+            );
             if ($response->getStatusCode() === 200) {
                 $response->assertStatus(200);
                 $response->assertJsonStructure($dataStructure);
@@ -43,7 +52,8 @@ abstract class TestCase extends BaseTestCase
         }
     }
 
-    public function paginationStructure($data) {
+    public function paginationStructure($data)
+    {
         $structure = [
             'status',
             'message',
@@ -58,10 +68,11 @@ abstract class TestCase extends BaseTestCase
                 'data' => $data,
             ]
         ];
-        return $structure;    
+        return $structure;
     }
 
-    public function falseJsonStructure() {
+    public function falseJsonStructure()
+    {
         return [
             'message',
             'status',
@@ -69,7 +80,8 @@ abstract class TestCase extends BaseTestCase
         ];
     }
 
-    public function hasNextPage($response) {
+    public function hasNextPage($response)
+    {
         $datas = $response->json();
         if ($datas) {
             if ($datas['data']) {
@@ -81,21 +93,25 @@ abstract class TestCase extends BaseTestCase
         return false;
     }
 
-    public function distinctCities () {
+    public function distinctCities()
+    {
         return ['釣魚臺', '南海島'];
     }
 
-    public function distinctDistricts () {
+    public function distinctDistricts()
+    {
         return ['釣魚臺', '東沙群島','南沙群島'];
     }
 
-    public function getDistrictsData() {
+    public function getDistrictsData()
+    {
         $districts = app(District::class)->get();
 
         return $districts;
     }
 
-    public function getCityCountyData() {
+    public function getCityCountyData()
+    {
         $cities = app(City::class)->get();
 
         return $cities;

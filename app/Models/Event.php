@@ -16,7 +16,7 @@ class Event extends Model
 
     public $incrementing = false;
 
-    public function getFilterData($filters, $orderBy = 'event_date', $order = 'ASC')
+    public function getFilterData(array $filters, string $orderBy = 'event_date', string $order = 'ASC')
     {
         $query = $this->newModelQuery();
 
