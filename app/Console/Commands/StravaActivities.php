@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\MemberToken;
+use App\Jobs\SendEmail;
 use App\Http\Controllers\Traits\StravaActivitiesTrait;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -58,6 +59,7 @@ class StravaActivities extends Command
             }
         } catch (Throwable $e) {
             Log::info($e);
+            SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'strava activities error log', 'main' => $e]);
         }
 
         return 0;

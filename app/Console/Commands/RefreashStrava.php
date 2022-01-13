@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\MemberToken;
+use App\Jobs\SendEmail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
@@ -67,10 +68,11 @@ class RefreashStrava extends Command
 
                 Log::info('會員Token更新完成');
             }
-
-            return 0;
         } catch (Throwable $e) {
             Log::info($e);
+            SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'strava refresh error log', 'main' => $e]);
         }
+
+        return 0;
     }
 }
