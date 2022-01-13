@@ -5,8 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Notifications\Notifiable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class Member extends Model
+class Member extends Authenticatable implements JWTSubject
 {
     use HasFactory;
 
@@ -15,6 +19,16 @@ class Member extends Model
     protected $guarded = [];
 
     public $incrementing = false;
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return[];
+    }
 
     public function index($filters, $orderBy = 'created_at', $order = 'DESC')
     {

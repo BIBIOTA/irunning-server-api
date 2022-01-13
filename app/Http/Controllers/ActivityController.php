@@ -8,11 +8,13 @@ use App\Models\Activity;
 use App\Models\MemberToken;
 use App\Http\Controllers\Traits\StravaActivitiesTrait;
 use App\Http\Controllers\Traits\Running;
+use App\Http\Controllers\Traits\MemberTrait;
 
 class ActivityController extends Controller
 {
     use Running;
     use StravaActivitiesTrait;
+    use MemberTrait;
 
     public function __construct()
     {
@@ -22,24 +24,12 @@ class ActivityController extends Controller
 
     public function getActivities(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'id' => 'required',
-        ], [
-            'id.required' => '缺少會員uuid資料',
-        ]);
+        $member = $this->me();
 
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => $validator->errors()->all()[0],
-                'data' => null
-            ], 400);
-        }
-
-        $count = $this->activities->where('member_id', $request->id)->count();
+        $count = $this->activities->where('member_id', $member->id)->count();
 
         if ($count < 1) {
-            $tokenData = $this->memberTokens->where('member_id', $request->id)->first();
+            $tokenData = $this->memberTokens->where('member_id', $member->id)->first();
             if ($tokenData) {
                 $this->getActivitiesDataFromStrava($tokenData);
             } else {
@@ -48,7 +38,7 @@ class ActivityController extends Controller
         }
 
         $this->filters = [
-            'id' => $request->id,
+            'id' => $member->id,
             'startDay' => $request->startDay,
             'endDay' => $request->endDay,
         ];
@@ -74,18 +64,15 @@ class ActivityController extends Controller
         return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
     }
 
-    public function getActivity(Request $request, string $memberUuid, string $runningUuId)
+    public function getActivity(Request $request, string $runningUuId)
     {
 
         $validator = Validator::make([
-            'memberUuid' => $memberUuid,
             'runningUuId' => $runningUuId,
         ], [
-            'memberUuid' => 'required',
             'runningUuId' => 'required',
         ], [
-            'runningUuId.required' => '缺少會員uuid資料',
-            'memberUuid.required' => '缺少跑步紀錄uuid資料',
+            'runningUuId.required' => '缺少活動紀錄uuid資料',
         ]);
 
         if ($validator->fails()) {
@@ -96,6 +83,8 @@ class ActivityController extends Controller
             ], 400);
         }
 
-        return $this->getActivityFromStrava($memberUuid, $runningUuId);
+        $member = $this->me();
+
+        return $this->getActivityFromStrava($member->id, $runningUuId);
     }
 }

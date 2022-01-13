@@ -13,27 +13,27 @@ class EventDistance extends Model
 
     protected $guarded = [];
 
-    public function distanceFilter($distance, $filters)
+    public function distanceFilter(object $distance, array $filters)
     {
         foreach ($filters as $filter) {
             if ($filter == 1) {
-                if (str_contains($distance, '42K')) {
+                if (str_contains($distance->event_distance, '42K')) {
                     return $distance;
                 }
-                if (str_contains($distance, '42.195K')) {
+                if (str_contains($distance->event_distance, '42.195K')) {
                     return $distance;
                 }
             }
             if ($filter == 2) {
-                if (str_contains($distance, '21K')) {
+                if (str_contains($distance->event_distance, '21K')) {
                     return $distance;
                 }
-                if (str_contains($distance, '21.0975K')) {
+                if (str_contains($distance->event_distance, '21.0975K')) {
                     return $distance;
                 }
             }
             if ($filter == 3) {
-                if (substr_count($distance, '+') === 2) {
+                if (substr_count($distance->event_distance, '+') === 2) {
                     return $distance;
                 }
             }

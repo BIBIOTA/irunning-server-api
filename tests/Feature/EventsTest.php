@@ -27,7 +27,7 @@ class EventsTest extends TestCase
                 'result' => 404,
             ]
         ];
-        
+
         // 1: 全馬, 2: 半馬, 3: 三鐵
         $eventDistances = [1,2,3];
 

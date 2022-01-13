@@ -12,11 +12,13 @@ use App\Models\MemberToken;
 use App\Models\Stat;
 use App\Http\Controllers\Traits\Running;
 use App\Http\Controllers\Traits\StravaActivitiesTrait;
+use App\Http\Controllers\Traits\MemberTrait;
 
 class MemberController extends Controller
 {
     use Running;
     use StravaActivitiesTrait;
+    use MemberTrait;
 
     public $members;
 
@@ -50,7 +52,7 @@ class MemberController extends Controller
         return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
     }
 
-    public function view(Request $request, $memberUuid)
+    public function view(Request $request, string $memberUuid)
     {
         $validator = Validator::make(
             [
@@ -98,7 +100,7 @@ class MemberController extends Controller
         return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
     }
 
-    public function runningInfo(Request $request, $memberUuid, $runningUuId)
+    public function runningInfo(Request $request, string $memberUuid, string $runningUuId)
     {
         $validator = Validator::make([
             'memberUuid' => $memberUuid,
@@ -123,28 +125,9 @@ class MemberController extends Controller
 
     /* ============   client  ============= */
 
-    public function read(Request $request, $memberUuid)
+    public function read(Request $request)
     {
-        $validator = Validator::make(
-            [
-                'memberUuid' => $memberUuid,
-            ],
-            [
-                'memberUuid' => 'required',
-            ],
-            [
-                'memberUuid.required' => '缺少uuid資料',
-            ]
-        );
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => $validator->errors()->all()[0],
-                'data' => null
-            ], 400);
-        }
-
-        $member = $this->members->find($memberUuid);
+        $member = $this->me();
 
         if ($member) {
             $data = $this->memberDataProcessforClientRead($member);
@@ -155,7 +138,7 @@ class MemberController extends Controller
         return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
     }
 
-    public function update(Request $request, $memberUuid)
+    public function update(Request $request)
     {
         $form = [
             'username' => $request->username,
@@ -192,7 +175,7 @@ class MemberController extends Controller
             ], 400);
         }
 
-        $member = $this->members->find($memberUuid);
+        $member = $this->me();
 
         if ($member) {
             if ($member->is_register === 1) {
@@ -207,15 +190,17 @@ class MemberController extends Controller
         }
     }
 
-    public function getIndexRunInfo(Request $request, $memberUuid)
+    public function getIndexRunInfo(Request $request)
     {
-        $stat = $this->stats->where('member_id', $memberUuid)->first();
+        $member = $this->me();
+
+        $stat = $this->stats->where('member_id', $member->id)->first();
 
 
-        $activitiesCount = $this->activities->where('member_id', $memberUuid)->count();
+        $activitiesCount = $this->activities->where('member_id', $member->id)->count();
 
         if ($activitiesCount === 0) {
-            $tokenData = $this->memberTokens->where('member_id', $memberUuid)->first();
+            $tokenData = $this->memberTokens->where('member_id', $member->id)->first();
             if ($tokenData) {
                 $this->getActivitiesDataFromStrava($tokenData);
             } else {
@@ -224,13 +209,13 @@ class MemberController extends Controller
         }
 
         $activitiesYear = $this->activities
-                    ->getActivitiesYear($memberUuid);
+                    ->getActivitiesYear($member->id);
 
         $activitiesMonth = $this->activities
-                    ->getActivitiesMonth($memberUuid);
+                    ->getActivitiesMonth($member->id);
 
         $activitiesWeek = $this->activities
-                    ->getActivitiesWeek($memberUuid);
+                    ->getActivitiesWeek($member->id);
 
         if ($stat && isset($activitiesYear) && isset($activitiesMonth) && isset($activitiesWeek)) {
             $data['totalDistance'] = floor($this->getDistance($stat->distance));
@@ -247,44 +232,7 @@ class MemberController extends Controller
         return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
     }
 
-    public function updateMemberLocation(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'county' => 'required',
-            'district' => 'required',
-            'siteName' => 'required',
-            'id' => 'required',
-        ], [
-            'county.required' => '居住地資料更新失敗:缺少縣市參數',
-            'district.required' => '居住地資料更新失敗:缺少鄉鎮區參數',
-            'siteName.required' => '居住地資料更新失敗:缺少空氣品質測量站參數',
-            'id.required' => '居住地資料更新失敗:缺少會員參數',
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => $validator->errors()->all()[0],
-                'data' => null
-            ], 400);
-        }
-
-        $member = $this->members->where('id', $request->id)->first();
-
-        if ($member) {
-            $member->county = $request->county;
-            $member->district = $request->district;
-            $member->siteName = $request->siteName;
-            $member->save();
-
-            $member->memberToken;
-
-            return response()->json(['status' => true, 'message' => '會員居住地資料更新成功', 'data' => $member], 200);
-        }
-
-        return response()->json(['status' => false, 'message' => '居住地資料更新失敗:無法取得會員資料', 'data' => null], 404);
-    }
-
-    private function memberDataProcess($row)
+    private function memberDataProcess(object $row)
     {
         $stat = $row->stat;
 
@@ -311,7 +259,7 @@ class MemberController extends Controller
         ];
     }
 
-    private function memberDataProcessforClientRead($row)
+    private function memberDataProcessforClientRead(object $row)
     {
         return [
             'id' => $row->id,

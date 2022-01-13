@@ -2,12 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Models\Member;
 use App\Models\MemberToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
-use Carbon\Carbon;
 use Artisan;
 
 class LoginTest extends TestCase
@@ -17,66 +18,52 @@ class LoginTest extends TestCase
      *
      * @return void
      */
-    public function test_example()
+    public function testLogin()
     {
-        
         $stravaAthleteUrl = 'https://www.strava.com/api/v3/athlete';
 
         $dataStructure = [
             'status',
             'message',
             'data' => [
-                'badge_type_id',
-                'city',
-                'country',
-                'county',
-                'created_at',
-                'district',
-                'email',
-                'expires_at',
-                'firstname',
-                'id',
-                'is_register',
-                'join_rank',
-                'lastname',
-                'login_from',
-                'nickname',
-                'resource_state',
-                'runner_type',
-                'sex',
-                'siteName',
-                'state',
-                'strava_id',
-                'updated_at',
-                'username',
-                'weight',
+                'access_token',
+                'token_type',
+                'expires_in',
             ],
         ];
 
-        $datas = app(MemberToken::class)->get();
+        $member = app(MemberToken::class)->where('member_id', env('API_MEMBER_ID'))->first();
 
-        if ($datas->count() > 0) {
-            foreach($datas as $data) {   
+        $responseRefreashToken = $this->refreshStravaToken($member);
 
-                $responseRefreashToken = $this->refreshStravaToken($data);
-                
-                $responseAthlete = Http::withToken($data->access_token)->get($stravaAthleteUrl);
 
-                $responseAthlete = $responseAthlete->json();
+        $responseAthlete = Http::withToken($member->access_token)->get($stravaAthleteUrl);
 
-                $formData = array_merge($responseRefreashToken, ['athlete' => $responseAthlete]);
+        $responseAthlete = $responseAthlete->json();
 
-                $response = $this->call('POST', 'api/login/login', $formData);
+        $formData = array_merge($responseRefreashToken, ['athlete' => $responseAthlete]);
 
-                if ($response->getStatusCode() === 200) {
-                    $response->assertStatus(200);
-                    $response->assertJsonStructure($dataStructure);
-                } else {
-                    $response->assertStatus(404);
-                    $response->assertJsonStructure($this->falseJsonStructure());
-                }
-            }
-        }
+        $response = $this->call('POST', 'api/login', $formData);
 
+        $response->assertStatus(200);
+        $response->assertJsonStructure($dataStructure);
+    }
+
+    public function testLogout()
+    {
+        $memberId = env('API_MEMBER_ID');
+
+        $member = app(Member::class)->where('id', env('API_MEMBER_ID'))->first();
+
+        $token = Auth::guard()->fromUser($member);
+
+        $response = $this->call('POST', 'api/logout', [], [], [], ['HTTP_Authorization' => 'Bearer ' . $token], []);
+
+        $response
+        ->assertStatus(200)
+        ->assertJsonStructure([
+            'status',
+            'message',
+        ]);
     }
 }

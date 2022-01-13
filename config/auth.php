@@ -41,9 +41,15 @@ return [
             'provider' => 'users',
         ],
 
-        'api' => [
+        'admin' => [
             'driver' => 'jwt',
             'provider' => 'users',
+            'hash' => false,
+        ],
+
+        'api' => [
+            'driver' => 'jwt',
+            'provider' => 'members',
             'hash' => false,
         ],
     ],
@@ -69,6 +75,11 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+        ],
+
+        'members' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Member::class,
         ],
 
         // 'users' => [
