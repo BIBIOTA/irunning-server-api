@@ -42,36 +42,42 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/aqi/laravel.log'),
             'days' => 14,
+            'channels' => ['slack'],
         ],
 
         'activities' => [
             'driver' => 'daily',
             'path' => storage_path('logs/activities/laravel.log'),
             'days' => 14,
+            'channels' => ['slack'],
         ],
 
         'event' => [
             'driver' => 'daily',
             'path' => storage_path('logs/event/laravel.log'),
             'days' => 14,
+            'channels' => ['slack'],
         ],
 
         'login' => [
             'driver' => 'daily',
             'path' => storage_path('logs/login/laravel.log'),
             'days' => 14,
+            'channels' => ['slack'],
         ],
 
         'strava' => [
             'driver' => 'daily',
             'path' => storage_path('logs/strava/laravel.log'),
             'days' => 14,
+            'channels' => ['slack'],
         ],
 
         'weather' => [
             'driver' => 'daily',
             'path' => storage_path('logs/weather/laravel.log'),
             'days' => 14,
+            'channels' => ['slack'],
         ],
 
         /* === default channels === */
