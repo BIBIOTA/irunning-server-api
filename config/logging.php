@@ -35,6 +35,47 @@ return [
     */
 
     'channels' => [
+
+        /* === custom channels === */
+
+        'aqi' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/aqi/laravel.log'),
+            'days' => 14,
+        ],
+
+        'activities' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/activities/laravel.log'),
+            'days' => 14,
+        ],
+
+        'event' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/event/laravel.log'),
+            'days' => 14,
+        ],
+
+        'login' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/login/laravel.log'),
+            'days' => 14,
+        ],
+
+        'strava' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/strava/laravel.log'),
+            'days' => 14,
+        ],
+
+        'weather' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/weather/laravel.log'),
+            'days' => 14,
+        ],
+
+        /* === default channels === */
+
         'stack' => [
             'driver' => 'stack',
             'channels' => ['single'],

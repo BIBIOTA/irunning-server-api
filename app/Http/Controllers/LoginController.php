@@ -49,11 +49,11 @@ class LoginController extends Controller
 
                 return response()->json(['status' => true, 'message' => '登入成功', 'data' => $data], 200);
             } catch (Throwable $e) {
-                Log::info($e);
+                Log::channel('login')->critical($e);
                 return response()->json(['status' => false, 'message' => '發生例外錯誤:Strava資料取得失敗', 'data' => null], 404);
             }
         } catch (Throwable $e) {
-            Log::info($e);
+            Log::channel('login')->critical($e);
             return response()->json(['status' => false, 'message' => '發生例外錯誤:登入失敗', 'data' => null], 404);
         }
     }
@@ -93,7 +93,7 @@ class LoginController extends Controller
             }
             return $data;
         } catch (Throwable $e) {
-            Log::info($e);
+            Log::channel('login')->critical($e);
             return response()->json(['status' => false, 'message' => '發生例外錯誤:登入失敗', 'data' => null], 404);
         }
     }
@@ -126,7 +126,7 @@ class LoginController extends Controller
             }
             return $tokenData;
         } catch (Throwable $e) {
-            Log::info($e);
+            Log::channel('login')->critical($e);
             return response()->json(['status' => false, 'message' => '發生例外錯誤:登入失敗', 'data' => null], 404);
         }
     }

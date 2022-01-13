@@ -62,7 +62,7 @@ trait StravaActivitiesTrait
                 break;
             }
         }
-        Log::info($tokenData->member_id . 'Strava活動更新完成');
+        Log::channel('activities')->info($tokenData->member_id . 'Strava活動更新完成');
     }
 
     public function getStats(string $stravaId, object $tokenData)
@@ -73,9 +73,7 @@ trait StravaActivitiesTrait
         $resdatas = $response->json();
 
         if (isset($resdatas['message']) && $resdatas['message'] === 'Forbidden') {
-            Log::info($resdatas);
-            Log::info('取得Strava資料發生錯誤');
-            Log::info($tokenData);
+            Log::channel('activities')->error(['response' => $resdatas, 'message' => '取得Strava資料發生錯誤', 'tokenData' => $tokenData]);
         } else {
             $allRunTotals = $resdatas['all_run_totals'];
 
@@ -115,7 +113,7 @@ trait StravaActivitiesTrait
                 $data['distance'] = $this->getDistanceIsFloor($data['distance']);
                 return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $data], 200);
             } else {
-                Log::info($response);
+                Log::channel('activities')->error($response);
                 return response()->json(['status' => false, 'message' => '發生例外錯誤:無法取得Strava資料', 'data' => null], 404);
             }
         } else {

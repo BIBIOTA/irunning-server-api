@@ -52,9 +52,9 @@ class WeatherClearRecords extends Command
                 ->whereDate('end_time', '<=', $lastDay)
                 ->delete();
 
-            Log::info('天氣舊資料刪除完成');
+            Log::channel('weather')->info('天氣舊資料刪除完成');
         } catch (Throwable $e) {
-            Log::info($e);
+            Log::channel('weather')->error($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'weather clear error log', 'main' => $e]);
         }
 
