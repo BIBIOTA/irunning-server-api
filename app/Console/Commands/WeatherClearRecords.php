@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\WeatherData;
+use App\Jobs\SendEmail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -54,6 +55,7 @@ class WeatherClearRecords extends Command
             Log::info('天氣舊資料刪除完成');
         } catch (Throwable $e) {
             Log::info($e);
+            SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'weather clear error log', 'main' => $e]);
         }
 
         return 0;

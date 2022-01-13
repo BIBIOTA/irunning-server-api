@@ -6,6 +6,7 @@ use App\Models\City;
 use App\Models\District;
 use App\Models\WeatherDocument;
 use App\Models\WeatherData;
+use App\Jobs\SendEmail;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -112,16 +113,20 @@ class WeatherSeeder extends Seeder
                             }
                         } else {
                             Log::info('無法取得資料');
+                            SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'weather error log', 'main' => '無法取得資料']);
                         }
                     }
                 }
                 Log::info('天氣資料更新完成');
             } else {
                 Log::info('天氣更新失敗:無法取得縣市資料');
+                SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'weather error log', 'main' => '天氣更新失敗:無法取得縣市資料']);
             }
         } catch (Throwable $e) {
             Log::info($e);
+            SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'weather error log', 'main' => $e]);
         }
+
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

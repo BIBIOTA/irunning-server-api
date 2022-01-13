@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Aqi;
 use App\Models\City;
+use App\Jobs\SendEmail;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -52,9 +53,11 @@ class AqiSeeder extends Seeder
                 Log::info('空氣品質資料更新完成');
             } else {
                 Log::info('空氣品質資料未取得');
+                SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'aqi error log', 'main' => '空氣品質資料未取得']);
             }
         } catch (Throwable $e) {
             Log::info($e);
+            SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'aqi error log', 'main' => $e]);
         }
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
