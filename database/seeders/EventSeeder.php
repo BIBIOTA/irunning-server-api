@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Event;
 use App\Models\EventDistance;
+use App\Jobs\SendEmail;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -71,22 +72,22 @@ class EventSeeder extends Seeder
                                 }
                             }
                         }
-                        Log::info('賽事資料更新完成');
+                        Log::channel('event')->info('賽事資料更新完成');
                     } else {
-                        Log::info('無法取得賽事資料');
-                        Log::info($res['message']);
+                        Log::channel('event')->error([ 'message' => '無法取得賽事資料', 'response' => $res]);
                     }
                 } else {
-                    Log::info('無法取得賽事資料');
+                    Log::channel('event')->error('無法取得賽事資料');
                 }
             } else {
-                Log::info('無法取得賽事資料:無法連線');
+                Log::channel('event')->error('無法取得賽事資料:無法連線');
             }
 
 
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         } catch (Throwable $e) {
-            Log::info($e);
+            Log::channel('event')->critical($e);
+            SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'event error log', 'main' => $e]);
         }
     }
 }

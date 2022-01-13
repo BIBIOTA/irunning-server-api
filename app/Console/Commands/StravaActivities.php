@@ -51,14 +51,14 @@ class StravaActivities extends Command
                 foreach ($tokens as $tokenData) {
                     try {
                         $this->getActivitiesDataFromStrava($tokenData);
-                        Log::info($tokenData->member_id . 'Strava活動更新完成');
+                        Log::channel('strava')->info($tokenData->member_id . 'Strava活動更新完成');
                     } catch (Throwable $e) {
-                        Log::info($e);
+                        Log::channel('strava')->critical($e);
                     }
                 }
             }
         } catch (Throwable $e) {
-            Log::info($e);
+            Log::channel('strava')->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'strava activities error log', 'main' => $e]);
         }
 
