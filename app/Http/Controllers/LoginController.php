@@ -6,6 +6,7 @@ use App\Models\Member;
 use App\Models\MemberToken;
 use App\Jobs\GetActivitiesDataFromStrava;
 use App\Http\Controllers\Traits\StravaActivitiesTrait;
+use App\Jobs\SendEmail;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
