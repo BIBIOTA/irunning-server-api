@@ -50,11 +50,11 @@ class LoginController extends Controller
                 return response()->json(['status' => true, 'message' => '登入成功', 'data' => $data], 200);
             } catch (Throwable $e) {
                 Log::channel('login')->critical($e);
+                SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function login error', 'main' => $e]);
                 return response()->json(['status' => false, 'message' => '發生例外錯誤:Strava資料取得失敗', 'data' => null], 404);
             }
         } catch (Throwable $e) {
             Log::channel('login')->critical($e);
-            return response()->json(['status' => false, 'message' => '發生例外錯誤:登入失敗', 'data' => null], 404);
         }
     }
 
@@ -94,7 +94,7 @@ class LoginController extends Controller
             return $data;
         } catch (Throwable $e) {
             Log::channel('login')->critical($e);
-            return response()->json(['status' => false, 'message' => '發生例外錯誤:登入失敗', 'data' => null], 404);
+            SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function createOrUpdateMember error', 'main' => $e]);
         }
     }
 
@@ -127,25 +127,35 @@ class LoginController extends Controller
             return $tokenData;
         } catch (Throwable $e) {
             Log::channel('login')->critical($e);
-            return response()->json(['status' => false, 'message' => '發生例外錯誤:登入失敗', 'data' => null], 404);
+            SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function createOrUpdateToken error', 'main' => $e]);
         }
     }
 
     public function getJwtToken($member, $expired)
     {
-        if (!$token = Auth::guard()->fromUser($member)) {
-            return response()->json(['status' => false, 'message' => '登入失敗'], 401);
+        try {
+            if (!$token = Auth::guard()->fromUser($member)) {
+                return response()->json(['status' => false, 'message' => '登入失敗'], 401);
+            }
+            return $this->respondWithToken($token, $expired);
+        } catch (Throwable $e) {
+            Log::channel('login')->critical($e);
+            SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function getJwtToken error', 'main' => $e]);
         }
-        return $this->respondWithToken($token, $expired);
     }
 
     protected function respondWithToken($token, $expired)
     {
-        return [
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => Auth::guard()->factory()->getTTL() * floor(($expired / 60))
-        ];
+        try {
+            return [
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => Auth::guard()->factory()->getTTL() * floor(($expired / 60))
+            ];
+        } catch (Throwable $e) {
+            Log::channel('login')->critical($e);
+            SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function respondWithToken error', 'main' => $e]);
+        }
     }
 
     /**
@@ -156,7 +166,12 @@ class LoginController extends Controller
 
     public function logout()
     {
-        Auth::guard()->logout();
-        return response()->json(['status' => true, 'message' => '登出成功']);
+        try {
+            Auth::guard()->logout();
+            return response()->json(['status' => true, 'message' => '登出成功']);
+        } catch (Throwable $e) {
+            Log::channel('login')->critical($e);
+            SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function logout error', 'main' => $e]);
+        }
     }
 }

@@ -50,6 +50,12 @@ return [
             'days' => 14,
         ],
 
+        'controller' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/controller/laravel.log'),
+            'days' => 14,
+        ],
+
         'event' => [
             'driver' => 'daily',
             'path' => storage_path('logs/event/laravel.log'),
