@@ -42,42 +42,49 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/aqi/laravel.log'),
             'days' => 14,
+            'permission' => 0664,
         ],
 
         'activities' => [
             'driver' => 'daily',
             'path' => storage_path('logs/activities/laravel.log'),
             'days' => 14,
+            'permission' => 0664,
         ],
 
         'controller' => [
             'driver' => 'daily',
             'path' => storage_path('logs/controller/laravel.log'),
             'days' => 14,
+            'permission' => 0664,
         ],
 
         'event' => [
             'driver' => 'daily',
             'path' => storage_path('logs/event/laravel.log'),
             'days' => 14,
+            'permission' => 0664,
         ],
 
         'login' => [
             'driver' => 'daily',
             'path' => storage_path('logs/login/laravel.log'),
             'days' => 14,
+            'permission' => 0664,
         ],
 
         'strava' => [
             'driver' => 'daily',
             'path' => storage_path('logs/strava/laravel.log'),
             'days' => 14,
+            'permission' => 0664,
         ],
 
         'weather' => [
             'driver' => 'daily',
             'path' => storage_path('logs/weather/laravel.log'),
             'days' => 14,
+            'permission' => 0664,
         ],
 
         /* === default channels === */
