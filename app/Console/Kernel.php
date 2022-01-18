@@ -30,6 +30,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('weather:clear')->daily();
         $schedule->exec('php artisan DB:seed --class=EventSeeder')
         ->daily();
+        $schedule->command('DB:seed --class=AqiSeeder')->everyMinute();
     }
 
     /**
