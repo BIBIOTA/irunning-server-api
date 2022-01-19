@@ -22,13 +22,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->exec('php artisan DB:seed --class=WeatherSeeder')
+        $schedule->command('DB:seed --class=WeatherSeeder')
         ->hourly();
-        $schedule->exec('php artisan DB:seed --class=AqiSeeder')->hourly();
+        $schedule->command('DB:seed --class=AqiSeeder')->hourly();
         $schedule->command('strava:refreashToken')->everyThreeHours();
         $schedule->command('strava:activities')->daily();
         $schedule->command('weather:clear')->daily();
-        $schedule->exec('php artisan DB:seed --class=EventSeeder')
+        $schedule->command('DB:seed --class=EventSeeder')
         ->daily();
     }
 
