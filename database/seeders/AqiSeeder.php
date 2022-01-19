@@ -52,11 +52,11 @@ class AqiSeeder extends Seeder
                 }
                 Log::channel('aqi')->info('空氣品質資料更新完成');
             } else {
-                Log::channel('aqi')->error('空氣品質資料未取得');
+                Log::stack(['aqi', 'slack'])->error('空氣品質資料未取得');
                 SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'aqi error log', 'main' => '空氣品質資料未取得']);
             }
         } catch (Throwable $e) {
-            Log::channel('aqi')->critical($e);
+            Log::stack(['aqi', 'slack'])->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'aqi error log', 'main' => $e]);
         }
 

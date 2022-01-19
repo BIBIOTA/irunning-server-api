@@ -67,7 +67,7 @@ class ActivityController extends Controller
 
             return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
         } catch (Throwable $e) {
-            Log::channel('api')->critical($e);
+            Log::stack(['api', 'slack'])->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function getActivities error', 'main' => $e]);
         }
     }
@@ -95,7 +95,7 @@ class ActivityController extends Controller
 
             return $this->getActivityFromStrava($member->id, $runningUuId);
         } catch (Throwable $e) {
-            Log::channel('controller')->critical($e);
+            Log::stack(['controller', 'slack'])->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function getActivity error', 'main' => $e]);
         }
     }
