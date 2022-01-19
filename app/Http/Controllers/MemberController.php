@@ -54,7 +54,7 @@ class MemberController extends Controller
 
             return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
         } catch (Throwable $e) {
-            Log::channel('controller')->critical($e);
+            Log::stack(['controller', 'slack'])->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function index error', 'main' => $e]);
         }
     }
@@ -107,7 +107,7 @@ class MemberController extends Controller
 
             return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
         } catch (Throwable $e) {
-            Log::channel('controller')->critical($e);
+            Log::stack(['controller', 'slack'])->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function view error', 'main' => $e]);
         }
     }
@@ -135,7 +135,7 @@ class MemberController extends Controller
 
             return $this->getActivityFromStrava($memberUuid, $runningUuId);
         } catch (Throwable $e) {
-            Log::channel('controller')->critical($e);
+            Log::stack(['controller', 'slack'])->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function runningInfo error', 'main' => $e]);
         }
     }
@@ -155,7 +155,7 @@ class MemberController extends Controller
 
             return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
         } catch (Throwable $e) {
-            Log::channel('controller')->critical($e);
+            Log::stack(['controller', 'slack'])->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function read error', 'main' => $e]);
         }
     }
@@ -212,7 +212,7 @@ class MemberController extends Controller
                 return response()->json(['status' => false, 'message' => '查無會員資料', 'data' => null], 404);
             }
         } catch (Throwable $e) {
-            Log::channel('controller')->critical($e);
+            Log::stack(['controller', 'slack'])->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function update error', 'main' => $e]);
         }
     }
@@ -259,7 +259,7 @@ class MemberController extends Controller
 
             return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
         } catch (Throwable $e) {
-            Log::channel('controller')->critical($e);
+            Log::stack(['controller', 'slack'])->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function getIndexRunInfo error', 'main' => $e]);
         }
     }
@@ -291,7 +291,7 @@ class MemberController extends Controller
                 'lastLoginAt' => $row->memberToken->updated_at,
             ];
         } catch (Throwable $e) {
-            Log::channel('controller')->critical($e);
+            Log::stack(['controller', 'slack'])->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function memberDataProcess error', 'main' => $e]);
         }
     }
@@ -310,7 +310,7 @@ class MemberController extends Controller
                 'joinRank' => $row->join_rank,
             ];
         } catch (Throwable $e) {
-            Log::channel('controller')->critical($e);
+            Log::stack(['controller', 'slack'])->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function memberDataProcessforClientRead error', 'main' => $e]);
         }
     }

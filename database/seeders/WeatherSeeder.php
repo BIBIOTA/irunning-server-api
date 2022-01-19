@@ -112,18 +112,18 @@ class WeatherSeeder extends Seeder
                                 }
                             }
                         } else {
-                            Log::channel('weather')->error('無法取得資料');
+                            Log::stack(['weather', 'slack'])->error('無法取得資料');
                             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'weather error log', 'main' => '無法取得資料']);
                         }
                     }
                 }
                 Log::channel('weather')->info('天氣資料更新完成');
             } else {
-                Log::channel('weather')->error('天氣更新失敗:無法取得縣市資料');
+                Log::stack(['weather', 'slack'])->error('天氣更新失敗:無法取得縣市資料');
                 SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'weather error log', 'main' => '天氣更新失敗:無法取得縣市資料']);
             }
         } catch (Throwable $e) {
-            Log::channel('weather')->critical($e);
+            Log::stack(['weather', 'slack'])->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'weather error log', 'main' => $e]);
         }
 

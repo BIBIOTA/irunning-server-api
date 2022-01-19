@@ -54,7 +54,7 @@ class WeatherClearRecords extends Command
 
             Log::channel('weather')->info('天氣舊資料刪除完成');
         } catch (Throwable $e) {
-            Log::channel('weather')->error($e);
+            Log::stack(['weather', 'slack'])->error($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'weather clear error log', 'main' => $e]);
         }
 

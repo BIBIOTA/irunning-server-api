@@ -33,7 +33,7 @@ class AuthController extends Controller
             }
             return $this->respondWithToken($token);
         } catch (Throwable $e) {
-            Log::channel('controller')->critical($e);
+            Log::stack(['controller', 'slack'])->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function login error', 'main' => $e]);
         }
     }
@@ -49,7 +49,7 @@ class AuthController extends Controller
                 ['status' => true, 'message' => '資料取得成功', 'data' => Auth::guard()->user()],
             );
         } catch (Throwable $e) {
-            Log::channel('controller')->critical($e);
+            Log::stack(['controller', 'slack'])->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function me error', 'main' => $e]);
         }
     }
@@ -65,7 +65,7 @@ class AuthController extends Controller
             Auth::guard()->logout();
             return response()->json(['status' => true, 'message' => '登出成功']);
         } catch (Throwable $e) {
-            Log::channel('controller')->critical($e);
+            Log::stack(['controller', 'slack'])->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function logout error', 'main' => $e]);
         }
     }
@@ -79,7 +79,7 @@ class AuthController extends Controller
         try {
             return $this->respondWithToken(Auth::guard()->refresh());
         } catch (Throwable $e) {
-            Log::channel('controller')->critical($e);
+            Log::stack(['controller', 'slack'])->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function refresh error', 'main' => $e]);
         }
     }
@@ -93,7 +93,7 @@ class AuthController extends Controller
                 'expires_in' => Auth::guard()->factory()->getTTL() * 60
             ]);
         } catch (Throwable $e) {
-            Log::channel('controller')->critical($e);
+            Log::stack(['controller', 'slack'])->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function refresh error', 'main' => $e]);
         }
     }
