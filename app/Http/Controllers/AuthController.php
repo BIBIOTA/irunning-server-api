@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use App\Jobs\SendEmail;
+use Throwable;
 
 class AuthController extends Controller
 {
@@ -23,11 +26,16 @@ class AuthController extends Controller
      */
     public function login()
     {
-        $credentials = request(['email', 'password']);
-        if (!$token = Auth::guard()->attempt($credentials)) {
-            return response()->json(['status' => false, 'message' => '登入失敗'], 401);
+        try {
+            $credentials = request(['email', 'password']);
+            if (!$token = Auth::guard()->attempt($credentials)) {
+                return response()->json(['status' => false, 'message' => '登入失敗'], 401);
+            }
+            return $this->respondWithToken($token);
+        } catch (Throwable $e) {
+            Log::channel('controller')->critical($e);
+            SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function login error', 'main' => $e]);
         }
-        return $this->respondWithToken($token);
     }
     /**
      * Get a authenticated User.
@@ -36,9 +44,14 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return response()->json(
-            ['status' => true, 'message' => '資料取得成功', 'data' => Auth::guard()->user()],
-        );
+        try {
+            return response()->json(
+                ['status' => true, 'message' => '資料取得成功', 'data' => Auth::guard()->user()],
+            );
+        } catch (Throwable $e) {
+            Log::channel('controller')->critical($e);
+            SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function me error', 'main' => $e]);
+        }
     }
     /**
      * Log the user out(Invalidate the Token).
@@ -48,8 +61,13 @@ class AuthController extends Controller
 
     public function logout()
     {
-        Auth::guard()->logout();
-        return response()->json(['status' => true, 'message' => '登出成功']);
+        try {
+            Auth::guard()->logout();
+            return response()->json(['status' => true, 'message' => '登出成功']);
+        } catch (Throwable $e) {
+            Log::channel('controller')->critical($e);
+            SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function logout error', 'main' => $e]);
+        }
     }
     /**
      * Refresh a Token.
@@ -58,15 +76,25 @@ class AuthController extends Controller
      */
     public function refresh()
     {
-        return $this->respondWithToken(Auth::guard()->refresh());
+        try {
+            return $this->respondWithToken(Auth::guard()->refresh());
+        } catch (Throwable $e) {
+            Log::channel('controller')->critical($e);
+            SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function refresh error', 'main' => $e]);
+        }
     }
     protected function respondWithToken($token)
     {
-        return response()->json([
-            'status' => true,
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => Auth::guard()->factory()->getTTL() * 60
-        ]);
+        try {
+            return response()->json([
+                'status' => true,
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => Auth::guard()->factory()->getTTL() * 60
+            ]);
+        } catch (Throwable $e) {
+            Log::channel('controller')->critical($e);
+            SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function refresh error', 'main' => $e]);
+        }
     }
 }
