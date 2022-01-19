@@ -26,7 +26,7 @@ class AqiController extends Controller
 
             return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
         } catch (Throwable $e) {
-            Log::channel('controller')->critical($e);
+            Log::stack(['controller', 'slack'])->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function getAqiList error', 'main' => $e]);
         }
     }

@@ -74,19 +74,19 @@ class EventSeeder extends Seeder
                         }
                         Log::channel('event')->info('賽事資料更新完成');
                     } else {
-                        Log::channel('event')->error([ 'message' => '無法取得賽事資料', 'response' => $res]);
+                        Log::stack(['event', 'slack'])->error([ 'message' => '無法取得賽事資料', 'response' => $res]);
                     }
                 } else {
-                    Log::channel('event')->error('無法取得賽事資料');
+                    Log::stack(['event', 'slack'])->error('無法取得賽事資料');
                 }
             } else {
-                Log::channel('event')->error('無法取得賽事資料:無法連線');
+                Log::stack(['event', 'slack'])->error('無法取得賽事資料:無法連線');
             }
 
 
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         } catch (Throwable $e) {
-            Log::channel('event')->critical($e);
+            Log::stack(['event', 'slack'])->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'event error log', 'main' => $e]);
         }
     }

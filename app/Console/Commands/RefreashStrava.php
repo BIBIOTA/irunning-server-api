@@ -69,7 +69,7 @@ class RefreashStrava extends Command
 
             Log::channel('strava')->info('會員Token更新完成');
         } catch (Throwable $e) {
-            Log::channel('strava')->critical($e);
+            Log::stack(['strava', 'slack'])->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'strava refresh error log', 'main' => $e]);
         }
 
