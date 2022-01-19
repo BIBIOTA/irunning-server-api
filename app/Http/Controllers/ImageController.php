@@ -23,7 +23,7 @@ class ImageController extends Controller
             Log::info(['message' => '缺少圖片', 'request' => [ 'dayOrNight' => $dayOrNight, 'number' => $number ]]);
             return abort(404);
         } catch (Throwable $e) {
-            Log::critical($e);
+            Log::stack(['controller', 'slack'])->critical($e);
             return abort(500, $e);
         }
     }

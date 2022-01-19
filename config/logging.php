@@ -42,7 +42,6 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/aqi/laravel.log'),
             'days' => 14,
-            'channels' => ['slack'],
             'permission' => 0664,
         ],
 
@@ -50,7 +49,6 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/activities/laravel.log'),
             'days' => 14,
-            'channels' => ['slack'],
             'permission' => 0664,
         ],
 
@@ -65,7 +63,6 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/event/laravel.log'),
             'days' => 14,
-            'channels' => ['slack'],
             'permission' => 0664,
         ],
 
@@ -73,7 +70,6 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/login/laravel.log'),
             'days' => 14,
-            'channels' => ['slack'],
             'permission' => 0664,
         ],
 
@@ -81,7 +77,6 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/strava/laravel.log'),
             'days' => 14,
-            'channels' => ['slack'],
             'permission' => 0664,
         ],
 
@@ -89,7 +84,6 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/weather/laravel.log'),
             'days' => 14,
-            'channels' => ['slack'],
             'permission' => 0664,
         ],
 
@@ -97,7 +91,7 @@ return [
 
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single'],
+            'channels' => ['single', 'slack'],
             'ignore_exceptions' => false,
         ],
 
