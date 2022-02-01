@@ -53,6 +53,10 @@ Route::prefix('index')->group(function () {
     Route::get('getIndexEvents', [IndexController::class, 'getIndexEvents'])->name('index.getIndexEvents');
 });
 
+Route::prefix('image')->group(function () {
+    Route::get('getRamdomWeatherImage', [WeatherController::class, 'getRamdomWeatherImage'])->name('image.getRamdomWeatherImage');
+});
+
 Route::prefix('member')->group(function () {
     Route::get('/', [MemberController::class, 'read'])->name('member.read');
     Route::put('/', [MemberController::class, 'update'])->name('member.update');
