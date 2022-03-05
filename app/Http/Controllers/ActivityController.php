@@ -45,6 +45,7 @@ class ActivityController extends Controller
                 'id' => $member->id,
                 'startDay' => $request->startDay,
                 'endDay' => $request->endDay,
+                'rows' => $request->rows,
             ];
 
             $data = $this->activities->getFilterData($this->filters);
