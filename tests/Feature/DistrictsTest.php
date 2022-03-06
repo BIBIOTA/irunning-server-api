@@ -14,13 +14,13 @@ class DistrictsTest extends TestCase
      *
      * @return void
      */
-    public function test_example()
+    public function testDistricts()
     {
         $cities = $this->getCityCountyData();
 
         $distinct = $this->distinctCities();
 
-        foreach($cities as $city) {
+        foreach ($cities as $city) {
             if (!in_array($city->city_name, $distinct)) {
                 $response = $this->call('GET', 'api/districts', [
                     'city_id' => $city->id,
@@ -35,7 +35,7 @@ class DistrictsTest extends TestCase
                             'district_name',
                         ],
                     ]
-                ]);   
+                ]);
             }
         }
     }

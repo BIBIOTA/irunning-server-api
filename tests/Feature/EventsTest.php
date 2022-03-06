@@ -13,7 +13,7 @@ class EventsTest extends TestCase
      *
      * @return void
      */
-    public function test_example()
+    public function testEvents()
     {
         $dateRangeTest = [
             [

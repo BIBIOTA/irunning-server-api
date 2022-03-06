@@ -13,7 +13,7 @@ class CitiesTest extends TestCase
      *
      * @return void
      */
-    public function test_example()
+    public function testCities()
     {
         $response = $this->call('GET', 'api/cities');
         $response->assertStatus(200);
