@@ -13,7 +13,7 @@ class IndexEventsTest extends TestCase
      *
      * @return void
      */
-    public function test_example()
+    public function testIndexEvents()
     {
         $response = $this->call('GET', 'api/index/getIndexEvents');
         $response->assertStatus(200);

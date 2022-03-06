@@ -13,16 +13,15 @@ class WeatherTest extends TestCase
      *
      * @return void
      */
-    public function test_example()
+    public function testWeather()
     {
-
         $cities = $this->getCityCountyData();
 
         $distinct = $this->distinctDistricts();
 
-        foreach($cities as $city) {
+        foreach ($cities as $city) {
             $districts = $this->getDistrictsData($city->id);
-            foreach($districts as $district) {
+            foreach ($districts as $district) {
                 if (!in_array($district->district_name, $distinct)) {
                     $response = $this->call('GET', 'api/weather', [
                         'district_id' => $district->id,
@@ -46,8 +45,5 @@ class WeatherTest extends TestCase
                 }
             }
         }
-
-        
-
     }
 }

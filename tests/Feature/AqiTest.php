@@ -14,13 +14,13 @@ class AqiTest extends TestCase
      *
      * @return void
      */
-    public function test_example()
+    public function testAqi()
     {
         $cities = $this->getCityCountyData();
 
         $distinct = $this->distinctCities();
 
-        foreach($cities as $city) {
+        foreach ($cities as $city) {
             if (!in_array($city->city_name, $distinct)) {
                 $response = $this->call('GET', 'api/aqi', [
                     'city_id' => $city->id,
@@ -57,7 +57,7 @@ class AqiTest extends TestCase
                             'ImportDate',
                         ],
                     ]
-                ]);   
+                ]);
             }
         }
     }
