@@ -1,7 +1,7 @@
-<h1>Irunning手機網頁應用程式</h1>
+<h1>Irunning</h1>
 
 ![php-badge](https://img.shields.io/badge/php-%5E8.1-blue)
-![laravel-badge](hthttps://img.shields.io/badge/laravel-%5E9-blue)
+![laravel-badge](https://img.shields.io/badge/laravel-%5E9-blue)
 ![laravel-octane](https://img.shields.io/badge/laravel%2Foctane-%5E1.2.4-blue)
 
 <a href="https://irunning.bibiota.com/">https://irunning.bibiota.com/</a>
@@ -13,11 +13,10 @@ username / password
 <br />
 irunning.test@gmail.com / irunning.test@gmail.com
 <br />
-<br />
 
 前端: Vue-cli、Vuetify
 <br />
-前端第三方串接: Strava、Google Map Api
+前端第三方串接: Strava、Google Map Api、Google Calendar
 <br />
 <br />
 後端: Laravel、Node.js
@@ -34,22 +33,5 @@ client-website: Google Kubernetes Engine (GKE)
 <br />
 node.js: Google Kubernetes Engine (GKE)
 <br />
-server-api: AWS (EC2)
-<br />
-<br />
-
-功能:
-<br />
-1.與運動社群應用程式Strava串接及第三方登入，取得個人的跑步紀錄
-<br />
-2.與中央氣象局、政府開放平台API串接，建立資料庫並取得台灣各地及目前所在地(GPS Location)的即時天氣資訊及空氣品質
-<br />
-3.透過Node.js爬蟲，取得全國路跑賽事資訊並建立資料庫、搜尋賽事
-<br />
-全國馬拉松賽事資料來源:
-<br />
-跑者廣場-全國賽會
-<br />
-<a href="http://www.taipeimarathon.org.tw/contest.aspx
-">http://www.taipeimarathon.org.tw/contest.aspx</a>
+server-api: Google Compute Engine (GCE)
 <br />
