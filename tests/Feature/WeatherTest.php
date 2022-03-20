@@ -42,6 +42,7 @@ class WeatherTest extends TestCase
                             'updated_at',
                         ]
                     ]);
+                    break;
                 }
             }
         }
