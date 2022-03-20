@@ -20,9 +20,6 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     // Path to PHPStan with extensions, that PHPStan in Rector uses to determine types
     $parameters->set(Option::PHPSTAN_FOR_RECTOR_PATH, getcwd() . '/phpstan-for-config.neon');
 
-    // CodeQuality
-    $containerConfigurator->import(SetList::CODE_QUALITY);
-
     // Auto Import Names
     $parameters->set(Option::AUTO_IMPORT_NAMES, true);
     // Remove Unused Imports

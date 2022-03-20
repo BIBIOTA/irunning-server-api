@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -22,7 +23,7 @@ class AuthController extends Controller
     /**
      * Get a JWT via given credentials.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function login()
     {
@@ -40,7 +41,7 @@ class AuthController extends Controller
     /**
      * Get a authenticated User.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function me()
     {
@@ -56,9 +57,8 @@ class AuthController extends Controller
     /**
      * Log the user out(Invalidate the Token).
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-
     public function logout()
     {
         try {
@@ -72,7 +72,7 @@ class AuthController extends Controller
     /**
      * Refresh a Token.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function refresh()
     {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use App\Models\Member;
 use App\Models\MemberToken;
 use App\Jobs\GetActivitiesDataFromStrava;
@@ -162,9 +163,8 @@ class LoginController extends Controller
     /**
      * Log the user out(Invalidate the Token).
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-
     public function logout()
     {
         try {
