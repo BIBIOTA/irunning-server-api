@@ -1,5 +1,9 @@
 <h1>Irunning手機網頁應用程式</h1>
 
+![php-badge](https://img.shields.io/badge/php-%5E8.1-blue)
+![laravel-badge](hthttps://img.shields.io/badge/laravel-%5E9-blue)
+![laravel-octane](https://img.shields.io/badge/laravel%2Foctane-%5E1.2.4-blue)
+
 <a href="https://irunning.bibiota.com/">https://irunning.bibiota.com/</a>
 
 <br />
