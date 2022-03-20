@@ -1,4 +1,4 @@
-<h1>Irunning手機網頁應用程式</h1>
+<h1>Irunning</h1>
 
 ![php-badge](https://img.shields.io/badge/php-%5E8.1-blue)
 ![laravel-badge](https://img.shields.io/badge/laravel-%5E9-blue)
@@ -12,7 +12,6 @@ strava testing account:
 username / password
 <br />
 irunning.test@gmail.com / irunning.test@gmail.com
-<br />
 <br />
 
 前端: Vue-cli、Vuetify
