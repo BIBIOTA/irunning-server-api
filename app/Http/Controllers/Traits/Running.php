@@ -41,11 +41,11 @@ trait Running
         $min = gmdate('i', $movingTime);
         $sec = gmdate('s', $movingTime);
 
-        $time = ( $hour * 3600 ) + ( $min * 60 ) + $sec;
+        $time = ($hour * 3600) + ($min * 60) + $sec;
 
         $distanceFloor = $this->floorDec($distance / 1000, 2);
 
-        $pace = date('i:s', $time / ( ($distanceFloor > 0) ? $distanceFloor : 1));
+        $pace = date('i:s', $time / (($distanceFloor > 0) ? $distanceFloor : 1));
 
         return $pace;
     }
