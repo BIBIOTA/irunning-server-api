@@ -31,6 +31,12 @@ type Query {
       title: String @where(operator: "like")
     ): [News!]! @paginate(defaultCount: 10)
 
+    "List multiple banner."
+    bannerAll(
+      "Filters by title. Accepts SQL LIKE wildcards `%` and `_`."
+      title: String @where(operator: "like")
+    ): [Banner!]! @paginate(defaultCount: 10)
+
 }
 
 "Account of a person who utilizes this application."
@@ -61,7 +67,25 @@ type News {
 
     content: String
 
-    isActive: Boolean
+    isActive: Boolean @rename(attribute: "is_active")
+
+    created_at: DateTime!
+
+    updated_at: DateTime!
+}
+
+type Banner {
+    id: ID!
+
+    title: String!
+
+    image: String!
+
+    isIncludeLink: Boolean! @rename(attribute: "include_link")
+    
+    link: String
+
+    isActive: Boolean!  @rename(attribute: "is_active")
 
     created_at: DateTime!
 
@@ -80,7 +104,7 @@ type Mutation {
 
       content: String
 
-      isActive: Boolean!
+      isActive: Boolean! @rename(attribute: "is_active")
     ): News @create
 
     "Update an existing user."
@@ -92,7 +116,7 @@ type Mutation {
 
       content: String
 
-      isActive: Boolean!
+      isActive: Boolean! @rename(attribute: "is_active")
 
     ): News @update
 
@@ -101,4 +125,65 @@ type Mutation {
       "Search by primary key."
       id: ID!
     ): News @delete
+
+    "Create a new banner."
+    createBanner(
+      title: String! @rules(apply: ["unique:banner"], messages: [
+        {
+            rule: "unique"
+            message: "Title is duplicated."
+        }
+      ])
+
+      image: String!
+
+      isIncludeLink: Boolean! @rename(attribute: "include_link")
+
+      link: String @rules(apply: ["url"], messages: [
+        {
+            rule: "url"
+            message: "Link is not valid url."
+        }
+      ])
+
+      isActive: Boolean! @rename(attribute: "is_active")
+
+    ): Banner @create
+
+    "Update an existing banner."
+    updateBanner(
+      "Search by primary key."
+      id: ID!
+
+      title: String!
+
+      image: String!
+
+      isIncludeLink: Boolean! @rename(attribute: "include_link")
+
+      link: String @rules(apply: ["url"], messages: [
+        {
+            rule: "url"
+            message: "Link is not valid url."
+        }
+      ])
+
+      isActive: Boolean! @rename(attribute: "is_active")
+
+    ): Banner @update
+
+    "Switch isActive an existing banner."
+    switchBanner(
+      "Search by primary key."
+      id: ID!
+
+      isActive: Boolean! @rename(attribute: "is_active")
+
+    ): Banner @update
+
+    "Delete an existing banner."
+    deleteBanner(
+      "Search by primary key."
+      id: ID!
+    ): Banner @delete
 }

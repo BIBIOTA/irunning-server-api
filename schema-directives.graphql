@@ -60,7 +60,7 @@ directive @can(
   """
   Statically defined arguments that are passed to `Gate::check`.
 
-  You may pass pass arbitrary GraphQL literals,
+  You may pass arbitrary GraphQL literals,
   e.g.: [1, 2, 3] or { foo: "bar" }
   """
   args: CanArgs
@@ -742,6 +742,12 @@ directive @complexity(
   """
   resolver: String
 ) on FIELD_DEFINITION
+
+# Directive class: Nuwave\Lighthouse\Schema\Directives\ConvertEmptyStringsToNullDirective
+"""
+Replaces `""` with `null`.
+"""
+directive @convertEmptyStringsToNull on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION | FIELD_DEFINITION
 
 # Directive class: Nuwave\Lighthouse\Schema\Directives\CountDirective
 """
