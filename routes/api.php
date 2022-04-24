@@ -10,7 +10,6 @@ use App\Http\Controllers\IndexController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\WeatherController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
