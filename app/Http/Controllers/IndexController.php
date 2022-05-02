@@ -29,7 +29,7 @@ class IndexController extends Controller
             return $this->response(null, Message::NOTFOUND, Response::HTTP_NOT_FOUND);
         } catch (Throwable $e) {
             $this->sendError('function getIndexEvents error', $e);
-            return $this->responseError(Message::SERVERERROR, Response::HTTP_INTERNAL_SERVER_ERROR);
+            return $this->response(null, Message::SERVERERROR, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
