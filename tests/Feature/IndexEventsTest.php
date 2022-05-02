@@ -22,7 +22,18 @@ class IndexEventsTest extends TestCase
             'message',
             'data' => [
                 '*' => [
+                    'id',
+                    'link',
+                    'event_status',
                     'event_name',
+                    'event_certificate',
+                    'event_date',
+                    'event_time',
+                    'location',
+                    'agent',
+                    'participate',
+                    'created_at',
+                    'updated_at',
                 ],
             ]
         ]);

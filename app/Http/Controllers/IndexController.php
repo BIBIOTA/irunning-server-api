@@ -3,42 +3,33 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use App\Models\Event;
-use Carbon\Carbon;
-use App\Jobs\SendEmail;
+use Illuminate\Http\Response;
+use App\Services\EventService;
+use App\Http\Responses\Message;
 use Throwable;
 
 class IndexController extends Controller
 {
-    public function __construct()
+    private $service;
+
+    public function __construct(EventService $eventService)
     {
-        $this->events = new Event();
+        $this->service = $eventService;
     }
 
     public function getIndexEvents(Request $request)
     {
         try {
-            $rows = $this->events
-                ->where('event_status', 1)
-                ->where('event_date', '>=', Carbon::now())
-                ->orderBy('event_date', 'ASC')->limit(5)
-                ->get();
+            $data = $this->service->getIndexEvents();
 
-            if ($rows->count() > 0) {
-                $data = $rows->map(function ($row) {
-                    return [
-                        'event_name' => $row->event_name,
-                    ];
-                });
-
-                return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $data], 200);
+            if (count($data) > 0) {
+                return $this->response($data, Message::SUCCESS);
             }
 
-            return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
+            return $this->response(null, Message::NOTFOUND, Response::HTTP_NOT_FOUND);
         } catch (Throwable $e) {
-            Log::stack(['controller', 'slack'])->critical($e);
-            SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function getIndexEvents error', 'main' => $e]);
+            $this->sendError('function getIndexEvents error', $e);
+            return $this->responseError(Message::SERVERERROR, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

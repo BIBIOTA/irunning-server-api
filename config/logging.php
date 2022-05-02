@@ -59,6 +59,20 @@ return [
             'permission' => 0664,
         ],
 
+        'service' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/service/laravel.log'),
+            'days' => 14,
+            'permission' => 0664,
+        ],
+
+        'repository' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/repository/laravel.log'),
+            'days' => 14,
+            'permission' => 0664,
+        ],
+
         'event' => [
             'driver' => 'daily',
             'path' => storage_path('logs/event/laravel.log'),
