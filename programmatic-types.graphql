@@ -72,6 +72,15 @@ type NewsPaginator {
   data: [News!]!
 }
 
+"""A paginated list of Banner items."""
+type BannerPaginator {
+  """Pagination information about the list of items."""
+  paginatorInfo: PaginatorInfo!
+
+  """A list of Banner items."""
+  data: [Banner!]!
+}
+
 """
 The `Float` scalar type represents signed double-precision fractional
 values as specified by
