@@ -2,59 +2,40 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use App\Models\Event;
-use App\Models\EventDistance;
-use App\Jobs\SendEmail;
+use App\Http\Requests\GetEventsRequest;
+use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
+use App\Http\Responses\Message;
+use App\Services\EventService;
 use Throwable;
 
 class EventController extends Controller
 {
-    public function __construct()
+    private $service;
+
+    public function __construct(EventService $eventService)
     {
-        $this->events = new Event();
-        $this->eventDistances = new EventDistance();
+        $this->service = $eventService;
     }
 
-    public function getEvents(Request $request)
+    /**
+     * @param GetEventsRequest $request
+     *
+     * @return JsonResponse
+     */
+    public function getEvents(GetEventsRequest $request): JsonResponse
     {
         try {
-            $this->filters = [
-                'startDay' => $request->startDay,
-                'endDay' => $request->endDay,
-                'distances' => $request->distances,
-                'keywords' => $request->keywords,
-            ];
+            $data = $this->service->getEvents($request->all());
 
-            if (isset($this->filters['distances']) && is_array($this->filters['distances'])) {
-                $distances = $this->eventDistances->get();
-                $this->filters['ids'] = [];
-                foreach ($distances as $distance) {
-                    $hasDistance = $this->eventDistances->distanceFilter($distance, $this->filters['distances']);
-                    if ($hasDistance) {
-                        if (!in_array($distance->event_id, $this->filters['ids'])) {
-                            array_push($this->filters['ids'], $distance->event_id);
-                        }
-                    }
-                }
+            if ($data->count() > 0) {
+                return $this->response($data, Message::SUCCESS);
             }
 
-            $rows = $this->events->getFilterData($this->filters);
-
-            if ($rows->count() > 0) {
-                $rows->getCollection()->transform(function ($row) {
-                    $row['distance'] = ($row->distance) ? $row->distance : null;
-                    return $row;
-                });
-
-                return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $rows], 200);
-            }
-
-            return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
+            return $this->response(null, Message::NOTFOUND, Response::HTTP_NOT_FOUND);
         } catch (Throwable $e) {
-            Log::stack(['controller', 'slack'])->critical($e);
-            SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function getEvents error', 'main' => $e]);
+            $this->sendError('function getEvents error', $e);
+            return $this->response(null, Message::SERVERERROR, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

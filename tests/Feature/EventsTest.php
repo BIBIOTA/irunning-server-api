@@ -8,28 +8,12 @@ use Tests\TestCase;
 
 class EventsTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     *
-     * @return void
-     */
-    public function testEvents()
+    public function testEventsSuccess()
     {
-        $dateRangeTest = [
-            [
-                'startDay' => date('Y-m-d'),
-                'endDay' => date('Y-m-d', strtotime("last day of 1 month")),
-                'result' => 200,
-            ],
-            [
-                'startDay' => date('Y-m-d', strtotime("-2 day")),
-                'endDay' => date('Y-m-d', strtotime("-1 day")),
-                'result' => 404,
-            ]
+        $data = [
+            'startDay' => date('Y-m-d'),
+            'endDay' => date('Y-m-d', strtotime("last day of 1 month")),
         ];
-
-        // 1: 全馬, 2: 半馬, 3: 三鐵
-        $eventDistances = [1,2,3];
 
         $dataStructure = $this->paginationStructure([
             '*' => [
@@ -59,21 +43,31 @@ class EventsTest extends TestCase
             ],
         ]);
 
-        // conditon
-        for ($i = 0; $i <= count($eventDistances) - 1; $i++) {
-            $eventDistance = $eventDistances[$i];
-            for ($j = 0; $j <= count($dateRangeTest) - 1; $j++) {
-                $dateRange = $dateRangeTest[$j];
-                $data = [
-                    'event_distance' => $eventDistance,
-                    'startDay' => $dateRange['startDay'],
-                    'endDay' => $dateRange['endDay'],
-                ];
-                $this->paginationTest('GET', 'api/events', $data, $dataStructure);
-            }
-        }
+        $this->json('GET', '/api/events', $data)
+        ->assertStatus(200)
+        ->assertJsonStructure($dataStructure);
+    }
 
-        // default
-        $this->paginationTest('GET', 'api/events', [], $dataStructure);
+    public function testEventsValidationFailedWhenInvalidDistancesValue()
+    {
+        $data = [
+            'distances' => [4],
+            'startDay' => date('Y-m-d'),
+            'endDay' => date('Y-m-d', strtotime("last day of 1 month")),
+        ];
+
+        $this->json('GET', '/api/events', $data)
+        ->assertStatus(422);
+    }
+
+    public function testEventNotFoundWhenDateRangeBeforeToday()
+    {
+        $data = [
+            'startDay' => date('Y-m-d', strtotime("-2 day")),
+            'endDay' => date('Y-m-d', strtotime("-1 day")),
+        ];
+
+        $this->json('GET', '/api/events', $data)
+        ->assertStatus(404);
     }
 }

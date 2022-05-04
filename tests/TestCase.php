@@ -38,6 +38,7 @@ abstract class TestCase extends BaseTestCase
                 $server,
                 $content = []
             );
+
             if ($response->getStatusCode() === 200) {
                 $response->assertStatus(200);
                 $response->assertJsonStructure($dataStructure);
