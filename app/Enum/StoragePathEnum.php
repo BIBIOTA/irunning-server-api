@@ -3,5 +3,5 @@ namespace App\Enum;
 
 class StoragePathEnum
 {
-    const BANNER = 'banner';
+    const BANNER = 'banners';
 }

@@ -126,9 +126,9 @@ type Mutation {
       id: ID!
     ): News @delete
 
-    "Create a new banner."
+    "Create a new banners."
     createBanner(
-      title: String! @rules(apply: ["unique:banner"], messages: [
+      title: String! @rules(apply: ["unique:banners"], messages: [
         {
             rule: "unique"
             message: "Title is duplicated."

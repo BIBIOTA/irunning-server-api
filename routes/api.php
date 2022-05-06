@@ -3,12 +3,14 @@
 use App\Http\Controllers\Apis\RequestApi;
 use App\Http\Controllers\AqiController;
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\BannerController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\NewsController;
 use App\Http\Controllers\WeatherController;
 use Illuminate\Support\Facades\Route;
 
@@ -27,7 +29,7 @@ Route::post('login', [LoginController::class, 'login']);
 Route::post('logout', [LoginController::class,'logout']);
 
 Route::prefix('aqi')->group(function () {
-    Route::get('', [AqiController::class, 'getAqiList'])->name('aqi.getAqiList');
+    Route::get('/', [AqiController::class, 'getAqiList'])->name('aqi.getAqiList');
 });
 
 Route::prefix('activities')->group(function () {
@@ -37,15 +39,15 @@ Route::prefix('activities')->group(function () {
 });
 
 Route::prefix('cities')->group(function () {
-    Route::get('', [CityController::class, 'getCities'])->name('cities.getCities');
+    Route::get('/', [CityController::class, 'getCities'])->name('cities.getCities');
 });
 
 Route::prefix('districts')->group(function () {
-    Route::get('', [DistrictController::class, 'getDistricts'])->name('districts.getDistricts');
+    Route::get('/', [DistrictController::class, 'getDistricts'])->name('districts.getDistricts');
 });
 
 Route::prefix('events')->group(function () {
-    Route::get('', [EventController::class, 'getEvents'])->name('events.getEvents');
+    Route::get('/', [EventController::class, 'getEvents'])->name('events.getEvents');
 });
 
 Route::prefix('index')->group(function () {
@@ -64,5 +66,13 @@ Route::prefix('member')->group(function () {
 });
 
 Route::prefix('weather')->group(function () {
-    Route::get('', [WeatherController::class, 'getWeather'])->name('weather.getWeather');
+    Route::get('/', [WeatherController::class, 'getWeather'])->name('weather.getWeather');
+});
+
+Route::prefix('banner')->group(function () {
+    Route::get('/', [BannerController::class, 'getBanners'])->name('banner.getBanners');
+});
+
+Route::prefix('news')->group(function () {
+    Route::get('/', [NewsController::class, 'getNews'])->name('banner.getNews');
 });
