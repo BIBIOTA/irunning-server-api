@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MemberController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\ImageController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -33,4 +33,11 @@ Route::group([
     Route::get('/', [MemberController::class, 'index'])->name('members.index');
     Route::get('{memberUuid}', [MemberController::class, 'view'])->name('members.view');
     Route::get('{memberUuid}/{runningUuId}', [MemberController::class, 'runningInfo'])->name('members.runningInfo');
+});
+
+Route::group([
+    'middleware' => 'admin',
+    'prefix' => 'upload'
+], function () {
+    Route::post('uploadImage', [ImageController::class, 'uploadImage'])->name('upload.uploadImage');
 });

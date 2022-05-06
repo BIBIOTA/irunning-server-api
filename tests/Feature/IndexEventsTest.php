@@ -15,14 +15,25 @@ class IndexEventsTest extends TestCase
      */
     public function testIndexEvents()
     {
-        $response = $this->call('GET', 'api/index/getIndexEvents');
+        $response = $this->json('GET', 'api/index/getIndexEvents');
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'status',
             'message',
             'data' => [
                 '*' => [
+                    'id',
+                    'link',
+                    'event_status',
                     'event_name',
+                    'event_certificate',
+                    'event_date',
+                    'event_time',
+                    'location',
+                    'agent',
+                    'participate',
+                    'created_at',
+                    'updated_at',
                 ],
             ]
         ]);

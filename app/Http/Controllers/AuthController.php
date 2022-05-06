@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use App\Jobs\SendEmail;
+use App\Models\User;
 use Throwable;
 
 class AuthController extends Controller
@@ -17,18 +20,33 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login']]);
+        $this->middleware('admin', ['except' => ['login']]);
     }
     /**
      * Get a JWT via given credentials.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function login()
+    public function login(Request $request)
     {
         try {
-            $credentials = request(['email', 'password']);
-            if (!$token = Auth::guard()->attempt($credentials)) {
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|email',
+                'password' => 'required|string',
+            ], [
+                'email.required' => 'email is required',
+                'password.required' => 'password is required',
+            ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => $validator->errors()->all()[0],
+                    'data' => null
+                ], 400);
+            }
+        
+            $credentials = $request->all();
+            if (!$token = Auth::guard('admin')->attempt($credentials)) {
                 return response()->json(['status' => false, 'message' => '登入失敗'], 401);
             }
             return $this->respondWithToken($token);
@@ -40,7 +58,7 @@ class AuthController extends Controller
     /**
      * Get a authenticated User.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function me()
     {
@@ -56,13 +74,12 @@ class AuthController extends Controller
     /**
      * Log the user out(Invalidate the Token).
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-
     public function logout()
     {
         try {
-            Auth::guard()->logout();
+            Auth::guard('admin')->logout();
             return response()->json(['status' => true, 'message' => '登出成功']);
         } catch (Throwable $e) {
             Log::stack(['controller', 'slack'])->critical($e);
@@ -72,12 +89,12 @@ class AuthController extends Controller
     /**
      * Refresh a Token.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function refresh()
     {
         try {
-            return $this->respondWithToken(Auth::guard()->refresh());
+            return $this->respondWithToken(Auth::guard('admin')->refresh());
         } catch (Throwable $e) {
             Log::stack(['controller', 'slack'])->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function refresh error', 'main' => $e]);
@@ -90,7 +107,7 @@ class AuthController extends Controller
                 'status' => true,
                 'access_token' => $token,
                 'token_type' => 'bearer',
-                'expires_in' => Auth::guard()->factory()->getTTL() * 60
+                'expires_in' => Auth::guard('admin')->factory()->getTTL() * 60
             ]);
         } catch (Throwable $e) {
             Log::stack(['controller', 'slack'])->critical($e);

@@ -161,12 +161,16 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
-        PHPOpenSourceSaver\JWTAuth\Providers\LaravelServiceProvider::class,
-        Intervention\Image\ImageServiceProvider::class,
 
         /*
          * Package Service Providers...
          */
+
+        PHPOpenSourceSaver\JWTAuth\Providers\LaravelServiceProvider::class,
+        Intervention\Image\ImageServiceProvider::class,
+        Nuwave\Lighthouse\LighthouseServiceProvider::class,
+        Nuwave\Lighthouse\Pagination\PaginationServiceProvider::class,
+        Nuwave\Lighthouse\Validation\ValidationServiceProvider::class,
 
         /*
          * Application Service Providers...

@@ -171,6 +171,7 @@ class MemberController extends Controller
                 'district' => $request->district,
                 'runner_type' => $request->runnerType,
                 // 'join_rank' => $request->joinRank,
+                'is_register' => true,
             ];
 
             $validator = Validator::make($form, [
@@ -201,12 +202,7 @@ class MemberController extends Controller
             $member = $this->me();
 
             if ($member) {
-                if ($member->is_register === 1) {
-                    $member->update($form);
-                } else {
-                    $form['is_register'] = 1;
-                    $member->update($form);
-                }
+                $member->update($form);
                 return response()->json(['status' => true, 'message' => '資料更新成功', 'data' => null], 200);
             } else {
                 return response()->json(['status' => false, 'message' => '查無會員資料', 'data' => null], 404);

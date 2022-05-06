@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Traits;
 
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
@@ -10,7 +11,7 @@ trait MemberTrait
     /**
      * Get a authenticated User.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     private function me()
     {
