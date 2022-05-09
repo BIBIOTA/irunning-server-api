@@ -29,14 +29,11 @@ abstract class TestCase extends BaseTestCase
         for ($page = 1; $page <= $pageCount; $page++) {
             $formData = array_merge($formData, ['page' => $pageCount]);
 
-            $response = $this->call(
+            $response = $this->json(
                 $httpMethod,
                 $url,
                 $formData,
-                $cookies = [],
-                $files = [],
                 $server,
-                $content = []
             );
 
             if ($response->getStatusCode() === 200) {

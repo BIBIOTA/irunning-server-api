@@ -2,32 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use App\Models\Aqi;
-use App\Jobs\SendEmail;
+use App\Http\Requests\GetAqiRequest;
+use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
+use App\Http\Responses\Message;
+use App\Services\AqiService;
 use Throwable;
 
 class AqiController extends Controller
 {
-    public function __construct()
+    private AqiService $service;
+
+    public function __construct(AqiService $service)
     {
-        $this->aqis = new Aqi();
+        $this->service = $service;
     }
 
-    public function getAqiList(Request $request)
+    public function getAqiList(GetAqiRequest $request): JsonResponse
     {
         try {
-            $data = $this->aqis->where('city_id', $request->city_id)->get();
+            $data = $this->service->getAqiList($request->city_id);
 
-            if ($data->count() > 0) {
-                return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $data], 200);
+            if (count($data) > 0) {
+                return $this->response($data, Message::SUCCESS);
             }
 
-            return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
+            return $this->response(null, Message::NOTFOUND, Response::HTTP_NOT_FOUND);
         } catch (Throwable $e) {
-            Log::stack(['controller', 'slack'])->critical($e);
-            SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function getAqiList error', 'main' => $e]);
+            $this->sendError('function getAqiList error', $e);
+            return $this->response(null, Message::SERVERERROR, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
