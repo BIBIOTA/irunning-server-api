@@ -27,6 +27,7 @@ class ActivityTest extends TestCase
             ],
         ]);
 
+
         $member = app(Member::class)->where('id', env('API_MEMBER_ID'))->first();
         $token = Auth::guard()->fromUser($member);
 

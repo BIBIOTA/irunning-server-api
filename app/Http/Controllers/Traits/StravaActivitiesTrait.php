@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use Exception;
 
 trait StravaActivitiesTrait
 {
@@ -100,24 +101,19 @@ trait StravaActivitiesTrait
     {
         $token = app(MemberToken::class)->where('member_id', $memberId)->first();
 
-        if ($token) {
-            $response = Http::withToken($token->access_token)
-                        ->get('https://www.strava.com/api/v3/activities/' . $stravaActivityId);
+        $response = Http::withToken($token->access_token)
+                    ->get('https://www.strava.com/api/v3/activities/' . $stravaActivityId);
 
-            if ($response->status() === 200) {
-                $data = $response->json();
-                $time_raw = strtotime($data['start_date_local']);
-                $time_mysql = gmdate('Y-m-d H:i:s', $time_raw);
-                $data['start_date_local'] = $time_mysql;
-                $data['pace'] = $this->getPace($data['distance'], $data['moving_time']);
-                $data['distance'] = $this->getDistanceIsFloor($data['distance']);
-                return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $data], 200);
-            } else {
-                Log::stack(['activities', 'slack'])->error($response);
-                return response()->json(['status' => false, 'message' => '發生例外錯誤:無法取得Strava資料', 'data' => null], 404);
-            }
+        if ($response->status() === 200) {
+            $data = $response->json();
+            $time_raw = strtotime($data['start_date_local']);
+            $time_mysql = gmdate('Y-m-d H:i:s', $time_raw);
+            $data['start_date_local'] = $time_mysql;
+            $data['pace'] = $this->getPace($data['distance'], $data['moving_time']);
+            $data['distance'] = $this->getDistanceIsFloor($data['distance']);
+            return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $data], 200);
         } else {
-            return response()->json(['status' => false, 'message' => '無法取得登入資料', 'data' => null], 404);
+            throw new Exception('getActivityFromStrava error');
         }
     }
 }
