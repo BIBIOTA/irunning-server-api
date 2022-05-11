@@ -2,18 +2,25 @@
 
 namespace Database\Seeders;
 
-use App\Models\Event;
-use App\Models\EventDistance;
+use App\Services\EventService;
 use App\Jobs\SendEmail;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class EventSeeder extends Seeder
 {
+    private EventService $service;
+
+    /**
+     * @param EventService $service
+     */
+    public function __construct(EventService $service)
+    {
+        $this->service = $service;
+    }
+
     /**
      * Run the database seeds.
      *
@@ -22,69 +29,34 @@ class EventSeeder extends Seeder
     public function run()
     {
         try {
-            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-
             $response = Http::get(env('NODE_URL') . '/api/events');
 
             if ($response->status() === 200) {
                 $res = $response->json();
 
-                $eventsColumns = DB::getSchemaBuilder()->getColumnListing('events');
-                $eventsDistancesColumns = DB::getSchemaBuilder()->getColumnListing('events_distances');
-
                 if (count($res) > 0) {
-                    app(Event::class)->truncate();
-                    app(EventDistance::class)->truncate();
-
-
                     if ($res['status'] === true) {
                         if (is_array($res['data'])) {
                             foreach ($res['data'] as $data) {
-                                $id = uniqid();
-                                $formData = [
-                                    'id' => $id,
-                                ];
-                                $distanceFormData = [];
-                                foreach ($data as $key => $value) {
-                                    if (in_array($key, $eventsColumns)) {
-                                        $formData[$key] = $value;
-                                    }
-                                    if ($key === 'distances') {
-                                        foreach ($data[$key] as $distance) {
-                                            $distanceData = [
-                                                'id' => uniqid(),
-                                                'event_id' => $id,
-                                            ];
-                                            foreach ($distance as $key => $value) {
-                                                if (in_array($key, $eventsDistancesColumns)) {
-                                                    $distanceData[$key] = $value;
-                                                }
-                                            }
-                                            array_push($distanceFormData, $distanceData);
-                                        }
-                                    }
-                                }
-                                app(Event::class)->create($formData);
-                                if (count($distanceFormData) > 0) {
-                                    foreach ($distanceFormData as $data) {
-                                        app(EventDistance::class)->create($data);
-                                    }
+                                $event = $this->service->getEventByEventName($data['event_name']);
+
+                                if (empty($event)) {
+                                    $this->service->createEvent($data);
+                                } else {
+                                    $this->service->updateEvent($event->id, $data);
                                 }
                             }
                         }
                         Log::channel('event')->info('賽事資料更新完成');
                     } else {
-                        Log::stack(['event', 'slack'])->error([ 'message' => '無法取得賽事資料', 'response' => $res]);
+                        Log::stack(['event', 'slack'])->error('無法取得賽事資料');
                     }
                 } else {
-                    Log::stack(['event', 'slack'])->error('無法取得賽事資料');
+                    Log::stack(['event', 'slack'])->error('無賽事資料');
                 }
             } else {
                 Log::stack(['event', 'slack'])->error('無法取得賽事資料:無法連線');
             }
-
-
-            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         } catch (Throwable $e) {
             Log::stack(['event', 'slack'])->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'event error log', 'main' => $e]);

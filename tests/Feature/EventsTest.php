@@ -21,6 +21,7 @@ class EventsTest extends TestCase
                 'link',
                 'event_status',
                 'event_name',
+                'event_info',
                 'event_certificate',
                 'event_date',
                 'event_time',
