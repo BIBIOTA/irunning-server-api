@@ -8,7 +8,6 @@ use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use App\Http\Responses\Message;
 use App\Services\ActivityService;
-use App\Http\Controllers\Traits\StravaActivitiesTrait;
 use App\Http\Controllers\Traits\Running;
 use App\Http\Controllers\Traits\MemberTrait;
 use Throwable;
@@ -16,7 +15,6 @@ use Throwable;
 class ActivityController extends Controller
 {
     use Running;
-    use StravaActivitiesTrait;
     use MemberTrait;
 
     private ActivityService $service;
@@ -42,12 +40,20 @@ class ActivityController extends Controller
         }
     }
 
+    /**
+     * @param Request $request
+     * @param string $runningUuId
+     *
+     * @return JsonResponse
+     */
     public function getActivity(Request $request, string $runningUuId): JsonResponse
     {
         try {
             $member = $this->me();
 
-            return $this->getActivityFromStrava($member->id, $runningUuId);
+            $data = $this->service->getActivityFromStrava($member->id, $runningUuId);
+
+            return $this->response($data, Message::SUCCESS);
         } catch (Throwable $e) {
             $this->sendError('function getActivity error', $e);
             return $this->response(null, Message::SERVERERROR, Response::HTTP_INTERNAL_SERVER_ERROR);

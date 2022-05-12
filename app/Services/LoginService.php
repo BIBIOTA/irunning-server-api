@@ -5,14 +5,10 @@ namespace App\Services;
 use App\Repositories\MemberRepository;
 use App\Repositories\MemberTokenRepositroy;
 use App\Models\Member;
-use App\Jobs\GetActivitiesDataFromStrava;
-use App\Http\Controllers\Traits\StravaActivitiesTrait;
 use Illuminate\Support\Facades\Auth;
 
 class LoginService
 {
-    use StravaActivitiesTrait;
-
     /**
      * Undocumented variable
      *
@@ -27,13 +23,22 @@ class LoginService
      */
     private MemberTokenRepositroy $memberTokenRepository;
 
+    /**
+     * @param MemberRepository $memberRepository
+     * @param MemberTokenRepositroy $memberTokenRepository
+     */
     public function __construct(MemberRepository $memberRepository, MemberTokenRepositroy $memberTokenRepository)
     {
         $this->memberRepository = $memberRepository;
         $this->memberTokenRepository = $memberTokenRepository;
     }
 
-    public function login(array $input): ?array
+    /**
+     * @param array $input
+     *
+     * @return array
+     */
+    public function login(array $input): array
     {
         $athlete = $input['athlete'];
 
@@ -48,17 +53,16 @@ class LoginService
         $memberToken = $this->memberTokenRepository->getMemberToken($member->id);
 
         if ($memberToken) {
-            $tokenData = $this->memberTokenRepository->updateToken($memberToken, $input);
+            $memberToken = $this->memberTokenRepository->updateToken($memberToken, $input);
         } else {
-            $tokenData = $this->memberTokenRepository->createToken($member->id, $input);
+            $memberToken = $this->memberTokenRepository->createToken($member->id, $input);
         }
 
-        $this->getStats($member->strava_id, $tokenData);
-
-        $newJob = new GetActivitiesDataFromStrava($tokenData, true);
-        dispatch($newJob);
-
-        return $this->getJwtToken($member, $input['expires_in']);
+        return [
+            'jwtToken' => $this->getJwtToken($member, $input['expires_in']),
+            'member' => $member,
+            'memberToken' => $memberToken,
+        ];
     }
 
     /**

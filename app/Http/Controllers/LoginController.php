@@ -2,31 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Traits\StravaActivitiesTrait;
 use App\Http\Requests\LoginRequest;
 use App\Http\Responses\Message;
+use App\Services\ActivityService;
 use App\Services\LoginService;
+use App\Jobs\GetActivitiesDataFromStrava;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Throwable;
 
 class LoginController extends Controller
 {
-    use StravaActivitiesTrait;
 
     /**
      * Undocumented variable
      *
      * @var LoginService
      */
-    private LoginService $service;
+    private LoginService $loginService;
+
+    private ActivityService $activityService;
 
     /**
      * @param LoginService $service
      */
-    public function __construct(LoginService $service)
+    public function __construct(LoginService $loginService, ActivityService $activityService)
     {
-        $this->service = $service;
+        $this->loginService = $loginService;
+        $this->activityService = $activityService;
     }
 
     /**
@@ -37,10 +40,21 @@ class LoginController extends Controller
     public function login(LoginRequest $request): JsonResponse
     {
         try {
-            $data = $this->service->login($request->all());
+            $data = $this->loginService->login($request->all());
+            
+            $token = $data['jwtToken'];
 
-            if ($data) {
-                return $this->response($data, Message::SUCCESS);
+            $member = $data['member'];
+
+            $memberToken = $data['memberToken'];
+
+            if ($token && $memberToken) {
+                $this->activityService->getStats($member->strava_id, $memberToken);
+
+                $newJob = new GetActivitiesDataFromStrava($memberToken, $this->activityService, true);
+                dispatch($newJob);
+
+                return $this->response($token, Message::SUCCESS);
             }
 
             return $this->response(null, Message::LOGINFAILED, Response::HTTP_UNAUTHORIZED);
@@ -57,7 +71,7 @@ class LoginController extends Controller
     public function logout(): JsonResponse
     {
         try {
-            $this->service->logout();
+            $this->loginService->logout();
             return $this->response(null, Message::SUCCESS);
         } catch (Throwable $e) {
             $this->sendError('function logout error', $e);

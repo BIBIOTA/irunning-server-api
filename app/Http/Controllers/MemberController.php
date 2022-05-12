@@ -11,26 +11,28 @@ use App\Models\Member;
 use App\Models\MemberToken;
 use App\Models\Stat;
 use App\Http\Controllers\Traits\Running;
-use App\Http\Controllers\Traits\StravaActivitiesTrait;
 use App\Http\Controllers\Traits\MemberTrait;
 use App\Jobs\SendEmail;
+use App\Services\ActivityService;
 use Throwable;
 
 class MemberController extends Controller
 {
     use Running;
-    use StravaActivitiesTrait;
     use MemberTrait;
 
     public $members;
 
+    private ActivityService $activityService;
 
-    public function __construct()
+
+    public function __construct(ActivityService $activityService)
     {
         $this->members = new Member();
         $this->memberTokens = new MemberToken();
         $this->activities = new Activity();
         $this->stats = new Stat();
+        $this->activityService = $activityService;
     }
 
     /* ============   admin  ============= */
@@ -133,7 +135,7 @@ class MemberController extends Controller
                 ], 400);
             }
 
-            return $this->getActivityFromStrava($memberUuid, $runningUuId);
+            return $this->activityService->getActivityFromStrava($memberUuid, $runningUuId);
         } catch (Throwable $e) {
             Log::stack(['controller', 'slack'])->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function runningInfo error', 'main' => $e]);
