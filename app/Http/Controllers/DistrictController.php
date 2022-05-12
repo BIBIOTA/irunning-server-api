@@ -2,32 +2,43 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use App\Models\District;
-use App\Jobs\SendEmail;
+use App\Http\Requests\GetDistrictRequest;
+use App\Services\DistrictService;
+use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
+use App\Http\Responses\Message;
 use Throwable;
 
 class DistrictController extends Controller
 {
-    public function __construct()
+    private DistrictService $service;
+
+    /**
+     * @param DistrictService $service
+     */
+    public function __construct(DistrictService $service)
     {
-        $this->districts = new District();
+        $this->service = $service;
     }
 
-    public function getDistricts(Request $request)
+    /**
+     * @param GetDistrictRequest $request
+     *
+     * @return JsonResponse
+     */
+    public function getDistricts(GetDistrictRequest $request): JsonResponse
     {
         try {
-            $data = $this->districts->where('city_id', $request->city_id)->get();
+            $data = $this->service->getDistricts($request->city_id);
 
-            if ($data->count() > 0) {
-                return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $data], 200);
+            if (count($data) > 0) {
+                return $this->response($data, Message::SUCCESS);
             }
 
-            return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
+            return $this->response(null, Message::NOTFOUND, Response::HTTP_NOT_FOUND);
         } catch (Throwable $e) {
-            Log::stack(['controller', 'slack'])->critical($e);
-            SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function getDistricts error', 'main' => $e]);
+            $this->sendError('function getDistricts error', $e);
+            return $this->response(null, Message::SERVERERROR, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
