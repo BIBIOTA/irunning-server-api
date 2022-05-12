@@ -4,15 +4,14 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\MemberToken;
+use App\Services\ActivityService;
 use App\Jobs\SendEmail;
-use App\Http\Controllers\Traits\StravaActivitiesTrait;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class StravaActivities extends Command
 {
-    use StravaActivitiesTrait;
-
     /**
      * The name and signature of the console command.
      *
@@ -27,14 +26,19 @@ class StravaActivities extends Command
      */
     protected $description = '取得活動紀錄';
 
+
+    protected ActivityService $activityService;
+
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(ActivityService $activityService)
     {
         parent::__construct();
+
+        $this->activityService = $activityService;
     }
 
     /**
@@ -50,7 +54,7 @@ class StravaActivities extends Command
             if ($tokens->count() > 0) {
                 foreach ($tokens as $tokenData) {
                     try {
-                        $this->getActivitiesDataFromStrava($tokenData);
+                        $this->activityService->getActivitiesDataFromStrava($tokenData);
                         Log::channel('strava')->info($tokenData->member_id . 'Strava活動更新完成');
                     } catch (Throwable $e) {
                         Log::stack(['strava', 'slack'])->critical($e);

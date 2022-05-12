@@ -2,32 +2,37 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use App\Models\City;
-use App\Jobs\SendEmail;
+use App\Services\CityService;
+use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
+use App\Http\Responses\Message;
 use Throwable;
 
 class CityController extends Controller
 {
-    public function __construct()
+    private CityService $service;
+
+    public function __construct(CityService $service)
     {
-        $this->cities = new City();
+        $this->service = $service;
     }
 
-    public function getCities(Request $request)
+    /**
+     * @return array
+     */
+    public function getCities(): JsonResponse
     {
         try {
-            $data = $this->cities->whereNotNull('dataid')->get();
+            $data = $this->service->getCities();
 
-            if ($data->count() > 0) {
-                return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $data], 200);
+            if (count($data) > 0) {
+                return $this->response($data, Message::SUCCESS);
             }
 
-            return response()->json(['status' => false, 'message' => '查無任何資料', 'data' => null], 404);
+            return $this->response(null, Message::NOTFOUND, Response::HTTP_NOT_FOUND);
         } catch (Throwable $e) {
-            Log::stack(['controller', 'slack'])->critical($e);
-            SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function getCities error', 'main' => $e]);
+            $this->sendError('function getCities error', $e);
+            return $this->response(null, Message::SERVERERROR, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

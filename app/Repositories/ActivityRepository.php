@@ -2,13 +2,10 @@
 namespace App\Repositories;
 
 use App\Models\Activity;
-use App\Http\Controllers\Traits\Running;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class ActivityRepository
 {
-    use Running;
-
     private Activity $model;
 
     public function __construct(Activity $model)
@@ -40,18 +37,18 @@ class ActivityRepository
         $results = $query->paginate($filters['rows'] ?? 10);
         $results->appends($filters);
 
-        $results->getCollection()->transform(function ($row) {
-            return [
-                'id' => $row->id,
-                'name' => $row->name,
-                'pace' => $this->getPace($row->distance, $row->moving_time),
-                'distance' => $this->getDistanceIsFloor($row->distance),
-                'moving_time' => $row->moving_time,
-                'start_date_local' => $row->start_date_local,
-                'summary_polyline' => $row->summary_polyline,
-            ];
-        });
-
         return $results;
+    }
+
+    /**
+     * @param array $formData
+     *
+     * @return void
+     */
+    public function updateOrCreateActivities(array $formData): void
+    {
+        $this->model->updateOrCreate([
+            'id' => $formData['id']
+        ], $formData);
     }
 }
