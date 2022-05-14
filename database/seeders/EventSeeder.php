@@ -34,7 +34,7 @@ class EventSeeder extends Seeder
             if ($response->status() === 200) {
                 $res = $response->json();
 
-                if (count($res) > 0) {
+                if (isset($res) && count($res) > 0) {
                     if ($res['status'] === true) {
                         if (is_array($res['data'])) {
                             foreach ($res['data'] as $data) {
