@@ -10,6 +10,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\TelegramUserController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\WeatherController;
 use Illuminate\Support\Facades\Route;
@@ -63,6 +64,11 @@ Route::prefix('member')->group(function () {
     Route::put('/', [MemberController::class, 'update'])->name('member.update');
     Route::get('/getIndexRunInfo', [MemberController::class, 'getIndexRunInfo'])
     ->name('member.getIndexRunInfo');
+});
+
+Route::prefix('telegram')->group(function () {
+    Route::post('/subscribe', [TelegramUserController::class, 'subscribe'])->name('telegram.subscribe');
+    Route::post('/unsubscribe', [TelegramUserController::class, 'unsubscribe'])->name('subscribe.unsubscribe');
 });
 
 Route::prefix('weather')->group(function () {

@@ -26,10 +26,11 @@ class Kernel extends ConsoleKernel
         ->hourly();
         $schedule->command('DB:seed --class=AqiSeeder')->hourly();
         $schedule->command('strava:refreashToken')->everyThreeHours();
-        $schedule->command('strava:activities')->daily();
-        $schedule->command('weather:clear')->daily();
+        $schedule->command('strava:activities')->dailyAt('00:00');
+        $schedule->command('weather:clear')->dailyAt('23:30');
+        $schedule->command('events:send')->dailyAt('09:00');
         $schedule->command('DB:seed --class=EventSeeder')
-        ->daily();
+        ->dailyAt('01:00');
     }
 
     /**

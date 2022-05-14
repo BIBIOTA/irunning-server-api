@@ -6,6 +6,10 @@ use App\Repositories\EventRepository;
 use App\Repositories\EventDistanceRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Http\JsonResponse;
+use Exception;
 
 class EventService
 {
@@ -16,8 +20,10 @@ class EventService
      * @param EventRepository $eventRepository
      * @param EventDistanceRepository $eventDistanceRepository
      */
-    public function __construct(EventRepository $eventRepository, EventDistanceRepository $eventDistanceRepository)
-    {
+    public function __construct(
+        EventRepository $eventRepository,
+        EventDistanceRepository $eventDistanceRepository,
+    ) {
         $this->eventRepository = $eventRepository;
         $this->eventDistanceRepository = $eventDistanceRepository;
     }
@@ -70,13 +76,13 @@ class EventService
      *
      * @return void
      */
-    public function updateEvent(string $eventId, array $data)
+    public function updateEvent(string $eventId, array $data): void
     {
         $input = $this->makeEventInput($data, $eventId);
 
         $distanceInput = $this->makeEventDistanceInput($data, $eventId);
 
-        return $this->eventRepository->updateEvent($input, $distanceInput);
+        $this->eventRepository->updateEvent($input, $distanceInput);
     }
 
     /**
@@ -91,7 +97,38 @@ class EventService
 
         $distanceInput = $this->makeEventDistanceInput($data, $id);
 
+        $this->storeNewEventToRedis($data);
+
         return $this->eventRepository->createEvent($input, $distanceInput);
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return void
+     */
+    public function storeNewEventToRedis(array $data): void
+    {
+        Redis::lpush('new_event', json_encode($data));
+        Redis::expire('new_event', 60 * 60 * 12);
+    }
+
+    /**
+     * @param array $events
+     *
+     * @return void
+     */
+    public function sendNewEventFromRedis(array $events, array $userIds): void
+    {
+        $response = Http::post(
+            env('NODE_URL') . '/api/newEvents',
+            [ 'events' => $events, 'userIds' => $userIds ]
+        );
+        if ($response->status() === 200) {
+            return;
+        }
+
+        throw new Exception($response->json()['message']);
     }
 
     /**
