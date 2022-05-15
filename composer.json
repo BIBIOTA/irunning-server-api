@@ -15,7 +15,7 @@
         "laravel/tinker": "^2.5",
         "league/flysystem-aws-s3-v3": "^3.0",
         "mll-lab/laravel-graphql-playground": "^2.6",
-        "nuwave/lighthouse": "^5.45",
+        "nuwave/lighthouse": "^5.48",
         "php-open-source-saver/jwt-auth": "^1.4.1",
         "predis/predis": "^1.1"
     },
