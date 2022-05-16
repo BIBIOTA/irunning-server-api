@@ -13,9 +13,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        $this->call(AqiSeeder::class);
         $this->call(CityAndDistrictSeeder::class);
         $this->call(CityDataIdSeeder::class);
-        $this->call(AqiSeeder::class);
+        $this->call(EventSeeder::class);
         $this->call(WxDocumentSeeder::class);
         $this->call(WeatherSeeder::class);
     }
