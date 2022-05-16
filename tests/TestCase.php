@@ -6,10 +6,48 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Http;
 use App\Models\City;
 use App\Models\District;
+use Illuminate\Support\Carbon;
 
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
+
+    public function fakeResponseAthlete()
+    {
+        return [
+            'id' => 28179653,
+            'username' => null,
+            'resource_state' => 2,
+            'firstname' => '裕揮',
+            'lastname' => '太田',
+            'bio' => '',
+            'city' => '',
+            'state' => '',
+            'country' => null,
+            'sex' => 'M',
+            'premium' => false,
+            'summit' => false,
+            'created_at' => '2018-02-10T15:19:26Z',
+            'updated_at' => '2019-10-14T00:54:04Z',
+            'badge_type_id' => 0,
+            'weight' => 56.4,
+            'profile_medium' => 'https://graph.facebook.com/1512028328846999/picture?height=256&width=256',
+            'profile' => 'https://graph.facebook.com/1512028328846999/picture?height=256&width=256',
+            'friend' => null,
+            'follower' => null,
+        ];
+    }
+
+    public function fakeRefrashStravaToken()
+    {
+        return [
+            'token_type' => 'Bearer',
+            'access_token' => '6c0ab16df149b98685c098a850f921f760c0da65',
+            'expires_at' => Carbon::now()->addHours(6)->timestamp,
+            'expires_in' => 3600,
+            'refresh_token' => '801228692fa6773627c1a5263838bdf1b4860e4e',
+        ];
+    }
 
     public function refreshStravaToken($data)
     {
