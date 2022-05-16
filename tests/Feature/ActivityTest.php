@@ -4,15 +4,17 @@ namespace Tests\Feature;
 
 use App\Models\Member;
 use App\Models\Activity;
+use App\Services\ActivityService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
-use Artisan;
+use Mockery;
+use Mockery\MockInterface;
 
 class ActivityTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function testActivities()
     {
         $dataStructure = $this->paginationStructure([
@@ -27,9 +29,13 @@ class ActivityTest extends TestCase
             ],
         ]);
 
+        $member = Member::factory()->create();
 
-        $member = app(Member::class)->where('id', env('API_MEMBER_ID'))->first();
         $token = Auth::guard()->fromUser($member);
+
+        Activity::factory()->create([
+            'member_id' => $member->id,
+        ]);
 
         $this->paginationTest('GET', 'api/activities', [], $dataStructure, ['HTTP_Authorization' => 'Bearer ' . $token]);
     }
@@ -42,10 +48,17 @@ class ActivityTest extends TestCase
             'data',
         ];
 
-        $member = app(Member::class)->where('id', env('API_MEMBER_ID'))->first();
+        $member = Member::factory()->create();
+
         $token = Auth::guard()->fromUser($member);
 
-        $activity = app(Activity::class)->where('member_id', env('API_MEMBER_ID'))->inRandomOrder()->first();
+        $activity = Activity::factory()->create([
+            'member_id' => $member->id,
+        ]);
+
+        $this->mock(ActivityService::class, function (MockInterface $mock) {
+            $mock->shouldReceive('getActivityFromStrava')->once()->andReturn([]);
+        });
 
         $response = $this->call('GET', 'api/activities/' . $activity->id, [], [], [], ['HTTP_Authorization' => 'Bearer ' . $token], []);
 
