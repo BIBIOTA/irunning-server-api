@@ -3,11 +3,29 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use App\Models\Event;
+use App\Models\EventDistance;
 use Tests\TestCase;
 
 class EventsTest extends TestCase
 {
+    use RefreshDatabase;
+
+    private $event;
+
+    private $eventDistance;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->event = Event::factory()->create();
+
+        $this->eventDistance = EventDistance::factory()->create([
+            'event_id' => $this->event->id,
+        ]);
+    }
+    
     public function testEventsSuccess()
     {
         $data = [

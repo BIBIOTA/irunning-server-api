@@ -4,9 +4,13 @@ namespace Tests\Feature;
 
 use App\Models\Member;
 use App\Models\MemberToken;
+use App\Services\ActivityService;
+use App\Jobs\GetActivitiesDataFromStrava;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
+use Mockery\MockInterface;
 
 class LoginTest extends TestCase
 {
@@ -17,6 +21,8 @@ class LoginTest extends TestCase
         Member::factory()->create();
 
         MemberToken::factory()->create();
+
+        Bus::fake();
 
         $dataStructure = [
             'status',
@@ -32,10 +38,15 @@ class LoginTest extends TestCase
 
         $responseAthlete = $this->fakeResponseAthlete();
 
+        $this->mock(ActivityService::class, function (MockInterface $mock) {
+            $mock->shouldReceive('getStats')->once()->andReturnNull();
+        });
+
         $formData = array_merge($responseRefreashToken, ['athlete' => $responseAthlete]);
 
         $response = $this->call('POST', 'api/login', $formData);
-
+        
+        Bus::assertDispatched(GetActivitiesDataFromStrava::class);
         $response->assertStatus(200);
         $response->assertJsonStructure($dataStructure);
     }

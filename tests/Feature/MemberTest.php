@@ -3,17 +3,15 @@
 namespace Tests\Feature;
 
 use App\Models\Member;
+use App\Models\Stat;
+use App\Models\Activity;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
-use Artisan;
 
 class MemberTest extends TestCase
 {
-    use DatabaseTransactions;
+    use RefreshDatabase;
 
     public function testMemberRead()
     {
@@ -32,7 +30,7 @@ class MemberTest extends TestCase
             ],
         ];
 
-        $member = app(Member::class)->where('id', env('API_MEMBER_ID'))->first();
+        $member = Member::factory()->create();
 
         $token = Auth::guard()->fromUser($member);
 
@@ -51,7 +49,7 @@ class MemberTest extends TestCase
             'data',
         ];
 
-        $member = app(Member::class)->where('id', env('API_MEMBER_ID'))->first();
+        $member = Member::factory()->create();
 
         $token = Auth::guard()->fromUser($member);
 
@@ -84,7 +82,15 @@ class MemberTest extends TestCase
             ],
         ];
 
-        $member = app(Member::class)->where('id', env('API_MEMBER_ID'))->first();
+        $member = Member::factory()->create();
+
+        Stat::factory()->create([
+            'member_id' => $member->id,
+        ]);
+
+        Activity::factory()->create([
+            'member_id' => $member->id,
+        ]);
 
         $token = Auth::guard()->fromUser($member);
 

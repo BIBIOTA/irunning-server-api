@@ -3,20 +3,27 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use Database\Seeders\WeatherSeeder;
+use Database\Seeders\WxDocumentSeeder;
 use Tests\TestCase;
 
 class WeatherTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     *
-     * @return void
-     */
+    use RefreshDatabase;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->seed(WxDocumentSeeder::class);
+        $this->seed(WeatherSeeder::class);
+    }
+
     public function testWeather()
     {
         $cities = $this->getCityCountyData();
 
+        
         $distinct = $this->distinctDistricts();
 
         foreach ($cities as $city) {

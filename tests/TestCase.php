@@ -7,10 +7,22 @@ use Illuminate\Support\Facades\Http;
 use App\Models\City;
 use App\Models\District;
 use Illuminate\Support\Carbon;
+use Database\Seeders\CityAndDistrictSeeder;
+use Database\Seeders\CityDataIdSeeder;
+use Database\Seeders\AqiSeeder;
 
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->seed(CityAndDistrictSeeder::class);
+        $this->seed(CityDataIdSeeder::class);
+        $this->seed(AqiSeeder::class);
+    }
 
     public function fakeResponseAthlete()
     {
