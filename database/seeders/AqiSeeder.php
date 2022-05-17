@@ -21,8 +21,6 @@ class AqiSeeder extends Seeder
      */
     public function run()
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-
         try {
             $response = Http::get('https://data.epa.gov.tw/api/v1/aqx_p_432?api_key=9be7b239-557b-4c10-9775-78cadfc555e9&sort=ImportDate%20desc&format=json');
             $datas = $response->json();
@@ -59,7 +57,5 @@ class AqiSeeder extends Seeder
             Log::stack(['aqi', 'slack'])->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'aqi error log', 'main' => $e]);
         }
-
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

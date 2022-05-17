@@ -45,8 +45,6 @@ class WeatherClearRecords extends Command
         try {
             $lastDay = Carbon::today('Asia/Taipei')->subDays(1);
 
-            logger($lastDay);
-
             app(WeatherData::class)
                 ->whereDate('start_time', '<=', $lastDay)
                 ->whereDate('end_time', '<=', $lastDay)

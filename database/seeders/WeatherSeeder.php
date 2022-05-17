@@ -25,8 +25,6 @@ class WeatherSeeder extends Seeder
      */
     public function run()
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-
         try {
             $datas = app(City::class)::select('id', 'dataid')->whereNotNull('dataid')->get();
 
@@ -126,7 +124,5 @@ class WeatherSeeder extends Seeder
             Log::stack(['weather', 'slack'])->critical($e);
             SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'weather error log', 'main' => $e]);
         }
-
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }
