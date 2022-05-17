@@ -55,6 +55,7 @@ Route::prefix('index')->group(function () {
     Route::get('getIndexEvents', [IndexController::class, 'getIndexEvents'])->name('index.getIndexEvents');
 });
 
+// TODO: Remove this route
 Route::prefix('image')->group(function () {
     Route::get('getRamdomWeatherImage', [WeatherController::class, 'getRamdomWeatherImage'])->name('image.getRamdomWeatherImage');
 });
