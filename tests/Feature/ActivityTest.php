@@ -37,7 +37,13 @@ class ActivityTest extends TestCase
             'member_id' => $member->id,
         ]);
 
-        $this->paginationTest('GET', 'api/activities', [], $dataStructure, ['HTTP_Authorization' => 'Bearer ' . $token]);
+        $this->paginationTest(
+            'GET',
+            'api/activities',
+            [],
+            $dataStructure,
+            ['HTTP_Authorization' => 'Bearer ' . $token]
+        );
     }
 
     public function testActivity()
@@ -60,7 +66,15 @@ class ActivityTest extends TestCase
             $mock->shouldReceive('getActivityFromStrava')->once()->andReturn([]);
         });
 
-        $response = $this->call('GET', 'api/activities/' . $activity->id, [], [], [], ['HTTP_Authorization' => 'Bearer ' . $token], []);
+        $response = $this->call(
+            'GET',
+            'api/activities/' . $activity->id,
+            [],
+            [],
+            [],
+            ['HTTP_Authorization' => 'Bearer ' . $token],
+            []
+        );
 
         $response
         ->assertStatus(200)

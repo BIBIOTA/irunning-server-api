@@ -62,7 +62,15 @@ class MemberTest extends TestCase
             'runnerType' => '1',
         ];
 
-        $response = $this->call('PUT', 'api/member', $formData, [], [], ['HTTP_Authorization' => 'Bearer ' . $token], []);
+        $response = $this->call(
+            'PUT',
+            'api/member',
+            $formData,
+            [],
+            [],
+            ['HTTP_Authorization' => 'Bearer ' . $token],
+            [],
+        );
 
         $response
         ->assertStatus(200)
@@ -94,7 +102,15 @@ class MemberTest extends TestCase
 
         $token = Auth::guard()->fromUser($member);
 
-        $response = $this->call('GET', 'api/member/getIndexRunInfo', [], [], [], ['HTTP_Authorization' => 'Bearer ' . $token], []);
+        $response = $this->call(
+            'GET',
+            'api/member/getIndexRunInfo',
+            [],
+            [],
+            [],
+            ['HTTP_Authorization' => 'Bearer ' . $token],
+            []
+        );
 
         $response
         ->assertStatus(200)

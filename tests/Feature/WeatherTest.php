@@ -83,7 +83,10 @@ class WeatherTest extends TestCase
                                         'district_id' => $district->id,
                                         'start_time' => $time['startTime'],
                                         'end_time' => $time['endTime'],
-                                        'value' => $this->getValue($weatherElement['elementName'], $time['elementValue'])
+                                        'value' => $this->getValue(
+                                            $weatherElement['elementName'],
+                                            $time['elementValue']
+                                        )
                                     ];
 
                                     WeatherData::factory()->create($data);
@@ -97,7 +100,10 @@ class WeatherTest extends TestCase
                                         'district_id' => $district->id,
                                         'start_time' => $time['dataTime'],
                                         'end_time' => $defaultEndTime,
-                                        'value' => $this->getValue($weatherElement['elementName'], $time['elementValue'])
+                                        'value' => $this->getValue(
+                                            $weatherElement['elementName'],
+                                            $time['elementValue'],
+                                        )
                                     ];
 
                                     WeatherData::factory()->create($data);

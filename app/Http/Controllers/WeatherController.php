@@ -121,7 +121,10 @@ class WeatherController extends Controller
             return response()->json(['status' => true, 'message' => '取得資料成功', 'data' => $urls], 200);
         } catch (Throwable $e) {
             Log::stack(['controller', 'slack'])->critical($e);
-            SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function getRamdomWeatherImage error', 'main' => $e]);
+            SendEmail::dispatchNow(
+                env('ADMIN_MAIL'),
+                ['title' => 'function getRamdomWeatherImage error', 'main' => $e]
+            );
         }
     }
 

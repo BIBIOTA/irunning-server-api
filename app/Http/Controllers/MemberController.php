@@ -230,7 +230,9 @@ class MemberController extends Controller
                 if ($tokenData) {
                     $this->getActivitiesDataFromStrava($tokenData);
                 } else {
-                    return response()->json(['status' => false, 'message' => '發生例外錯誤: 無法取得會員Token資料', 'data' => null], 404);
+                    return response()->json([
+                        'status' => false, 'message' => '發生例外錯誤: 無法取得會員Token資料', 'data' => null
+                    ], 404);
                 }
             }
 
@@ -309,7 +311,10 @@ class MemberController extends Controller
             ];
         } catch (Throwable $e) {
             Log::stack(['controller', 'slack'])->critical($e);
-            SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => 'function memberDataProcessforClientRead error', 'main' => $e]);
+            SendEmail::dispatchNow(
+                env('ADMIN_MAIL'),
+                ['title' => 'function memberDataProcessforClientRead error', 'main' => $e]
+            );
         }
     }
 }
