@@ -3,6 +3,8 @@ image: bibiota/irunning-server-api:latest
 stages:
   - build
   - test
+  - deploy
+  - deploy-k8s
 
 composer:
   stage: build
@@ -30,4 +32,37 @@ codestyle:
   stage: test
   dependencies: []
   script:
-    - /root/.composer/vendor/bin/phpcs --standard=PSR2 --extensions=php ./app ./tests
+    - /root/.composer/vendor/bin/phpcs --standard=PSR2 --exclude=Generic.Files.LineLength --extensions=php ./app ./tests
+
+deploy:
+  stage: deploy
+  image: "docker:18.09"
+  services:
+    - docker:18-dind
+  dependencies:
+    - composer
+  before_script:
+    - apk -Uuv add curl bash python
+    - curl https://sdk.cloud.google.com | CLOUDSDK_CORE_DISABLE_PROMPTS=1 bash
+    - export PATH=$PATH:/root/google-cloud-sdk/bin/
+    - echo "$GCP_SERVICE_KEY" > gcloud-service-key.json # Google Cloud service accounts
+    - gcloud auth activate-service-account --key-file gcloud-service-key.json
+    - gcloud auth configure-docker --quiet
+    - docker login -u _json_key --password-stdin https://gcr.io < gcloud-service-key.json
+  script:
+    - docker build -t gcr.io/$GCP_PROJECT_ID/$IMAGE:$CI_PIPELINE_ID .
+    - docker push gcr.io/$GCP_PROJECT_ID/$IMAGE:$CI_PIPELINE_ID
+  only:
+    - master
+
+deploy-k8s:
+  image: google/cloud-sdk
+  stage: deploy-k8s
+  before_script:
+    - echo "$GCP_SERVICE_KEY" > gcloud-service-key.json # Google Cloud service accounts
+    - gcloud auth activate-service-account --key-file gcloud-service-key.json
+    - gcloud container clusters get-credentials $CLUSTER --zone $ZONE --project $GCP_PROJECT_ID
+  script:
+    - kubectl set image deployment $DEPLOYMENT $CONTAINER=gcr.io/$GCP_PROJECT_ID/$IMAGE:$CI_PIPELINE_ID
+  dependencies:
+    - deploy
