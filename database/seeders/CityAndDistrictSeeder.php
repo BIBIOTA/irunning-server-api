@@ -19,9 +19,6 @@ class CityAndDistrictSeeder extends Seeder
      */
     public function run()
     {
-        app(City::class)->truncate();
-        app(District::class)->truncate();
-
         $filename = 'CityCountyData';
 
         $path = storage_path() . "/app/public" . "/${filename}.json";
