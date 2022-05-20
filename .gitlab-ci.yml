@@ -9,6 +9,7 @@ composer:
   script:
       - composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts
       - php artisan key:generate
+      - php artisan octane:install --server=swoole
   artifacts:
     paths:
       - vendor/
@@ -23,10 +24,10 @@ phpunit:
   dependencies:
     - composer
   script:
-    - phpunit --coverage-text --colors=never
+    - /root/.composer/vendor/bin/phpunit --coverage-text --colors=never
 
 codestyle:
   stage: test
   dependencies: []
   script:
-    - phpcs --standard=PSR2 --extensions=php ./app ./tests
+    - /root/.composer/vendor/bin/phpcs --standard=PSR2 --extensions=php ./app ./tests
