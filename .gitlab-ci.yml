@@ -25,12 +25,12 @@ composer:
     paths:
       - vendor/
 
-phpunit:
+paratest:
   stage: test
   dependencies:
     - composer
   script:
-    - /root/.composer/vendor/bin/phpunit --coverage-text --colors=never
+    - ./vendor/bin/paratest -p2
 
 codestyle:
   stage: test
