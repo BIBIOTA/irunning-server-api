@@ -1,0 +1,13 @@
+#!/bin/sh
+
+echo DB_DATABASE=$DB_DATABASE >> .env
+echo DB_USERNAME=$DB_USERNAME >> .env
+echo DB_PASSWORD=$DB_PASSWORD >> .env
+echo REDIS_HOST=$REDIS_HOST >> .env
+echo AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID >> .env
+echo AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY >> .env
+echo AWS_BUCKET=$AWS_BUCKET >> .env
+echo AWS_URL=$AWS_URL >> .env
+echo JWT_SECRET=$JWT_SECRET >>  .env
+echo ADMIN_MAIL=$ADMIN_MAIL >>  .env
+echo LOG_SLACK_WEBHOOK_URL=$LOG_SLACK_WEBHOOK_URL >>  .env

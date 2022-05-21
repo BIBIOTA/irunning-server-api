@@ -8,6 +8,10 @@ stages:
 
 composer:
   stage: build
+  before_script:
+    - cp .env.example .env
+    - chmod +x ./setup_env.sh
+    - ./setup_env.sh
   script:
       - composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts
       - php artisan key:generate
