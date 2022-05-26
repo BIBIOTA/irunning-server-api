@@ -69,24 +69,11 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 	&& php -r "unlink('composer-setup.php');" \
 	&& mv composer.phar /usr/bin/composer
 RUN chmod +x /usr/bin/composer
-RUN /usr/bin/composer global require squizlabs/php_codesniffer
-RUN /usr/bin/composer global require phpunit/phpunit
-RUN /usr/bin/composer global require friendsofphp/php-cs-fixer
 
 # change www-data's uid and gid for laravel folder permisstion
 RUN apt-get install -y --force-yes --no-install-recommends  && \
     usermod -u 1000 www-data && \
     groupmod -g 1000 www-data
-
-# install xdebug
-RUN pecl install xdebug && docker-php-ext-enable xdebug
-RUN echo 'zend_extension=xdebug' >> /usr/local/etc/php/php.ini
-RUN echo 'xdebug.mode=develop,debug,coverage' >> /usr/local/etc/php/php.ini
-RUN echo 'xdebug.discover_client_host=0' >> /usr/local/etc/php/php.ini
-RUN echo 'xdebug.start_with_request=yes' >> /usr/local/etc/php/php.ini
-RUN echo 'xdebug.client_host=host.docker.internal' >> /usr/local/etc/php/php.ini
-RUN echo 'xdebug.client_port=9000' >> /usr/local/etc/php/php.ini
-RUN echo 'session.save_path = "/tmp"' >> /usr/local/etc/php/php.ini
 
 # setting crontab
 COPY crontab /var/spool/cron/crontabs/root
