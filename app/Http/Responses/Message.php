@@ -8,4 +8,5 @@ class Message
     const NOTFOUND = 'not found';
     const SERVERERROR = 'internal server error';
     const LOGINFAILED = 'login failed';
+    const DATAEXISTS = 'data exists';
 }

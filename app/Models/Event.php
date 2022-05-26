@@ -20,4 +20,9 @@ class Event extends Model
     {
         return $this->hasMany(EventDistance::class, 'event_id');
     }
+
+    public function telegramFollowEvent()
+    {
+        return $this->hasMany(TelegramFollowEvent::class);
+    }
 }

@@ -68,6 +68,9 @@ Route::prefix('member')->group(function () {
 });
 
 Route::prefix('telegram')->group(function () {
+    Route::post('/follow', [TelegramUserController::class, 'followEvent'])->name('telegram.follow');
+    Route::post('/unfollow', [TelegramUserController::class, 'unfollowEvent'])->name('telegram.unfollow');
+    Route::get('/followingEvent', [TelegramUserController::class, 'getFollowingEvent'])->name('telegram.followingEvent');
     Route::post('/subscribe', [TelegramUserController::class, 'subscribe'])->name('telegram.subscribe');
     Route::post('/unsubscribe', [TelegramUserController::class, 'unsubscribe'])->name('subscribe.unsubscribe');
 });

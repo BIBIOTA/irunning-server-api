@@ -29,6 +29,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('strava:activities')->dailyAt('00:00');
         $schedule->command('weather:clear')->dailyAt('23:30');
         $schedule->command('events:send')->dailyAt('09:00');
+        $schedule->command('send:follow_events')->dailyAt('09:05');
         $schedule->command('DB:seed --class=EventSeeder --force')
         ->dailyAt('01:00');
     }

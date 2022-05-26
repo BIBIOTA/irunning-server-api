@@ -132,6 +132,34 @@ class EventService
     }
 
     /**
+     * @param array $input
+     *
+     * @return void
+     */
+    public function sendUpdatedEvents(array $input):void
+    {
+        $response = Http::post(
+            env('NODE_URL') . '/api/updatedEvent',
+            ['data' => $input],
+        );
+
+        if ($response->status() === 200) {
+            return;
+        }
+
+        throw new Exception($response->json()['message']);
+    }
+
+    /**
+     *
+     * @return array
+     */
+    public function getUpdatedEventsWithTelegramUser(): array
+    {
+        return $this->eventRepository->getUpdatedEventsWithTelegramUser();
+    }
+
+    /**
      * @param array $data
      * @param string $eventId
      *

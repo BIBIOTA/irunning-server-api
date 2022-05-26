@@ -52,15 +52,20 @@ class EventRepository
 
         $query->orderBy($orderBy, $sort);
 
-        $results = $query->paginate($filters['rows'] ?? 30);
+        if (empty($filters['page'])) {
+            $results = $query->get();
+        } else {
+            $results = $query->paginate($filters['rows'] ?? 30);
+    
+            $results->appends($filters);
+    
+            $results->getCollection()->transform(function ($event) {
+                $event['distance'] = $event->distance;
+    
+                return $event;
+            });
+        }
 
-        $results->appends($filters);
-
-        $results->getCollection()->transform(function ($event) {
-            $event['distance'] = $event->distance;
-
-            return $event;
-        });
 
         return $results;
     }
@@ -103,7 +108,9 @@ class EventRepository
      */
     public function updateEvent(array $eventInput, array $distanceInput): void
     {
-        $this->eventModel->where('id', $eventInput['id'])->update($eventInput);
+        $event = $this->eventModel->where('id', $eventInput['id'])->first();
+
+        $event->fill($eventInput)->save();
 
         $this->eventDistanceModel->where('event_id', $eventInput['id'])->delete();
 
@@ -132,5 +139,17 @@ class EventRepository
         foreach ($distanceInput as $distance) {
             $this->eventDistanceModel->create($distance);
         }
+    }
+    
+    /**
+     *
+     * @return array
+     */
+    public function getUpdatedEventsWithTelegramUser(): array
+    {
+        return $this->eventModel
+            ->with(['telegramFollowEvent', 'distance'])
+            ->where('updated_at', '>', Carbon::now()->startOfDay())
+            ->get()->toArray();
     }
 }

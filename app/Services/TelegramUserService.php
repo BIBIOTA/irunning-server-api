@@ -3,17 +3,60 @@
 namespace App\Services;
 
 use App\Repositories\TelegramUserRepository;
+use App\Repositories\TelegramFollowEventRepository;
+use Exception;
 
 class TelegramUserService
 {
-    private TelegramUserRepository $repository;
+    private TelegramUserRepository $telegramUserRepository;
+    private TelegramFollowEventRepository $telegramFollowEventRepository;
 
     /**
      * @param TelegramUserRepository $repository
      */
-    public function __construct(TelegramUserRepository $repository)
+    public function __construct(
+        TelegramUserRepository $telegramUserRepository,
+        TelegramFollowEventRepository $telegramFollowEventRepository
+    ) {
+        $this->telegramUserRepository = $telegramUserRepository;
+        $this->telegramFollowEventRepository = $telegramFollowEventRepository;
+    }
+
+    /**
+     * @param integer $userId
+     *
+     * @return array
+     */
+    public function getFollowingEvent(int $userId): array
     {
-        $this->repository = $repository;
+        return $this->telegramFollowEventRepository->findAllEventsByUserId($userId);
+    }
+
+    /**
+     * @param array $input
+     *
+     * @return boolean
+     */
+    public function followEvent(array $input): bool
+    {
+        $data = $this->telegramFollowEventRepository->find($input);
+
+        if (empty($data)) {
+            $this->telegramFollowEventRepository->create($input);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param array $input
+     *
+     * @return void
+     */
+    public function unfollowEvent(array $input): void
+    {
+        $this->telegramFollowEventRepository->delete($input);
     }
 
     /**
@@ -23,7 +66,7 @@ class TelegramUserService
      */
     public function getUserByOption(string $option): array
     {
-        return $this->repository->getUserByOption($option);
+        return $this->telegramUserRepository->getUserByOption($option);
     }
 
     /**
@@ -33,7 +76,7 @@ class TelegramUserService
      */
     public function subscribe(int $userId, string $option): void
     {
-        $this->repository->subscribe($userId, $option);
+        $this->telegramUserRepository->subscribe($userId, $option);
     }
 
 
@@ -44,6 +87,6 @@ class TelegramUserService
      */
     public function unsubscribe(int $userId, string $option): void
     {
-        $this->repository->unsubscribe($userId, $option);
+        $this->telegramUserRepository->unsubscribe($userId, $option);
     }
 }
