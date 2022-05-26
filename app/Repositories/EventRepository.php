@@ -54,6 +54,9 @@ class EventRepository
 
         if (empty($filters['page'])) {
             $results = $query->get();
+            $results->map(function ($event) {
+                $event->distance;
+            });
         } else {
             $results = $query->paginate($filters['rows'] ?? 30);
     
