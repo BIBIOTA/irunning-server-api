@@ -38,7 +38,7 @@ class EventSeeder extends Seeder
                     if ($res['status'] === true) {
                         if (is_array($res['data'])) {
                             foreach ($res['data'] as $data) {
-                                $event = $this->service->getEventByEventName($data['event_name']);
+                                $event = $this->service->getEventByEventNameAndDate($data['event_name'], $data['event_date']);
 
                                 if (empty($event)) {
                                     $this->service->createEvent($data);

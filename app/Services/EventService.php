@@ -56,9 +56,9 @@ class EventService
      *
      * @return void
      */
-    public function getEventByEventName(string $eventName)
+    public function getEventByEventNameAndDate(string $eventName, string $eventDate)
     {
-        return $this->eventRepository->getEventByEventName($eventName);
+        return $this->eventRepository->getEventByEventNameAndDate($eventName, $eventDate);
     }
 
     /**

@@ -78,9 +78,13 @@ class EventRepository
      *
      * @return Event|null
      */
-    public function getEventByEventName(string $eventName): ?Event
+    public function getEventByEventNameAndDate(string $eventName, string $eventDate): ?Event
     {
-        return $this->eventModel->where('event_name', $eventName)->first();
+        return $this
+                ->eventModel
+                ->where('event_name', $eventName)
+                ->where('event_date', $eventDate)
+                ->first();
     }
 
     /**
@@ -113,7 +117,11 @@ class EventRepository
     {
         $event = $this->eventModel->where('id', $eventInput['id'])->first();
 
-        $event->fill($eventInput)->save();
+        $event->fill($eventInput);
+
+        if ($event->isDirty()) {
+            $event->save();
+        }
 
         $this->eventDistanceModel->where('event_id', $eventInput['id'])->delete();
 
