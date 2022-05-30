@@ -22,19 +22,19 @@ class AqiSeeder extends Seeder
     public function run()
     {
         try {
-            $response = Http::get('https://data.epa.gov.tw/api/v1/aqx_p_432?api_key=9be7b239-557b-4c10-9775-78cadfc555e9&sort=ImportDate%20desc&format=json');
+            $response = Http::get('https://data.epa.gov.tw/api/v2/aqx_p_432?api_key=e8dd42e6-9b8b-43f8-991e-b3dee723a52d&limit=1000&sort=ImportDate%20desc&format=json');
             $datas = $response->json();
             if (count($datas['records']) > 0) {
                 foreach ($datas['records'] as $data) {
-                    $aqi = app(Aqi::class)->where('SiteName', $data['SiteName'])->first();
+                    $aqi = app(Aqi::class)->where('sitename', $data['sitename'])->first();
                     foreach ($data as $key => $value) {
-                        if ($key === 'PM2.5') {
-                            $key = 'PM2_5';
+                        if ($key === 'pm2.5') {
+                            $key = 'pm2_5';
                         }
-                        if ($key === 'PM2.5_AVG') {
-                            $key = 'PM2_5_AVG';
+                        if ($key === 'pm2.5_avg') {
+                            $key = 'pm2_5_avg';
                         }
-                        if ($key === 'County') {
+                        if ($key === 'county') {
                             $key = 'city_id';
                             $city = app(City::class)->where('city_name', $value)->first();
                             $value = $city->id;

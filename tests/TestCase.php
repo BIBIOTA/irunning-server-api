@@ -21,7 +21,6 @@ abstract class TestCase extends BaseTestCase
 
         $this->seed(CityAndDistrictSeeder::class);
         $this->seed(CityDataIdSeeder::class);
-        $this->seed(AqiSeeder::class);
     }
 
     public function fakeResponseAthlete()
@@ -149,13 +148,6 @@ abstract class TestCase extends BaseTestCase
     public function distinctDistricts()
     {
         return ['釣魚臺', '東沙群島','南沙群島'];
-    }
-
-    public function getDistrictsData()
-    {
-        $districts = app(District::class)->get();
-
-        return $districts;
     }
 
     public function getCityCountyData()
