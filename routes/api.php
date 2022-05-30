@@ -26,63 +26,65 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('login', [LoginController::class, 'login']);
-Route::post('logout', [LoginController::class,'logout']);
-
-Route::prefix('aqi')->group(function () {
-    Route::get('/', [AqiController::class, 'getAqiList'])->name('aqi.getAqiList');
+Route::controller(LoginController::class)->group(function () {
+    Route::post('login', 'login');
+    Route::post('logout', 'logout');
 });
 
-Route::prefix('activities')->group(function () {
-    Route::get('', [ActivityController::class, 'getActivities'])->name('activities.getActivities');
-    Route::get('/{runningUuId}', [ActivityController::class, 'getActivity'])
+Route::prefix('aqi')->controller(AqiController::class)->group(function () {
+    Route::get('/', 'getAqiList')->name('aqi.getAqiList');
+});
+
+Route::prefix('activities')->controller(ActivityController::class)->group(function () {
+    Route::get('', 'getActivities')->name('activities.getActivities');
+    Route::get('/{runningUuId}', 'getActivity')
     ->name('activities.getActivity');
 });
 
-Route::prefix('cities')->group(function () {
-    Route::get('/', [CityController::class, 'getCities'])->name('cities.getCities');
+Route::prefix('cities')->controller(CityController::class)->group(function () {
+    Route::get('/', 'getCities')->name('cities.getCities');
 });
 
-Route::prefix('districts')->group(function () {
-    Route::get('/', [DistrictController::class, 'getDistricts'])->name('districts.getDistricts');
+Route::prefix('districts')->controller(DistrictController::class)->group(function () {
+    Route::get('/', 'getDistricts')->name('districts.getDistricts');
 });
 
-Route::prefix('events')->group(function () {
-    Route::get('/', [EventController::class, 'getEvents'])->name('events.getEvents');
+Route::prefix('events')->controller(EventController::class)->group(function () {
+    Route::get('/', 'getEvents')->name('events.getEvents');
 });
 
-Route::prefix('index')->group(function () {
-    Route::get('getIndexEvents', [IndexController::class, 'getIndexEvents'])->name('index.getIndexEvents');
+Route::prefix('index')->controller(IndexController::class)->group(function () {
+    Route::get('getIndexEvents', 'getIndexEvents')->name('index.getIndexEvents');
 });
 
 // TODO: Remove this route
-Route::prefix('image')->group(function () {
-    Route::get('getRamdomWeatherImage', [WeatherController::class, 'getRamdomWeatherImage'])->name('image.getRamdomWeatherImage');
+Route::prefix('image')->controller(WeatherController::class)->group(function () {
+    Route::get('getRamdomWeatherImage', 'getRamdomWeatherImage')->name('image.getRamdomWeatherImage');
 });
 
-Route::prefix('member')->group(function () {
-    Route::get('/', [MemberController::class, 'read'])->name('member.read');
-    Route::put('/', [MemberController::class, 'update'])->name('member.update');
-    Route::get('/getIndexRunInfo', [MemberController::class, 'getIndexRunInfo'])
+Route::prefix('member')->controller(MemberController::class)->group(function () {
+    Route::get('/', 'read')->name('member.read');
+    Route::put('/', 'update')->name('member.update');
+    Route::get('/getIndexRunInfo', 'getIndexRunInfo')
     ->name('member.getIndexRunInfo');
 });
 
-Route::prefix('telegram')->group(function () {
-    Route::post('/follow', [TelegramUserController::class, 'followEvent'])->name('telegram.follow');
-    Route::post('/unfollow', [TelegramUserController::class, 'unfollowEvent'])->name('telegram.unfollow');
-    Route::get('/followingEvent', [TelegramUserController::class, 'getFollowingEvent'])->name('telegram.followingEvent');
-    Route::post('/subscribe', [TelegramUserController::class, 'subscribe'])->name('telegram.subscribe');
-    Route::post('/unsubscribe', [TelegramUserController::class, 'unsubscribe'])->name('subscribe.unsubscribe');
+Route::prefix('telegram')->controller(TelegramUserController::class)->group(function () {
+    Route::post('/follow', 'followEvent')->name('telegram.follow');
+    Route::post('/unfollow', 'unfollowEvent')->name('telegram.unfollow');
+    Route::get('/followingEvent', 'getFollowingEvent')->name('telegram.followingEvent');
+    Route::post('/subscribe', 'subscribe')->name('telegram.subscribe');
+    Route::post('/unsubscribe', 'unsubscribe')->name('subscribe.unsubscribe');
 });
 
-Route::prefix('weather')->group(function () {
-    Route::get('/', [WeatherController::class, 'getWeather'])->name('weather.getWeather');
+Route::prefix('weather')->controller(WeatherController::class)->group(function () {
+    Route::get('/', 'getWeather')->name('weather.getWeather');
 });
 
-Route::prefix('banner')->group(function () {
-    Route::get('/', [BannerController::class, 'getBanners'])->name('banner.getBanners');
+Route::prefix('banner')->controller(BannerController::class)->group(function () {
+    Route::get('/', 'getBanners')->name('banner.getBanners');
 });
 
-Route::prefix('news')->group(function () {
-    Route::get('/', [NewsController::class, 'getNews'])->name('banner.getNews');
+Route::prefix('news')->controller(NewsController::class)->group(function () {
+    Route::get('/', 'getNews')->name('banner.getNews');
 });
