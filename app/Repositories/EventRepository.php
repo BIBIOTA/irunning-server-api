@@ -33,6 +33,8 @@ class EventRepository
     {
         $query = $this->eventModel->newModelQuery();
 
+        $query->with('distance');
+
         $query->where('event_date', '>=', Carbon::now());
 
         if (is_array($filters) && count($filters) > 0) {
@@ -48,6 +50,23 @@ class EventRepository
             }
             if (!empty($filters['ids']) && is_array($filters['ids'])) {
                 $query->whereIn('id', $filters['ids']);
+            }
+            if (isset($filters['distances']) && is_array($filters['distances'])) {
+                foreach ($filters['distances'] as $distance) {
+                    if ($distance == 1) {
+                        $query->whereHas('distance', function ($query) {
+                            $query->where('distance', '>=', 42)->where('distance', '<', 43);
+                        })->get();
+                    } elseif ($distance == 2) {
+                        $query->whereHas('distance', function ($query) {
+                            $query->where('distance', '>=', 21)->where('distance', '<', 22);
+                        })->get();
+                    } elseif ($distance == 3) {
+                        $query->whereHas('distance', function ($query) {
+                            $query->where('distance', '=', 10);
+                        })->get();
+                    }
+                }
             }
         }
 

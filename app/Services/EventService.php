@@ -3,29 +3,22 @@
 namespace App\Services;
 
 use App\Repositories\EventRepository;
-use App\Repositories\EventDistanceRepository;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Http\JsonResponse;
 use Exception;
 
 class EventService
 {
     private EventRepository $eventRepository;
-    private EventDistanceRepository $eventDistanceRepository;
 
     /**
      * @param EventRepository $eventRepository
-     * @param EventDistanceRepository $eventDistanceRepository
      */
     public function __construct(
         EventRepository $eventRepository,
-        EventDistanceRepository $eventDistanceRepository,
     ) {
         $this->eventRepository = $eventRepository;
-        $this->eventDistanceRepository = $eventDistanceRepository;
     }
 
     /**
@@ -35,19 +28,6 @@ class EventService
      */
     public function getEvents(array $filters)
     {
-        if (isset($filters['distances']) && is_array($filters['distances'])) {
-            $distances = $this->eventDistanceRepository->getDistances();
-            $filters['ids'] = [];
-            foreach ($distances as $distance) {
-                $hasDistance = $this->eventDistanceRepository->distanceFilter($distance, $filters['distances']);
-                if ($hasDistance) {
-                    if (!in_array($distance->event_id, $filters['ids'])) {
-                        array_push($filters['ids'], $distance->event_id);
-                    }
-                }
-            }
-        }
-
         return $this->eventRepository->getEvents($filters);
     }
 
