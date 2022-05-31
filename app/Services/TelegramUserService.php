@@ -4,32 +4,36 @@ namespace App\Services;
 
 use App\Repositories\TelegramUserRepository;
 use App\Repositories\TelegramFollowEventRepository;
-use Exception;
+use App\Repositories\EventRepository;
+use Illuminate\Database\Eloquent\Collection;
 
 class TelegramUserService
 {
     private TelegramUserRepository $telegramUserRepository;
     private TelegramFollowEventRepository $telegramFollowEventRepository;
+    private EventRepository $eventRepository;
 
     /**
      * @param TelegramUserRepository $repository
      */
     public function __construct(
         TelegramUserRepository $telegramUserRepository,
-        TelegramFollowEventRepository $telegramFollowEventRepository
+        TelegramFollowEventRepository $telegramFollowEventRepository,
+        EventRepository $eventRepository,
     ) {
         $this->telegramUserRepository = $telegramUserRepository;
         $this->telegramFollowEventRepository = $telegramFollowEventRepository;
+        $this->eventRepository = $eventRepository;
     }
 
     /**
      * @param integer $userId
      *
-     * @return array
+     * @return Collection
      */
-    public function getFollowingEvent(int $userId): array
+    public function getFollowingEvent(int $userId): Collection
     {
-        return $this->telegramFollowEventRepository->findAllEventsByUserId($userId);
+        return $this->eventRepository->findAllEventsByUserId($userId);
     }
 
     /**

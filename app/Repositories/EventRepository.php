@@ -4,6 +4,7 @@ namespace App\Repositories;
 use App\Models\Event;
 use App\Models\EventDistance;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Throwable;
 
 class EventRepository
@@ -71,6 +72,20 @@ class EventRepository
 
 
         return $results;
+    }
+
+    /**
+     * @param integer $userId
+     *
+     * @return Collection
+     */
+    public function findAllEventsByUserId(int $userId): Collection
+    {
+        return $this->eventModel
+                    ->select('events.*')
+                    ->join('telegram_follow_event', 'telegram_follow_event.event_id', '=', 'events.id')
+                    ->where('telegram_follow_event.telegram_id', $userId)
+                    ->get();
     }
 
     /**

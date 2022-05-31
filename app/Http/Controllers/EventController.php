@@ -7,6 +7,7 @@ use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use App\Http\Responses\Message;
 use App\Services\EventService;
+use App\Transformer\EventTransformer;
 use Throwable;
 
 class EventController extends Controller
@@ -23,12 +24,21 @@ class EventController extends Controller
      *
      * @return JsonResponse
      */
-    public function getEvents(GetEventsRequest $request): JsonResponse
+    public function getEvents(GetEventsRequest $request, EventTransformer $transformer): JsonResponse
     {
         try {
             $data = $this->service->getEvents($request->all());
 
             if ($data->count() > 0) {
+                if (isset($request->page)) {
+                    $data->getCollection()->transform(function ($event) use ($transformer) {
+                        return $transformer->transform($event);
+                    });
+                } else {
+                    $data->transform(function ($event) use ($transformer) {
+                        return $transformer->transform($event);
+                    });
+                }
                 return $this->response($data, Message::SUCCESS);
             }
 

@@ -30,16 +30,6 @@ class TelegramFollowEventRepository
     }
 
     /**
-     * @param integer $userId
-     *
-     * @return array
-     */
-    public function findAllEventsByUserId(int $userId): array
-    {
-        return $this->model->with('event')->where('telegram_id', $userId)->get()->toArray();
-    }
-
-    /**
      * @param array $input
      *
      * @return void
