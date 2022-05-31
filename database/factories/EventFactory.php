@@ -24,11 +24,14 @@ class EventFactory extends Factory
             'event_name' => $this->faker->sentence,
             'event_info' => $this->faker->sentence,
             'event_certificate' => $this->faker->numberBetween(1, 3),
-            'event_date' => date("Y-m-d", rand(Carbon::now()->timestamp, Carbon::now()->addMonth(1)->timestamp)),
+            'event_date' => date("Y-m-d", rand(Carbon::now()->timestamp, Carbon::now()->addMonth(2)->timestamp)),
             'event_time' => $this->faker->time,
             'location' => $this->faker->address,
             'agent' => $this->faker->name,
             'participate' => $this->faker->sentence,
+            'entry_is_end' => false,
+            'entry_start' => date("Y-m-d", Carbon::now()->addDays(7)->timestamp),
+            'entry_end' => date("Y-m-d", Carbon::now()->addDays(14)->timestamp),
         ];
     }
 }

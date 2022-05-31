@@ -47,6 +47,9 @@ class EventsTest extends TestCase
                 'location',
                 'agent',
                 'participate',
+                'entry_is_end',
+                'entry_start',
+                'entry_end',
                 'created_at',
                 'updated_at',
                 'distance' => [
