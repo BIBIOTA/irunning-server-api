@@ -101,8 +101,10 @@ class EventRepository
     public function findAllEventsByUserId(int $userId): array
     {
         return $this->eventModel
-                    ->with('distance')
-                    ->where('telegram_follow_event.telegram_id', $userId)
+                    ->with('telegramFollowEvent')
+                    ->whereHas('telegramFollowEvent', function ($query) use ($userId) {
+                        $query->where('telegram_id', $userId);
+                    })
                     ->get()->toArray();
     }
 
