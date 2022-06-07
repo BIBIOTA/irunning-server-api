@@ -19,9 +19,9 @@ class EventDistanceFactory extends Factory
         return [
             'id' => $this->faker->uuid,
             'event_id' => $this->faker->uuid,
-            'event_distance' => '10K',
-            'event_price' => '1000',
-            'event_limit' => '1000',
+            'event_distance' => 10,
+            'event_price' => 1000,
+            'event_limit' => 1000,
         ];
     }
 }

@@ -94,17 +94,16 @@ class EventRepository
     }
 
     /**
-     * @param integer $userId
+     * @param string $id
      *
-     * @return Collection
+     * @return array
      */
-    public function findAllEventsByUserId(int $userId): Collection
+    public function findAllEventsByUserId(int $userId): array
     {
         return $this->eventModel
-                    ->select('events.*')
-                    ->join('telegram_follow_event', 'telegram_follow_event.event_id', '=', 'events.id')
+                    ->with('distance')
                     ->where('telegram_follow_event.telegram_id', $userId)
-                    ->get();
+                    ->get()->toArray();
     }
 
     /**

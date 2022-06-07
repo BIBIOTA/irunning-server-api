@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TelegramSubScribeRequest;
 use App\Http\Requests\TelegramFollowEventRequest;
 use App\Http\Requests\GetFollowingEventRequest;
-use App\Transformer\EventTransformer;
 use App\Services\TelegramUserService;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
@@ -67,15 +66,11 @@ class TelegramUserController extends Controller
      *
      * @return JsonResponse
      */
-    public function getFollowingEvent(GetFollowingEventRequest $request, EventTransformer $transformer): JsonResponse
+    public function getFollowingEvent(GetFollowingEventRequest $request): JsonResponse
     {
         try {
             $data = $this->service->getFollowingEvent($request->userId);
-
-            if ($data->count() > 0) {
-                $data->transform(function ($event) use ($transformer) {
-                    return $transformer->transform($event);
-                });
+            if (count($data) > 0) {
                 return $this->response($data, Message::SUCCESS);
             }
 

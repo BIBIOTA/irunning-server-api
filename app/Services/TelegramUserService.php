@@ -29,9 +29,9 @@ class TelegramUserService
     /**
      * @param integer $userId
      *
-     * @return Collection
+     * @return array
      */
-    public function getFollowingEvent(int $userId): Collection
+    public function getFollowingEvent(int $userId): array
     {
         return $this->eventRepository->findAllEventsByUserId($userId);
     }
