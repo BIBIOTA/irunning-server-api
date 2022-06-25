@@ -66,7 +66,7 @@ class EventsTest extends TestCase
             ],
         ]);
 
-        $this->json('GET', '/api/events', $data)
+        $this->json('GET', '/api/events' . '?' . http_build_query($data))
         ->assertStatus(200)
         ->assertJsonStructure($dataStructure);
     }
