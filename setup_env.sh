@@ -12,3 +12,4 @@ echo AWS_URL=$AWS_URL >> .env
 echo JWT_SECRET=$JWT_SECRET >>  .env
 echo ADMIN_MAIL=$ADMIN_MAIL >>  .env
 echo LOG_SLACK_WEBHOOK_URL=$LOG_SLACK_WEBHOOK_URL >>  .env
+echo EPA_API_KEY=$EPA_API_KEY >>  .env
