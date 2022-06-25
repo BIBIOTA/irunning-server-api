@@ -33,6 +33,5 @@ class Controller extends BaseController
     protected function sendError(string $message, Throwable $e)
     {
         Log::stack(['controller', 'slack'])->critical($e);
-        SendEmail::dispatchNow(env('ADMIN_MAIL'), ['title' => $message, 'main' => $e]);
     }
 }
